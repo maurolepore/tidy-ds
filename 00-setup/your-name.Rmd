@@ -4,19 +4,20 @@ output: github_document
 
 * Rename this file with your name, e.g. from your-name.Rmd to mauro.Rmd.
 
-* The first chunk of an .Rmd file is usually called "setup" and includes options, such as `echo = TRUE`, that modify the output. Kint this document; then add the options `comment = "#>"` and `collapse = TRUE`, and knit again. Based on your results, explain what these options do:
+* The first chunk of an .Rmd file is usually called "setup" and includes options, such as `echo = TRUE`, that modify the output. Kint this document; then add the options `comment = "#>"` and `collapse = TRUE` to `knitr::opts_chunk$set()`, and knit again. Based on your results, explain what these options do?:
 
   * `echo = TRUE`: ...
   * `collapse = TRUE`: ...
   * `comment = #>`: ...
 
-* Submit a pull request including both the .Rmd source and the .md output.
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+* You can also pass options to specific chunks. Change the chunk `{r situation-report}` to `{r situation-report, comment = ">"}`. Why should chunk comments start with `#` instead of any other symbol (e.g. `>`)?
+
+```{r situation-report}
 usethis::git_sitrep()
 ```
 
+* Submit a pull request including both the .Rmd source and the .md output.

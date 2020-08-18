@@ -1,5 +1,7 @@
 ---
 output: github_document
+params:
+  name: "your-name"
 ---
 
 ## Initialize pull request
@@ -26,12 +28,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(usethis)
+library(praise)
 ```
 
-* You can also pass options to specific chunks. Change the chunk `{r situation-report}` to `{r situation-report, comment = ">"}`. Why should chunk comments start with `#` instead of any other symbol (e.g. `>`)?
+* You can also pass options to specific chunks. Change the chunk `{r greetings}` to `{r greetings, comment = ">"}`. Why should chunk comments start with `#` instead of any other symbol (e.g. `>`)?
 
-```{r situation-report}
-usethis::git_sitrep()
+```{r greetings}
+paste(params$name, praise())
 ```
 
 * Commit with a meaningful message, e.g. "Tweak chunk options".
@@ -56,10 +59,13 @@ git_sitrep()
 
 ## Params
 
-* TBD
+* In the YAML header, replace "your-name" with your name. See how this works, then add a new `params` and use it however you like:
+
+```{r}
+# Your code goes here; it should use the variable params$your-new-param
+```
 
 ## Submit
 
 * Use `pr_push()` to submit a pull request with your changes to the .Rmd source and the .md output.
-
 

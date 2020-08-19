@@ -1,14 +1,8 @@
 ---
-output: github_document
+output: ioslides_presentation 
 params:
   name: "Your name"
 ---
-
-## Initialize
-
-* Initialize a pull request with `pr_init("01-your-name")`.
-
-* Copy this file as your-name.Rmd, e.g. mauro.Rmd.
 
 ## Global chunk-options
 
@@ -43,9 +37,12 @@ praise()
 
 ## Outputs
 
-* Change `output:` to `pdf_document` and knit.
+* Experiment with different outputs and knit each time:
+  * `pdf_document`
+  * `word_document`
+  * `ioslides_presentation`.
 
-* Remove the .pdf output and revert the change to your-name.Rmd.
+* Revert to `github_document`, and remove all outputs except the .pdf output.
 
 ## Params
 
@@ -54,8 +51,4 @@ praise()
 ```{r}
 paste(params$name, praise())
 ```
-
-## Submit
-
-* Use `pr_push()` to submit a pull request with your changes to the .Rmd source and the .md output.
 

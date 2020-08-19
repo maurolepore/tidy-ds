@@ -2,6 +2,13 @@
 
 Tidy data-science workshop
 
+Links:
+
+* https://bit.ly/2020-08-26-tidy-ds
+* https://github.com/2DegreesInvesting/tidy-ds
+
+
+
 ## How to work with each lesson
 
 Each lesson maps to a folder in this repo, and relates to a topic and an issue:

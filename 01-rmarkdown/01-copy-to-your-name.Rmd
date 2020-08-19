@@ -4,13 +4,13 @@ params:
   name: "your-name"
 ---
 
-## Initialize pull request (PR)
+## Initialize
 
-* Initialize a PR with `pr_init("01-your-name")`.
+* Initialize a pull request with `pr_init("01-your-name")`.
 
 * Copy this file as your-name.Rmd, e.g. mauro.Rmd.
 
-## Global chunk options
+## Global chunk-options
 
 * The first chunk of an .Rmd file is usually called `setup` and includes options that modify the output. These are my favourite options. What do they do? Experiment.
 

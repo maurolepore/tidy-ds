@@ -1,6 +1,8 @@
 ---
 title: "Wrap up"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 **Before you start, collapse all chunks with Alt+o**
@@ -11,20 +13,36 @@ output: github_document
 
 * Output a github_document.
 
-* Add chunk options to collapse output and to use "#>".
+* Add chunk options `collapse = TRUE`, `comments = "#>"`, and `error = TRUE`.
 
 ```{r setup-1, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = TRUE
+  
+  
+  
+)
 ```
 
 ```{r setup-2, include=FALSE, eval = FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
-knitr::opts_chunk$set(echo = TRUE, collapse = ____, comment = "__")
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  collapse = ____, 
+  comment = "__",
+  error = ____
+)
 ```
 
 ```{r setup-3, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  collapse = TRUE, 
+  comment = "#>",
+  error = TRUE
+)
 ```
+
+
 
 
 
@@ -56,13 +74,13 @@ library(tidyverse)
 ```
 
 ```{r import-2, eval = FALSE}
-messy <- readr::read_csv("_________________")
+messy <- read_csv("_________________")
 
 messy
 ```
 
 ```{r import-3}
-messy <- readr::read_csv("data/gap_wide.csv")
+messy <- read_csv("data/gap_wide.csv")
 
 messy
 ```
@@ -72,6 +90,7 @@ messy
 ## Tidy https://tidyr.tidyverse.org/
 
 * Pivot the data on everything except `continent` and `country`.
+
 * Separate the messy column into `metric` and `year`.
 
 ```{r pivot-1}

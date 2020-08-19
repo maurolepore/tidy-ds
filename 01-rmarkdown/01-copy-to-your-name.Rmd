@@ -1,5 +1,6 @@
 ---
-output: ioslides_presentation 
+title: "Rmarkdown"
+output: github_document 
 params:
   name: "Your name"
 ---

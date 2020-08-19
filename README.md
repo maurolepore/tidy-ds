@@ -2,20 +2,16 @@
 
 Tidy data-science workshop
 
-## How to work
+## How to work with each lesson
 
-Each folder relates to a topic and an issue.
+Each lesson maps to a folder in this repo, and relates to a topic and an issue:
 
-* Initialize a pull request like `pr_init("#-topic")`, where `#` is the related issue and `topic` is the related topic -- e.g. `pr_init("01-rmarkdown")`.
+* Start each lesson on a new branch off master with `pr_init("#-topic")`, where `#` is the related issue and `topic` is the related topic -- e.g. `pr_init("01-rmarkdown")`.
 
-* Copy this file as (GitHub) username.Rmd, e.g. maurolepore.Rmd.
+* Copy the file `##-username.Rmd` as, for example, maurolepore.Rmd.
 
-* Submit a pull request with `pr_push()` and mark it as a draft.
+* Commit with a message like "Start #01" and submit a PR with `pr_push()`.
 
-* Commit after each section with an informative message and run `pr_sync()`, e.g.:
+* Follow the instructions in `##-username.Rmd`.
 
-```
-Copy .Rmd to mauro.Rmd
-
-Relates to #01
-```
+* Commit after each section with an informative message and run `pr_sync()`.

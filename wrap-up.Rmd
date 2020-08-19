@@ -1,8 +1,11 @@
 ---
-title: "Wrap up"
+title: 'Wrap up'
 output: github_document
 editor_options: 
   chunk_output_type: console
+params:
+  # continents: !r c("Africa")
+  continents: !r c("Africa", "Americas", "Asia", "Europe", "Oceania")
 ---
 
 **Before you start, collapse all chunks with Alt+o**
@@ -13,11 +16,12 @@ editor_options:
 
 * Output a github_document.
 
-* Add chunk options `collapse = TRUE`, `comments = "#>"`, and `error = TRUE`.
+* Add chunk options `collapse = TRUE`, `cache = FALSE`, `comments = "#>"`, and `error = TRUE`.
 
 ```{r setup-1, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE
+  
   
   
   
@@ -28,6 +32,7 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(
   echo = TRUE, 
   collapse = ____, 
+  cache = _____, 
   comment = "__",
   error = ____
 )
@@ -37,12 +42,25 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(
   echo = TRUE, 
   collapse = TRUE, 
+  cache = FALSE, 
   comment = "#>",
   error = TRUE
 )
 ```
 
+* Show which continents this report is about:
 
+```{r params-1}
+
+```
+
+```{r params-2, eval=FALSE}
+params$__________
+```
+
+```{r params-3}
+params$continents
+```
 
 
 
@@ -123,6 +141,7 @@ tidy
 
 ## Transform https://dplyr.tidyverse.org/
 
+* Filter the continents passed to `params`.
 * Transform the year column from character to integer
 * Filter it to include data since 1980.
 * Select all columns except `country`.
@@ -147,6 +166,7 @@ polished
 
 ```{r verbs-3}
 polished <- tidy %>% 
+  filter(continent %in% params$continent) %>% 
   mutate(year = as.integer(year)) %>%
   filter(year > 1980) %>% 
   select(-country)
@@ -154,7 +174,7 @@ polished <- tidy %>%
 polished
 ```
 
-
+TODO: across, groupby and summarize to compute some summary.
 
 ## Visualize https://ggplot2.tidyverse.org/
 
@@ -178,11 +198,12 @@ ______(polished, ___(year, value, fill = _________, color = _________)) +
 
 ```{r plot-3}
 ggplot(polished, aes(year, value, fill = continent, color = continent)) +
+  geom_point() +
   geom_smooth() +
   facet_wrap(~ metric, scales = "free_y")
 ```
 
-
+TODO:  Save output to output/ -- iterage over groups instead of facets?
 
 ## Communicate https://rmarkdown.rstudio.com/
 

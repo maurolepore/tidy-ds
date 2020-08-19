@@ -23,7 +23,7 @@ Please do this before the workshop to ensure we all have the same R environment;
 create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 ```
 
-2. Install the packages tidyverse and here with:
+3. Install the packages tidyverse and here with:
 
 ```r
 install.packages(c("tidyverse", "here"))

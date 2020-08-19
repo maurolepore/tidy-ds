@@ -15,15 +15,15 @@ This workshop will cover the most useful bits of the [tidyverse](https://www.tid
 
 Please do this before the workshop to ensure we all have the same R environment; this avoids problems and saves time. You may ask for help on the #tidy-ds channel on Slack.
 
-* Setup usethis on [rstudio.cloud](https://login.rstudio.cloud/) following [this 16' video](https://youtu.be/A_Q6nmUhcGA).
+1. Setup usethis on [rstudio.cloud](https://login.rstudio.cloud/) following [this 16' video](https://youtu.be/A_Q6nmUhcGA).
 
-* Fork and clone the workshop materials into the home directory of rstudio.cloud:
+2. Fork and clone the tidy-ds repository into the home directory of the rstudio.cloud project you setup in (1):
 
 ```r
 create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 ```
 
-* Install the packages tidyverse and here with:
+2. Install the packages tidyverse and here with:
 
 ```r
 install.packages(c("tidyverse", "here"))

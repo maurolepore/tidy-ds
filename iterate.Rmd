@@ -62,6 +62,8 @@ vapply(by_continent, dim, FUN.VALUE = integer(2))
 if (!fs::dir_exists("data-by-continent")) fs::dir_create("data-by-continent")
 ```
 
+
+
 ```{r write-data-by-continent}
 (continents <- names(by_continent))
 (file_names <- glue::glue("{continents}.csv"))
@@ -69,6 +71,8 @@ if (!fs::dir_exists("data-by-continent")) fs::dir_create("data-by-continent")
 
 walk2(by_continent, paths, write_csv)
 ```
+
+Confirm
 
 ```{r dir-ls-data-by-continent}
 fs::dir_ls("data-by-continent")

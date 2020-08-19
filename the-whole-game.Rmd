@@ -1,10 +1,9 @@
 ---
-title: 'Wrap up'
+title: "The whole game"
 output: github_document
 editor_options: 
   chunk_output_type: console
 params:
-  # continents: !r c("Africa")
   continents: !r c("Africa", "Americas", "Asia", "Europe", "Oceania")
 ---
 

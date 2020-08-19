@@ -1,24 +1,36 @@
 # tidy-ds
 
-Tidy data-science workshop
+Tidy data-science: An online coding workshop for 2DII  
+August 26-27, 1-5pm - Berlin time  
 
-Links:
+This workshop will cover the most useful bits of the [tidyverse](https://www.tidyverse.org/): The main features of [ggplot2](https://ggplot2.tidyverse.org/), [tidyr](https://tidyr.tidyverse.org/), [dplyr](https://dplyr.tidyverse.org/), and [purrr](https://purrr.tidyverse.org/). It will also help you practice other tools that are crucial for data science but won't be the focus of any specific lesson: Rmarkdown, RStudio, Git, and GitHub.
 
-* https://bit.ly/2020-08-26-tidy-ds
-* https://github.com/2DegreesInvesting/tidy-ds
+## General objectives
 
+* Overview the main features of ggplot2, tidyr, dplyr, and purrr.
+* Solve iteration problems with purrr and dplyr instead of `for()` loops.
+* Practice working with Rmarkdown, RStudio, Git, and GitHub.
 
+## Before the workshop setup usethis and the tidy-ds repo on rstudio.cloud
 
-## How to work with each lesson
+Please do this before the workshop to ensure we all have the same R environment; this avoids problems and saves time. You may ask for help on the #tidy-ds channel on Slack.
 
-Each lesson maps to a folder in this repo, and relates to a topic and an issue:
+* Setup usethis on [rstudio.cloud](https://login.rstudio.cloud/) following [this 16' video](https://youtu.be/A_Q6nmUhcGA).
 
-* Start each lesson on a new branch off master with `pr_init("#-topic")`, where `#` is the related issue and `topic` is the related topic -- e.g. `pr_init("01-rmarkdown")`.
+* Fork and clone the workshop materials into the home directory of rstudio.cloud:
 
-* Copy the file `##-username.Rmd` as, for example, maurolepore.Rmd.
+```r
+create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
+```
 
-* Commit with a message like "Start #01" and submit a PR with `pr_push()`.
+* Install the packages tidyverse and here with:
 
-* Follow the instructions in `##-username.Rmd`.
+```r
+install.packages(c("tidyverse", "here"))
+```
 
-* Commit after each section with an informative message and run `pr_sync()`.
+## Links
+
+* Google doc: https://bit.ly/2020-08-26-tidy-ds
+* tidy-ds repository: https://github.com/2DegreesInvesting/tidy-ds
+

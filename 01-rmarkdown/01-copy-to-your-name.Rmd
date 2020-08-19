@@ -1,7 +1,7 @@
 ---
 output: github_document
 params:
-  name: "your-name"
+  name: "Your name"
 ---
 
 ## Initialize
@@ -49,7 +49,7 @@ praise()
 
 ## Params
 
-* In the YAML header above, edit `name: your-name` to prise yourself. How could you use `params` in real life?
+* Click on _Knit > Knit with Parameters ..._ and add your name so the code below prises you. How could you use `params` in real life?
 
 ```{r}
 paste(params$name, praise())

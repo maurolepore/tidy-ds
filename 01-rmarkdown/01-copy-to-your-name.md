@@ -32,7 +32,7 @@ library(praise)
 
 ``` r
 praise()
-#> [1] "You are luminous!"
+#> [1] "You are hunky-dory!"
 ```
 
   - Commit with a meaningful message, e.g. “Tweak chunk options”.
@@ -45,14 +45,14 @@ praise()
 
 ## Params
 
-  - In the YAML header above, edit `name: your-name` to prise yourself.
-    How could you use `params` in real life?
+  - Click on *Knit \> Knit with Parameters …* and add your name so the
+    code below prises you. How could you use `params` in real life?
 
 <!-- end list -->
 
 ``` r
 paste(params$name, praise())
-#> [1] "your-name You are wondrous!"
+#> [1] "Mauro Lepore You are impressive!"
 ```
 
 ## Submit

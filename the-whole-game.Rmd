@@ -4,6 +4,7 @@ output: github_document
 editor_options: 
   chunk_output_type: console
 params:
+  # continents: !r c("Africa")
   continents: !r c("Africa", "Americas", "Asia", "Europe", "Oceania")
 ---
 
@@ -51,7 +52,9 @@ knitr::opts_chunk$set(
 
 ## Packages https://www.tidyverse.org/
 
-* Use tidyverse packages. Your may also use the packages fs and vroom.
+* Use tidyverse packages. 
+
+* Your may also use the packages fs and vroom.
 
 ```{r use-tidyverse-1}
 
@@ -97,7 +100,9 @@ messy
 ## Transform (part 1) https://dplyr.tidyverse.org/
 
 * Select all numeric columns -- i.e. exclude `continent` and `country`.
+
 * Slice a sample of 5 rows.
+
 * Pull the contents of the pull the first column -- the values are not round.
 
 ```{r select-slice-pull-1}
@@ -121,38 +126,44 @@ messy %>%
   pull(1)
 ```
 
-* Round values across numeric columns; assigne the result to `messy`.
+* Round values across numeric columns.
 
-```{r mutate-accross-where-1}
+* Filter the `continents` passed to `params`.
+
+* Store the result as `messy2`.
+
+```{r mutate-accross-where-filter-1}
 
 
 
 
 ```
 
-```{r mutate-accross-where-2, eval=FALSE}
-______ <- messy %>% 
-  mutate(______(where(is._______), round))
+```{r mutate-accross-where-filter-2, eval=FALSE}
+______2 <- messy %>% 
+  mutate(______(where(is._______), round)) %>% 
+  ______(continent %in% params$__________)
 
-messy
+messy2
 ```
 
-```{r mutate-accross-where-3}
-messy <- messy %>% 
-  mutate(across(where(is.numeric), round))
+```{r mutate-accross-where-filter-3}
+messy2 <- messy %>% 
+  mutate(across(where(is.numeric), round)) %>% 
+  filter(continent %in% params$continents)
 
-messy
+messy2
 ```
 
 
 
 ## Tidy https://tidyr.tidyverse.org/
 
-* Pivot the data on everything except `continent` and `country`.
+* Pivot the data on all columns except `continent` and `country`.
 
 * Separate the messy column into `metric` and `year`.
 
-```{r pivot-longer-1}
+```{r pivot-longer-separate-1}
 
 
 
@@ -160,42 +171,74 @@ messy
 
 ```
 
-```{r pivot-longer-2, eval = FALSE}
+```{r pivot-longer-separate-2, eval = FALSE}
 tidy <- messy2 %>% 
-  pivot_______(cols = -_________:-_______) %>% 
+  pivot_______(cols = -c(_________, country)) %>% 
   ________(col = name, into = c("______", "____"))
 
 tidy
 ```
 
-```{r pivot-longer-3}
+```{r pivot-longer-separate-3}
 tidy <- messy2 %>% 
-  pivot_longer(cols = -continent:-country) %>% 
+  pivot_longer(cols = -c(continent, country)) %>% 
   separate(col = name, into = c("metric", "year"))
 
 tidy
 ```
 
-## Transform more https://dplyr.tidyverse.org/
+## Transform (part 2) https://dplyr.tidyverse.org/
 
-* Mutate the year column from character to integer.
-* Mutate values across the remaining character columns to lower case.
-* Filter the `continents` passed to `params`.
-* Filter `year` after 1980.
-* Select all columns except `country`.
+* Mutate the year column from character to integer as `tidy2`.
 
-```{r verbs-3}
-polished <- tidy %>% 
-  mutate(year = as.integer(year)) %>%
-  mutate(across(where(is.character), tolower)) %>% 
-  filter(continent %in% params$continents) %>% 
-  filter(year > 1980) %>% 
-  select(-country)
+```{r fix-year-1}
 
-polished
+
+
+
 ```
 
-TODO: across, groupby and summarize to compute some summary.
+```{r fix-year-2, eval=FALSE}
+tidy2 <- tidy %>% 
+  ______(year = as._______(____))
+
+tidy2
+```
+
+```{r fix-year-3}
+tidy2 <- tidy %>% 
+  mutate(year = as.integer(year))
+
+tidy2
+```
+
+* For each `metric` and `continent`, compute the mean and standard error.
+
+```{r group-by-summarize-1}
+
+
+
+
+
+```
+
+```{r group-by-summarize-2, eval=FALSE}
+summaries <- tidy2 %>% 
+  group_by(______, _________) %>% 
+  _________(mean = mean(value), se = sd(_____) / sqrt(n()))
+
+summaries
+```
+
+```{r group-by-summarize-3}
+summaries <- tidy2 %>% 
+  group_by(metric, continent) %>% 
+  summarise(mean = mean(value), se = sd(value) / sqrt(n()))
+
+summaries
+```
+
+
 
 ## Visualize https://ggplot2.tidyverse.org/
 
@@ -212,20 +255,33 @@ Plot a model for each metric through time:
 ```
 
 ```{r plot-2, eval = FALSE}
-______(polished, ___(year, value, fill = _________, color = _________)) +
+______(tidy2, ___(year, value, fill = _________, color = _________)) +
   geom_______() +
   ______wrap(~ ______, scales = "free_y")
 ```
 
 ```{r plot-3}
-ggplot(polished, aes(year, value, fill = continent, color = continent)) +
+ggplot(tidy2, aes(year, value, fill = continent, color = continent)) +
   geom_smooth() +
   facet_wrap(~ metric, scales = "free_y")
 ```
 
-TODO:  Save output to output/ -- iterage over groups instead of facets?
+Plot the mean of each metric by continent:
+
+* Set the `fill` to "grey".
+* Plot the standard error to show uncertainty around the mean.
+* Facet by `metric` (free the `y` variable -- see `?scales`).
+
+```{r}
+ggplot(summaries, aes(continent, mean)) +
+  geom_col(fill = "grey") +
+  geom_errorbar(aes(ymin = mean + se, ymax = mean - se)) +
+  facet_wrap(~ metric, scales = "free_y")
+```
 
 ## Communicate https://rmarkdown.rstudio.com/
 
 * Knit to create a report in .pdf format, then in word format.
+
+TODO: purrr::walk to produce one report per continent.
 

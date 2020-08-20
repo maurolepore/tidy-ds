@@ -1,7 +1,7 @@
 For each task, expand and work in one of the three chunks:
 
-* `some-label-1`: This is the hardest -- it has no code so you need to code everything from scratch.
+* `some-label-1`: This is the hardest. It has no code; you need to type everything from scratch.
 
-* `some-label-2`: This is intermediate -- it has hints in the form of degraded code. You need to fill the blanks and remove the chunk option `eval` or set it to `TRUE`.
+* `some-label-2`: This is the easiest. It has degraded code as hints; you need to fill the blanks and remove the chunk option `eval` or set it to `TRUE`.
 
-* `some-label-3`: I no brainer -- it's already complete and you can use it to check your results. If your version works, you may remove it do avoid duplication.
+* `some-label-3`: This is already done. Use it when you are stuck and to check your results. Once your own code works, you may remove this chunk to avoid duplication.

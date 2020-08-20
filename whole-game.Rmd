@@ -1,13 +1,14 @@
 ---
-title: "The whole game"
+title: "Metrics (`r params$metrics`) & continents (`r params$continents`)"
+params:
+  metrics: !r c("gdpPercap", "lifeExp", "pop")
+  # metrics: !r c("gdpPercap", "pop")
+  # continents: !r c("Africa", "Americas", "Asia", "Europe", "Oceania")
+  continents: !r c("Africa", "Americas")
+author: "Your Name"
 output: github_document
 editor_options: 
   chunk_output_type: console
-params:
-  # metrics: !r c("gdpPercap", "lifeExp", "pop")
-  metrics: !r c("gdpPercap")
-  # continents: !r c("Africa")
-  continents: !r c("Africa", "Americas", "Asia", "Europe", "Oceania")
 ---
 
 ## TODO
@@ -188,30 +189,33 @@ tidy
 
 ## Transform (part 2) https://dplyr.tidyverse.org/
 
+* Filter the `metrics` and `continents` passed passed to `params`.
+
 * Mutate the year column from character to integer as `tidy2`.
 
-```{r fix-year-1}
+```{r filter-mutate-1}
 
 
 
 
 ```
 
-```{r fix-year-2, eval=FALSE}
+```{r filter-mutate-2, eval=FALSE}
 tidy2 <- tidy %>% 
+  ______(metric %in% ______$metrics, _________ %in% ______$continents) %>% 
   ______(year = as._______(____))
 
 tidy2
 ```
 
-```{r fix-year-3}
+```{r filter-mutate-3}
 tidy2 <- tidy %>% 
+  filter(metric %in% params$metrics, continent %in% params$continents) %>% 
   mutate(year = as.integer(year))
 
 tidy2
 ```
 
-* Filter the `metrics` and `continents` passed passed to `params`.
 
 * For each `metric` and `continent`, compute the mean and standard error.
 
@@ -225,7 +229,6 @@ tidy2
 
 ```{r group-by-summarize-2, eval=FALSE}
 summaries <- tidy2 %>% 
-  ______(metric %in% ______$metrics, _________ %in% ______$continents) %>% 
   group_by(______, _________) %>% 
   _________(mean = mean(value), se = sd(_____) / sqrt(n()))
 
@@ -234,7 +237,6 @@ summaries
 
 ```{r group-by-summarize-3}
 summaries <- tidy2 %>% 
-  filter(metric %in% params$metrics, continent %in% params$continents) %>% 
   group_by(metric, continent) %>% 
   summarise(mean = mean(value), se = sd(value) / sqrt(n()))
 
@@ -251,20 +253,21 @@ Plot a model for each metric through time:
 * Plot model with uncertainty around the mean.
 * Facet by `metric` (free the `y` variable -- see `?scales`).
 
-```{r plot-1}
+```{r geom-smooth-wrap-1}
 
 
 
 ```
 
-```{r plot-2, eval = FALSE}
+```{r geom-smooth-wrap-2, eval = FALSE}
 ______(tidy2, ___(year, value, fill = _________, color = _________)) +
   geom_______() +
   ______wrap(~ ______, scales = "free_y")
 ```
 
-```{r plot-3}
+```{r geom-smooth-wrap-3}
 ggplot(tidy2, aes(year, value, fill = continent, color = continent)) +
+  geom_point() +
   geom_smooth() +
   facet_wrap(~ metric, scales = "free_y")
 ```
@@ -275,7 +278,21 @@ Plot the mean of each metric by continent:
 * Plot the standard error to show uncertainty around the mean.
 * Facet by `metric` (free the `y` variable -- see `?scales`).
 
-```{r}
+```{r geom-col-errorbar-1}
+
+
+
+
+```
+
+```{r geom-col-errorbar-2, eval=FALSE}
+ggplot(summaries, aes(_________, ____)) +
+  geom____(fill = "____") +
+  geom_________(aes(ymin = mean + __, ____ = mean - se)) +
+  ______wrap(~ ______, ______ = "free_y")
+```
+
+```{r geom-col-errorbar-3}
 ggplot(summaries, aes(continent, mean)) +
   geom_col(fill = "grey") +
   geom_errorbar(aes(ymin = mean + se, ymax = mean - se)) +

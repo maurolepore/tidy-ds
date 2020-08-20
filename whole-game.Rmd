@@ -12,9 +12,7 @@ params:
 
 ## TODO
 
-Click the Knit button and read the instructions in the output.
-
-```{r instructions, child="instructions.Rmd"}
+```{r click-on-knit-and-read-the-instructions, child="how-to-work.Rmd"}
 
 ```
 

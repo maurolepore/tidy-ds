@@ -1,0 +1,13 @@
+1. Initialize a pull request with `usethis::pr_init("file-name_your-name")`.
+
+2. Copy this file as `file-name_your-name.Rmd`.
+
+3. Submit a draft pull request with `usethis::pr_push()`.
+
+4. For each task, expand and work in one of the three chunks:
+  * `some-label-1`: This is the hardest. It has no code; you need to type everything from scratch.
+  * `some-label-2`: This is the easiest. It has degraded code as hints; you need to fill the blanks and remove the chunk option `eval` or set it to `TRUE`.
+  * `some-label-3`: This is already done. Use it when you are stuck and to check your results. Once your own code works, you may remove this chunk to avoid duplication.
+
+5. After completing each task, commit with a meaningful message and update your pull request with `usethis::pr_sync()`.
+

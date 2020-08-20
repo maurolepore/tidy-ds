@@ -4,13 +4,19 @@ output: github_document
 editor_options: 
   chunk_output_type: console
 params:
+  # metrics: !r c("gdpPercap", "lifeExp", "pop")
+  metrics: !r c("gdpPercap")
   # continents: !r c("Africa")
   continents: !r c("Africa", "Americas", "Asia", "Europe", "Oceania")
 ---
 
-**Before you start, collapse all chunks with Alt+o**
+## TODO
 
+Click the Knit button and read the instructions in the output.
 
+```{r instructions, child="instructions.Rmd"}
+
+```
 
 ## Rmarkdown https://rmarkdown.rstudio.com/
 
@@ -128,29 +134,24 @@ messy %>%
 
 * Round values across numeric columns.
 
-* Filter the `continents` passed to `params`.
-
 * Store the result as `messy2`.
 
-```{r mutate-accross-where-filter-1}
-
+```{r mutate-accross-where-1}
 
 
 
 ```
 
-```{r mutate-accross-where-filter-2, eval=FALSE}
+```{r mutate-accross-where-2, eval=FALSE}
 ______2 <- messy %>% 
-  mutate(______(where(is._______), round)) %>% 
-  ______(continent %in% params$__________)
+  mutate(______(where(is._______), round))
 
 messy2
 ```
 
-```{r mutate-accross-where-filter-3}
+```{r mutate-accross-where-3}
 messy2 <- messy %>% 
-  mutate(across(where(is.numeric), round)) %>% 
-  filter(continent %in% params$continents)
+  mutate(across(where(is.numeric), round))
 
 messy2
 ```
@@ -212,6 +213,8 @@ tidy2 <- tidy %>%
 tidy2
 ```
 
+* Filter the `metrics` and `continents` passed passed to `params`.
+
 * For each `metric` and `continent`, compute the mean and standard error.
 
 ```{r group-by-summarize-1}
@@ -224,6 +227,7 @@ tidy2
 
 ```{r group-by-summarize-2, eval=FALSE}
 summaries <- tidy2 %>% 
+  ______(metric %in% ______$metrics, _________ %in% ______$continents) %>% 
   group_by(______, _________) %>% 
   _________(mean = mean(value), se = sd(_____) / sqrt(n()))
 
@@ -232,6 +236,7 @@ summaries
 
 ```{r group-by-summarize-3}
 summaries <- tidy2 %>% 
+  filter(metric %in% params$metrics, continent %in% params$continents) %>% 
   group_by(metric, continent) %>% 
   summarise(mean = mean(value), se = sd(value) / sqrt(n()))
 

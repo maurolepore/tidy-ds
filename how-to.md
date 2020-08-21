@@ -8,10 +8,10 @@ Work with usethis:
 
 Work on a task:
 
-1. Initialize a pull request with `pr_init()`.
-2. Copy (don't rename) `task_your-name.Rmd` as a new file with your name.
+1. Initialize a pull request with `pr_init("task_you")` (you is your name).
+2. _Copy_ (don't rename) `task_you.Rmd` (a new file with your name).
 3. Submit a draft pull request with `pr_push()`.
-4. Do each sub-task in `task_your-name.Rmd` in only one of the three chunks:
+4. Do each sub-task in `task_you.Rmd` in only one of the three chunks:
   * `some-label-1` is harder; type everything from scratch.
   * `some-label-2` is easier; fill the blanks then set `eval = TRUE`.
   * `some-label-3` is done; check it to debug or confirm.

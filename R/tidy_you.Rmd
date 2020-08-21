@@ -3,7 +3,7 @@ title: "Tidy"
 output: github_document
 ---
 
-**Before you start, collapse all chunks with Alt+o.**
+**Before you start, collapse all chunks with Alt+o (or Alt+Shift+o).**
 
 ## Setup
 

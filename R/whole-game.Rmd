@@ -1,24 +1,18 @@
 ---
+title: "Whole game"
 output: github_document
-title: "Metrics (`r params$metrics`) & continents (`r params$continents`)"
 params:
   metrics: !r c("gdpPercap", "lifeExp", "pop")
   continents: !r c("Africa", "Americas")
-editor_options: 
-  chunk_output_type: console
 ---
 
-## TODO
-
-```{r click-on-knit-and-read-the-instructions, child="how-to-work.Rmd"}
-
-```
+**Before you start, collapse all chunks with Alt+o (or Alt+Shift+o).**
 
 ## rmarkdown https://rmarkdown.rstudio.com/
 
 * Output a github_document.
 
-* Add chunk options `collapse = TRUE`, `cache = FALSE`, `comments = "#>"`, and `error = TRUE`.
+* Set your favorite chunk options: `collapse`, `cache`, `comments`, and `error`.
 
 ```{r setup-1, include=FALSE}
 knitr::opts_chunk$set(

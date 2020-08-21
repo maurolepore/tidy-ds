@@ -1,3 +1,5 @@
+Import
+================
 
   - In `setup` chunk, set your favorite options.
 
@@ -46,7 +48,7 @@ paths
 <!-- end list -->
 
 ``` r
-vroom(paths)
+messy <- vroom(paths)
 #> Rows: 142
 #> Columns: 38
 #> Delimiter: ","
@@ -55,6 +57,8 @@ vroom(paths)
 #> 
 #> Use `spec()` to retrieve the guessed column specification
 #> Pass a specification to the `col_types` argument to quiet this message
+
+messy
 #> # A tibble: 142 x 38
 #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
 #>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>

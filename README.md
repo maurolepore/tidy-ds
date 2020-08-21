@@ -69,15 +69,17 @@ Work on a task:
     name).
 2.  *Copy* (don’t rename) `task_you.Rmd` (a new file with your name).
 3.  Submit a draft pull request with `pr_push()`.
-4.  Do each sub-task in `task_you.Rmd` in only one of the three chunks:
+4.  Open `task_you.Rmd` and collapse all chunks with Alt+o (or
+    Alt+Shift+o).
+5.  Attempt each sub-task expanding only one of the three chunks:
 
 <!-- end list -->
 
-  - `some-label-1` is harder; type everything from scratch.
-  - `some-label-2` is easier; fill the blanks then set `eval = TRUE`.
-  - `some-label-3` is done; check it to debug or confirm.
+  - `sub-task-1` is harder; type everything from scratch.
+  - `sub-task-2` is easier; fill the blanks then set `eval = TRUE`.
+  - `sub-task-3` is done; check it to debug or confirm.
 
 <!-- end list -->
 
-5.  Commit your sub-task with a meaningful message
-6.  Update the pull-request with `pr_sync()`.
+1.  Commit your sub-task with a meaningful message
+2.  Update the pull-request with `pr_sync()`.

@@ -3,8 +3,6 @@ title: "Tidy"
 output: github_document
 ---
 
-<https://github.com/maurolepore/open-science-with-r>
-
 **Before you start, collapse all chunks with Alt+o.**
 
 ## Setup

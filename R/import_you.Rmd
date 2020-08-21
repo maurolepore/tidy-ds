@@ -1,4 +1,5 @@
 ---
+title: "Import"
 output: github_document
 ---
 
@@ -40,7 +41,9 @@ paths
 * Explore the data interactively with `View()`.
 
 ```{r}
-vroom(paths)
+messy <- vroom(paths)
+
+messy
 ```
 
 * Knit and discuss the output. What is interesting or unclear?

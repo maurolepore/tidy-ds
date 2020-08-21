@@ -2,13 +2,17 @@
 output: github_document
 ---
 
-* Initialize a pull request with `pr_init("import-your-name")` (use your name).
-
-* *Copy* (don't rename) this file as "R/import_your-name.Rmd".
-
 * In `setup` chunk, set your favorite options.
 
-```{r setup, include=FALSE}
+```{r setup-1, include=FALSE}
+
+```
+
+```{r setup-2, include=FALSE, eval=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = ____, comment = "__")
+```
+
+```{r setup-3, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
@@ -42,7 +46,3 @@ vroom(paths)
 * Knit to produce "R/import_your-name.md".
 
 * Discuss the output. What is interesting or unclear?
-
-* Commit with an informative message.
-
-* Submit a pull request with `pr_push()`.

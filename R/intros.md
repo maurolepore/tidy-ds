@@ -1,13 +1,13 @@
 Create files in data/ from files in data-raw/
 ================
 
-This document creates the data in data/ from files in data-raw. Also it
-helps introduce rmarkdown, R, tidyverse packages and friends, and the
-pipe.
+This document creates the data in data/ from files in data-raw. It also
+introduces rmarkdown, R, the tidyverse, iteration with purrr, and some
+packages that play well with the tidyverse.
 
-## Skate
+## Basics
 
-### Introduction to rmarkdown, R, tidyverse packages and friends, and the pipe
+This section shows the basics of most data-science tasks.
 
 rmarkdown:
 
@@ -24,8 +24,6 @@ R:
   - Passing arguments to `...`
   - Compose functions by nesting.
   - Compose functions with the pipe.
-  - Run code `if()` a condition is met.
-  - Not`!` operator (bang)
 
 tidyverse:
 
@@ -124,17 +122,8 @@ Import `wide` data from data-raw/.
 
 ``` r
 wide <- vroom(here("data-raw", "gap_wide.csv"))
-```
 
-If the session is not interactive, print it on the report. Else view it
-in a new tab.
-
-``` r
-if (!interactive()) {
-  wide
-} else {
-  wide %>% View()
-}
+wide
 #> # A tibble: 142 x 38
 #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
 #>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>
@@ -161,7 +150,12 @@ if (!interactive()) {
 #> #   pop_2007 <dbl>
 ```
 
-## Ride
+## Beyond basics
+
+This section shows `if()`, the not `!` operator, and the pattern
+`glue("{variable} string")`.
+
+–
 
 Find `continents`.
 
@@ -188,7 +182,7 @@ if (!dir_exists(by_continent_path)) {
 }
 ```
 
-Create paths where to
+Create paths where to later save the data of each continent.
 
 ``` r
 paths <- path(by_continent_path, glue("{continents}.csv"))
@@ -201,12 +195,11 @@ paths
 #> /home/rstudio/tidy-ds/data/by-continent/oceania.csv
 ```
 
-## Drive
+## Iteration purrr
 
-### Introduction to iteration with purrr
+This section shows how to iterate with purrr:
 
-  - Split a data frame by groups.
-  - Apply a function to each element of a list or atomic vector
+  - Apply a function to each element of a list.
   - Iterate over multiple inputs simultaneously.
   - Apply a function called primarily for its side effect.
   - Specify the expected output with specialized, `map_*()` functions.
@@ -268,118 +261,17 @@ Other purrr ways to do the same.
 
 ``` r
 # Same
-df1 <- dir_ls(by_continent_path) %>% map(read_csv) %>% reduce(bind_rows)
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
+df1 <- dir_ls(by_continent_path) %>% 
+  map(read_csv) %>% 
+  reduce(bind_rows)
 
 # Same
-df2 <- dir_ls(by_continent_path) %>% map_df(read_csv)
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
+df2 <- dir_ls(by_continent_path) %>% 
+  map_df(read_csv)
 
 # Same
-df3 <- map_df(.x = dir_ls(by_continent_path), ~read_csv(.x))
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
-#> Parsed with column specification:
-#> cols(
-#>   .default = col_double(),
-#>   continent = col_character(),
-#>   country = col_character()
-#> )
-#> See spec(...) for full column specifications.
+df3 <- dir_ls(by_continent_path) %>% 
+  map_df(~read_csv(.x))
 
 all_equal(df, df1)
 #> [1] TRUE

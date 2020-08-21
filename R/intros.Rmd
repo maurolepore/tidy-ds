@@ -5,11 +5,11 @@ editor_options:
   chunk_output_type: inline
 ---
 
-This document creates the data in data/ from files in data-raw. Also it helps introduce rmarkdown, R, tidyverse packages and friends, and the pipe.
+This document creates the data in data/ from files in data-raw. It also introduces rmarkdown, R, the tidyverse, iteration with purrr, and some packages that play well with the tidyverse.
 
-## Skate
+## Basics
 
-###  Introduction to rmarkdown, R, tidyverse packages and friends, and the pipe
+This section shows the basics of most data-science tasks.
 
 rmarkdown: 
 
@@ -26,8 +26,6 @@ R:
 * Passing arguments to `...`
 * Compose functions by nesting.
 * Compose functions with the pipe.
-* Run code `if()` a condition is met.
-* Not`!` operator (bang)
 
 tidyverse:
 
@@ -94,21 +92,19 @@ Import `wide` data from data-raw/.
 
 ```{r, message=FALSE}
 wide <- vroom(here("data-raw", "gap_wide.csv"))
-```
 
-If the session is not interactive, print it on the report. Else view it in a new tab.
-
-```{r}
-if (!interactive()) {
-  wide
-} else {
-  wide %>% View()
-}
+wide
 ```
 
 
 
-## Ride
+## Beyond basics
+
+This section shows `if()`, the not `!` operator, and the pattern `glue("{variable} string")`.
+
+--
+
+
 
 Find `continents`.
 
@@ -133,7 +129,8 @@ if (!dir_exists(by_continent_path)) {
 }
 ```
 
-Create paths where to 
+Create paths where to later save the data of each continent.
+
 ```{r}
 paths <- path(by_continent_path, glue("{continents}.csv"))
 
@@ -142,13 +139,11 @@ paths
 
 
 
+## Iteration purrr
 
-## Drive
+This section shows how to iterate with purrr:
 
-### Introduction to iteration with purrr
-
-* Split a data frame by groups.
-* Apply a function to each element of a list or atomic vector
+* Apply a function to each element of a list.
 * Iterate over multiple inputs simultaneously.
 * Apply a function called primarily for its side effect.
 * Specify the expected output with specialized, `map_*()` functions.
@@ -180,15 +175,19 @@ df
 
 Other purrr ways to do the same.
 
-```{r}
+```{r, message=FALSE}
 # Same
-df1 <- dir_ls(by_continent_path) %>% map(read_csv) %>% reduce(bind_rows)
+df1 <- dir_ls(by_continent_path) %>% 
+  map(read_csv) %>% 
+  reduce(bind_rows)
 
 # Same
-df2 <- dir_ls(by_continent_path) %>% map_df(read_csv)
+df2 <- dir_ls(by_continent_path) %>% 
+  map_df(read_csv)
 
 # Same
-df3 <- map_df(.x = dir_ls(by_continent_path), ~read_csv(.x))
+df3 <- dir_ls(by_continent_path) %>% 
+  map_df(~read_csv(.x))
 
 all_equal(df, df1)
 all_equal(df, df2)

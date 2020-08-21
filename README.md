@@ -38,7 +38,7 @@ on the \#tidy-ds channel on Slack.
 create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 ```
 
-3.  Install the packages tidyverse and here with:
+3.  Install the tidyverse packages and friends:
 
 <!-- end list -->
 

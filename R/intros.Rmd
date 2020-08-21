@@ -2,7 +2,7 @@
 title: "Create files in data/ from files in data-raw/"
 output: github_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 This document creates the data in data/ from files in data-raw. Also it helps introduce rmarkdown, R, tidyverse packages and friends, and the pipe.
@@ -94,9 +94,21 @@ Import `wide` data from data-raw/.
 
 ```{r, message=FALSE}
 wide <- vroom(here("data-raw", "gap_wide.csv"))
-
-wide
 ```
+
+If the session is not interactive, print it on the report. Else view it in a new tab.
+
+```{r}
+if (!interactive()) {
+  wide
+} else {
+  wide %>% View()
+}
+```
+
+
+
+## Ride
 
 Find `continents`.
 
@@ -109,18 +121,25 @@ continents <- wide %>%
 continents
 ```
 
-Ensure data/by-continent.
+Ensure data/by-continent/.
 
 ```{r}
 by_continent_path <- here("data", "by-continent")
+
 by_continent_path
 
 if (!dir_exists(by_continent_path)) {
   dir_create(by_continent_path)
 }
-
-paths <- path(by_continent_path, glue("{continents}.csv"))
 ```
+
+Create paths where to 
+```{r}
+paths <- path(by_continent_path, glue("{continents}.csv"))
+
+paths
+```
+
 
 
 
@@ -153,9 +172,16 @@ Confirm.
 # See files
 dir_ls(by_continent_path)
 
-df <- dir_ls(by_continent_path) %>% vroom()
-df
 # Read them back as a single data frame
+df <- dir_ls(by_continent_path) %>% vroom()
+
+df
+```
+
+Other purrr ways to do the same.
+
+```{r}
+# Same
 df1 <- dir_ls(by_continent_path) %>% map(read_csv) %>% reduce(bind_rows)
 
 # Same
@@ -163,5 +189,10 @@ df2 <- dir_ls(by_continent_path) %>% map_df(read_csv)
 
 # Same
 df3 <- map_df(.x = dir_ls(by_continent_path), ~read_csv(.x))
+
+all_equal(df, df1)
+all_equal(df, df2)
+all_equal(df, df3)
 ```
+
 

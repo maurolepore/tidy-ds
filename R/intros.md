@@ -48,12 +48,12 @@ Friends of the tidyverse:
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ───────────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ─────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ──────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -124,8 +124,17 @@ Import `wide` data from data-raw/.
 
 ``` r
 wide <- vroom(here("data-raw", "gap_wide.csv"))
+```
 
-wide
+If the session is not interactive, print it on the report. Else view it
+in a new tab.
+
+``` r
+if (!interactive()) {
+  wide
+} else {
+  wide %>% View()
+}
 #> # A tibble: 142 x 38
 #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
 #>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>
@@ -152,6 +161,8 @@ wide
 #> #   pop_2007 <dbl>
 ```
 
+## Ride
+
 Find `continents`.
 
 ``` r
@@ -164,18 +175,30 @@ continents
 #> [1] "africa"   "americas" "asia"     "europe"   "oceania"
 ```
 
-Ensure data/by-continent.
+Ensure data/by-continent/.
 
 ``` r
 by_continent_path <- here("data", "by-continent")
+
 by_continent_path
 #> [1] "/home/rstudio/tidy-ds/data/by-continent"
 
 if (!dir_exists(by_continent_path)) {
   dir_create(by_continent_path)
 }
+```
 
+Create paths where to
+
+``` r
 paths <- path(by_continent_path, glue("{continents}.csv"))
+
+paths
+#> /home/rstudio/tidy-ds/data/by-continent/africa.csv
+#> /home/rstudio/tidy-ds/data/by-continent/americas.csv
+#> /home/rstudio/tidy-ds/data/by-continent/asia.csv
+#> /home/rstudio/tidy-ds/data/by-continent/europe.csv
+#> /home/rstudio/tidy-ds/data/by-continent/oceania.csv
 ```
 
 ## Drive
@@ -211,7 +234,9 @@ dir_ls(by_continent_path)
 #> /home/rstudio/tidy-ds/data/by-continent/europe.csv
 #> /home/rstudio/tidy-ds/data/by-continent/oceania.csv
 
+# Read them back as a single data frame
 df <- dir_ls(by_continent_path) %>% vroom()
+
 df
 #> # A tibble: 142 x 38
 #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
@@ -237,12 +262,129 @@ df
 #> #   pop_1967 <dbl>, pop_1972 <dbl>, pop_1977 <dbl>, pop_1982 <dbl>,
 #> #   pop_1987 <dbl>, pop_1992 <dbl>, pop_1997 <dbl>, pop_2002 <dbl>,
 #> #   pop_2007 <dbl>
-# Read them back as a single data frame
+```
+
+Other purrr ways to do the same.
+
+``` r
+# Same
 df1 <- dir_ls(by_continent_path) %>% map(read_csv) %>% reduce(bind_rows)
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
 
 # Same
 df2 <- dir_ls(by_continent_path) %>% map_df(read_csv)
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
 
 # Same
 df3 <- map_df(.x = dir_ls(by_continent_path), ~read_csv(.x))
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double(),
+#>   continent = col_character(),
+#>   country = col_character()
+#> )
+#> See spec(...) for full column specifications.
+
+all_equal(df, df1)
+#> [1] TRUE
+all_equal(df, df2)
+#> [1] TRUE
+all_equal(df, df3)
+#> [1] TRUE
 ```

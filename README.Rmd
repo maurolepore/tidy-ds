@@ -1,3 +1,7 @@
+---
+output: github_document
+---
+
 # tidy-ds
 
 Tidy data-science: An online coding workshop for 2DII  
@@ -26,7 +30,7 @@ create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 3. Install the packages tidyverse and here with:
 
 ```r
-install.packages(c("tidyverse", "here"))
+install.packages(c("tidyverse", "here", "vroom"))
 ```
 
 ## Links

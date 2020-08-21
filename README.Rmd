@@ -29,14 +29,13 @@ create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 install.packages(c("tidyverse", "here"))
 ```
 
-## Links
-
-* Google doc: https://bit.ly/2020-08-26-tidy-ds
-* tidy-ds repository: https://github.com/2DegreesInvesting/tidy-ds
-
 ## How to work on each task
 
 ```{r child="R/how-to-work.Rmd"}
 
 ```
 
+## Links
+
+* Google doc: https://bit.ly/2020-08-26-tidy-ds
+* tidy-ds repository: https://github.com/2DegreesInvesting/tidy-ds

@@ -1,0 +1,167 @@
+---
+title: "Create files in data/ from files in data-raw/"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This document creates the data in data/ from files in data-raw. Also it helps introduce rmarkdown, R, tidyverse packages and friends, and the pipe.
+
+## Skate
+
+###  Introduction to rmarkdown, R, tidyverse packages and friends, and the pipe
+
+rmarkdown: 
+
+* Share reports online with rmarkdown's `output: github_document`.
+* Write prose with Markdown and insert chunks of R code.
+* Setup chunk.
+* Set global chunk options.
+* Set chunk-specific options.
+
+R:
+
+* Assign a value to an object.
+* Call a function with 0, 1, 2, and 3 arguments.
+* Passing arguments to `...`
+* Compose functions by nesting.
+* Compose functions with the pipe.
+* Run code `if()` a condition is met.
+* Not`!` operator (bang)
+
+tidyverse:
+
+* Use multiple packages at once.
+* Notice conflicts.
+
+Friends of the tidyverse:
+
+* rmarkdown for communication.
+* here to write safe paths (crucial in rmarkdown documents).
+* fs to interact with the file system.
+* vroom to read multiple files at once and fast.
+* glue to paste strings in a readable way.
+
+--
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+* Use tidyverse packages and friends.
+
+```{r packages}
+library(tidyverse)
+library(here)
+library(vroom)
+
+library(fs)
+library(glue)
+```
+
+Explore the root of this repository.
+
+```{r}
+# Call a function with no argument
+here()
+
+# Call a function with 1 argument
+dir_ls(here())
+
+# Same output, different syntax: nest
+out1 <- dir_ls(here())
+
+# Same output, different syntax: pipe
+out2 <- here() %>% dir_ls()
+
+# Call a function with 2 arguments
+identical(out1, out2)
+
+# Same
+out1 %>% identical(out2)
+```
+
+Explore datasets.
+
+```{r}
+# Call a function with three arguments (one passed to ...) -- see `?dir_ls()`
+here() %>% dir_ls(regex = "data", recurse = TRUE)
+```
+
+Import `wide` data from data-raw/.
+
+```{r, message=FALSE}
+wide <- vroom(here("data-raw", "gap_wide.csv"))
+
+wide
+```
+
+Find `continents`.
+
+```{r}
+continents <- wide %>% 
+  distinct(continent) %>% 
+  pull() %>% 
+  tolower()
+
+continents
+```
+
+Ensure data/by-continent.
+
+```{r}
+by_continent_path <- here("data", "by-continent")
+by_continent_path
+
+if (!dir_exists(by_continent_path)) {
+  dir_create(by_continent_path)
+}
+
+paths <- path(by_continent_path, glue("{continents}.csv"))
+```
+
+
+
+## Drive
+
+### Introduction to iteration with purrr
+
+* Split a data frame by groups.
+* Apply a function to each element of a list or atomic vector
+* Iterate over multiple inputs simultaneously.
+* Apply a function called primarily for its side effect.
+* Specify the expected output with specialized, `map_*()` functions.
+* Inline a function with the formula shortcut `~`.
+
+--
+
+
+
+Split data by continent and save it in data/ (side effect with no output).
+
+```{r}
+wide %>% 
+  group_split(continent) %>% 
+  walk2(paths, write_csv)
+```
+
+Confirm.
+
+```{r, message=FALSE}
+# See files
+dir_ls(by_continent_path)
+
+df <- dir_ls(by_continent_path) %>% vroom()
+df
+# Read them back as a single data frame
+df1 <- dir_ls(by_continent_path) %>% map(read_csv) %>% reduce(bind_rows)
+
+# Same
+df2 <- dir_ls(by_continent_path) %>% map_df(read_csv)
+
+# Same
+df3 <- map_df(.x = dir_ls(by_continent_path), ~read_csv(.x))
+```
+

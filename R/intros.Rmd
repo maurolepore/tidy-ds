@@ -23,6 +23,7 @@ R:
 
 * Assign a value to an object.
 * Call a function with 0, 1, 2, and 3 arguments.
+* Get help with `?`.
 * Passing arguments to `...`
 * Compose functions by nesting.
 * Compose functions with the pipe.

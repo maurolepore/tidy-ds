@@ -1,0 +1,48 @@
+---
+output: github_document
+---
+
+* Initialize a pull request with `pr_init("import-your-name")` (use your name).
+
+* *Copy* (don't rename) this file as "R/import_your-name.Rmd".
+
+* In `setup` chunk, set your favorite options.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+* Use the tidyverse, here, fs, and vroom.
+
+```{r}
+library(tidyverse)
+library(here)
+library(fs)
+library(vroom)
+```
+
+* Find all files in "data/by-continent/" with `dir_ls(here("some", "thing"))`.
+
+```{r}
+paths <- dir_ls(here("data", "by-continent"))
+
+paths
+```
+
+* Import all files into a single data frame with `vroom()`. 
+
+* Compare `vroom()` with `read_csv()` and `read.csv()`.
+
+* Explore the data interactively with `View()`.
+
+```{r}
+vroom(paths)
+```
+
+* Knit to produce "R/import_your-name.md".
+
+* Discuss the output. What is interesting or unclear?
+
+* Commit with an informative message.
+
+* Submit a pull request with `pr_push()`.

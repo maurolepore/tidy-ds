@@ -1,10 +1,9 @@
 ---
+output: github_document
 title: "Metrics (`r params$metrics`) & continents (`r params$continents`)"
 params:
   metrics: !r c("gdpPercap", "lifeExp", "pop")
   continents: !r c("Africa", "Americas")
-author: "Your Name"
-output: github_document
 editor_options: 
   chunk_output_type: console
 ---
@@ -50,6 +49,7 @@ knitr::opts_chunk$set(
   error = TRUE
 )
 ```
+
 
 
 

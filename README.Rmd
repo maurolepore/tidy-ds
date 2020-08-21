@@ -29,9 +29,9 @@ create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 install.packages(c("tidyverse", "here"))
 ```
 
-## How to work on each task
+## How to
 
-```{r child="R/how-to-work.Rmd"}
+```{r child="how-to.md"}
 
 ```
 

@@ -1,5 +1,5 @@
 ---
-title: "Create files in data/ from files in data-raw/"
+title: "Create data/ from data-raw/"
 output: github_document
 editor_options: 
   chunk_output_type: inline

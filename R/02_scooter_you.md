@@ -163,5 +163,8 @@ ggplot(data = selected, aes(lifeExp)) +
 
 ![](02_scooter_you_files/figure-gfm/boxplot-3-1.png)<!-- -->
 
-Histogram of life expectancy in Africa, Americas, Asia, Europe, Oceania
-between 1952, 2007.
+*Histogram of life expectancy in Africa, Americas, Asia, Europe, Oceania
+between 1952, 2007.*
+
+  - Knit this report for different continents: *Knit \> Knit with
+    Parameters …*.

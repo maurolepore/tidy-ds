@@ -146,4 +146,8 @@ ggplot(data = selected, aes(lifeExp)) +
   geom_histogram()
 ```
 
-Histogram of life expectancy in `r params$continent` between `r range(gapminder$year)`.
+*Histogram of life expectancy in `r params$continent` between `r range(gapminder$year)`.*
+
+
+
+* Knit this report for different continents: *Knit > Knit with Parameters ...*.

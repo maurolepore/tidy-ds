@@ -81,4 +81,4 @@ ggplot(data = _________, aes(x = _________, y = _______)) +
   geom________()
 ```
 
-![](skateboarding_you_files/figure-gfm/boxplot-3-1.png)<!-- -->
+![](01_skateboard_you_files/figure-gfm/boxplot-3-1.png)<!-- -->

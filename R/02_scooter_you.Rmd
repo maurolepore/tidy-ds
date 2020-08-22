@@ -76,19 +76,30 @@ params
 
 * Subset rows with `filter()`, where `continent` is `r params$continent`.
 
+* Assign the result to `filtered`.
+
 ```{r filter-params-continent-1}
+
 
 
 ```
 
 ```{r filter-params-continent-2, eval=FALSE}
-continents <- ______$continent
-_________ %>% ______(continent %in% continents)
+continents <- params$continent
+
+filtered <- _________ %>% 
+  ______(continent %in% continents)
+
+filtered
 ```
 
 ```{r filter-params-continent-3, echo=FALSE}
 continents <- params$continent
-gapminder %>% filter(continent %in% continents)
+
+filtered <- gapminder %>% 
+  filter(continent %in% continents)
+
+filtered
 ```
 
 
@@ -114,11 +125,12 @@ subset_cols
 
 
 
+* Plot a histogram of `lifeExp` (see `?geom_histogram`).
 
+* Plot each `continent` in its own panel with `facet_wrap()`.
 
-* Boxplot `lifeExp` for each continent `continent` (see `?geom_boxplot()`).
-
-```{r boxplot}
-ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
-  geom_boxplot()
+```{r boxplot-3, echo=FALSE}
+ggplot(data = filtered, aes(lifeExp, fill = continent)) +
+  geom_histogram() +
+  facet_wrap(~continent)
 ```

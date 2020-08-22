@@ -9,12 +9,12 @@ Scooter
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ─────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ─────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -97,11 +97,17 @@ params
   - Subset rows with `filter()`, where `continent` is Africa, Americas,
     Asia, Europe, Oceania.
 
+  - Assign the result to `filtered`.
+
 <!-- end list -->
 
 ``` r
-continents <- ______$continent
-_________ %>% ______(continent %in% continents)
+continents <- params$continent
+
+filtered <- _________ %>% 
+  ______(continent %in% continents)
+
+filtered
 ```
 
     #> # A tibble: 1,704 x 6
@@ -159,14 +165,12 @@ subset_cols
 #> # … with 842 more rows
 ```
 
-  - Boxplot `lifeExp` for each continent `continent` (see
-    `?geom_boxplot()`).
+  - Plot a histogram of `lifeExp` (see `?geom_histogram`).
+
+  - Plot each `continent` in its own panel with `facet_wrap()`.
 
 <!-- end list -->
 
-``` r
-ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
-  geom_boxplot()
-```
+    #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](02_scooter_you_files/figure-gfm/boxplot-1.png)<!-- -->
+![](02_scooter_you_files/figure-gfm/boxplot-3-1.png)<!-- -->

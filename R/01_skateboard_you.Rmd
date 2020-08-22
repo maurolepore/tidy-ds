@@ -11,6 +11,8 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
+
+
 * Use the packages tidyverse and here.
 
 ```{r packages-1}
@@ -28,6 +30,8 @@ library(tidyverse)
 library(here)
 ```
 
+
+
 * Create a safe `path` to "data/gampinder" with `here()`.
 
 ```{r path-1}
@@ -41,6 +45,8 @@ path <- ____("data", "_________.csv")
 ```{r path-3, echo = FALSE}
 path <- here("data", "gapminder.csv")
 ```
+
+
 
 * Read the csv file and assign it to `gapminder`.
 
@@ -56,6 +62,8 @@ gapminder <- read____(____)
 gapminder <- read_csv(path)
 ```
 
+
+
 * Print and explore `gampinder` under the chunk and with `view()`.
 
 ```{r gapminder-1}
@@ -69,6 +77,8 @@ _________
 ```{r gapminder-3, echo = FALSE}
 gapminder
 ```
+
+
 
 * Boxplot `lifeExp` for each continent `continent` (see `?geom_boxplot()`).
 

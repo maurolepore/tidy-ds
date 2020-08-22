@@ -1,4 +1,4 @@
-Skateboarding
+Skate
 ================
 
 **Collapse all chunks with Alt+O/Cmd+Option+O**

@@ -6,12 +6,6 @@ params:
     choices: [Africa, Americas, Asia, Europe, Oceania]
     multiple: true
     value: [Africa, Americas, Asia, Europe, Oceania]
-  year:
-    value: 2017
-    min: 1952
-    max: 2007
-    step: 1
-    sep: ""
 ---
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
@@ -41,36 +35,60 @@ gapminder <- read_csv(here("data", "gapminder.csv"))
 
 * Explore.
 
-```{r glimpse-3}
-gapminder %>% 
-  glimpse()
+```{r glimpse-1}
+
 ```
 
-* Find `distinct()` values of `continent`.
-
-```{r}
-gapminder %>% distinct(continent)
+```{r glimpse-2, eval=FALSE}
+gapminder %>% _______()
 ```
 
-* Subset rows where `continent` is "Americas" or "Europe".
+```{r glimpse-3, echo=FALSE}
+gapminder %>% glimpse()
+```
 
-```{r}
+
+
+* Subset rows with `filter()`, where `continent` is "Americas" or "Europe".
+
+```{r filter-continents-1}
+
+
+```
+
+```{r filter-continents-2, eval=FALSE}
+continents <- c("________", "______")
+_________ %>% ______(continent %in% continents)
+```
+
+```{r filter-continents-3, echo=FALSE}
 continents <- c("Americas", "Europe")
 gapminder %>% filter(continent %in% continents)
 ```
 
-* Subset rows where `continent` is one of `r params$continents`.
+Notice the `value` of the `continent` `param` from the YAML header at the top.
 
 ```{r}
-continents <- c("Americas", "Europe")
-gapminder %>% filter(continent %in% continents)
+params
 ```
 
+* Edit the YAML header so `param` `continent` takes the value [America, Europe].
 
-* Subset rows where `continent` is in `params$continents`.
+* Subset rows with `filter()`, where `continent` is `r params$continent`.
 
-```{r}
-gapminder %>% filter(continent %in% params$continents)
+```{r filter-params-continent-1}
+
+
+```
+
+```{r filter-params-continent-2, eval=FALSE}
+continents <- ______$continent
+_________ %>% ______(continent %in% continents)
+```
+
+```{r filter-params-continent-3, echo=FALSE}
+continents <- params$continent
+gapminder %>% filter(continent %in% continents)
 ```
 
 

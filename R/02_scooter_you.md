@@ -176,7 +176,7 @@ You’ve just solved, elegantly, an iteration problem. Solution with
 `for()`:
 
 ``` r
-# Preallocate
+# Pre-allocate
 pick <- logical(ncol(filtered))
 # Iterate
 for (i in seq_along(filtered)) {

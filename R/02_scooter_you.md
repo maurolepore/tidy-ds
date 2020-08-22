@@ -9,12 +9,12 @@ Scooter
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ─────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -57,8 +57,7 @@ gapminder %>% _______()
     #> $ pop       <dbl> 8425333, 9240934, 10267083, 11537966, 13079460, 14880372, 1…
     #> $ gdpPercap <dbl> 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.1134,…
 
-  - Subset rows with `filter()`, where `continent` is “Americas” or
-    “Europe”.
+  - Using `filter()`, subset rows where `continent` is “Europe”.
 
 <!-- end list -->
 
@@ -67,7 +66,7 @@ continents <- c("________", "______")
 _________ %>% ______(continent %in% continents)
 ```
 
-    #> # A tibble: 660 x 6
+    #> # A tibble: 360 x 6
     #>    country continent  year lifeExp     pop gdpPercap
     #>    <chr>   <chr>     <dbl>   <dbl>   <dbl>     <dbl>
     #>  1 Albania Europe     1952    55.2 1282697     1601.
@@ -80,7 +79,7 @@ _________ %>% ______(continent %in% continents)
     #>  8 Albania Europe     1987    72   3075321     3739.
     #>  9 Albania Europe     1992    71.6 3326498     2497.
     #> 10 Albania Europe     1997    73.0 3428038     3193.
-    #> # … with 650 more rows
+    #> # … with 350 more rows
 
 Notice the `value` of the `continent` `param` from the YAML header at
 the top.
@@ -91,21 +90,18 @@ params
 #> [1] "Africa"   "Americas" "Asia"     "Europe"   "Oceania"
 ```
 
-  - Edit the YAML header so `param` `continent` takes the value
-    \[America, Europe\].
+  - Edit the YAML header so `param` `continent` takes the value Europe.
 
-  - Subset rows with `filter()`, where `continent` is Africa, Americas,
-    Asia, Europe, Oceania.
+  - Using `filter()`, subset rows where `continent` is
+    `params$continent`.
 
   - Assign the result to `filtered`.
 
 <!-- end list -->
 
 ``` r
-continents <- params$continent
-
 filtered <- _________ %>% 
-  ______(continent %in% continents)
+  ______(continent %in% ______$continent)
 
 filtered
 ```
@@ -125,52 +121,47 @@ filtered
     #> 10 Afghanistan Asia       1997    41.8 22227415      635.
     #> # … with 1,694 more rows
 
-Subset columns using their names and types:
+  - From `filtered`, exclude `country` and `continent` with `select()`.
 
-  - Select all columns except `country` and `continent`.
+  - Store the result as `selected`.
 
 <!-- end list -->
 
 ``` r
-gapminder %>% select()
-#> # A tibble: 1,704 x 0
+selected <- filtered %>% 
+  ______(-country, -_________)
+  select(-country, -continent)
+
+selected
 ```
 
-``` r
-subset_cols <- gapminder %>% 
-  select(continent, lifeExp, year) %>% 
-  # Returns invisible.
-  glimpse() %>% 
-  filter(year >= 1980)
-#> Rows: 1,704
-#> Columns: 3
-#> $ continent <chr> "Asia", "Asia", "Asia", "Asia", "Asia", "Asia", "Asia", "As…
-#> $ lifeExp   <dbl> 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854, 40.…
-#> $ year      <dbl> 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997,…
-
-subset_cols
-#> # A tibble: 852 x 3
-#>    continent lifeExp  year
-#>    <chr>       <dbl> <dbl>
-#>  1 Asia         39.9  1982
-#>  2 Asia         40.8  1987
-#>  3 Asia         41.7  1992
-#>  4 Asia         41.8  1997
-#>  5 Asia         42.1  2002
-#>  6 Asia         43.8  2007
-#>  7 Europe       70.4  1982
-#>  8 Europe       72    1987
-#>  9 Europe       71.6  1992
-#> 10 Europe       73.0  1997
-#> # … with 842 more rows
-```
+    #> # A tibble: 1,704 x 4
+    #>     year lifeExp      pop gdpPercap
+    #>    <dbl>   <dbl>    <dbl>     <dbl>
+    #>  1  1952    28.8  8425333      779.
+    #>  2  1957    30.3  9240934      821.
+    #>  3  1962    32.0 10267083      853.
+    #>  4  1967    34.0 11537966      836.
+    #>  5  1972    36.1 13079460      740.
+    #>  6  1977    38.4 14880372      786.
+    #>  7  1982    39.9 12881816      978.
+    #>  8  1987    40.8 13867957      852.
+    #>  9  1992    41.7 16317921      649.
+    #> 10  1997    41.8 22227415      635.
+    #> # … with 1,694 more rows
 
   - Plot a histogram of `lifeExp` (see `?geom_histogram`).
 
-  - Plot each `continent` in its own panel with `facet_wrap()`.
-
 <!-- end list -->
+
+``` r
+ggplot(data = selected, aes(lifeExp)) +
+  geom_histogram()
+```
 
     #> `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](02_scooter_you_files/figure-gfm/boxplot-3-1.png)<!-- -->
+
+Histogram of life expectancy in Africa, Americas, Asia, Europe, Oceania
+between 1952, 2007.

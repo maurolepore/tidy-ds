@@ -49,7 +49,7 @@ gapminder %>% glimpse()
 
 
 
-* Subset rows with `filter()`, where `continent` is "Americas" or "Europe".
+* Using `filter()`, subset rows where `continent` is "Europe".
 
 ```{r filter-continents-1}
 
@@ -62,7 +62,7 @@ _________ %>% ______(continent %in% continents)
 ```
 
 ```{r filter-continents-3, echo=FALSE}
-continents <- c("Americas", "Europe")
+continents <- "Europe"
 gapminder %>% filter(continent %in% continents)
 ```
 
@@ -72,9 +72,9 @@ Notice the `value` of the `continent` `param` from the YAML header at the top.
 params
 ```
 
-* Edit the YAML header so `param` `continent` takes the value [America, Europe].
+* Edit the YAML header so `param` `continent` takes the value Europe.
 
-* Subset rows with `filter()`, where `continent` is `r params$continent`.
+* Using `filter()`, subset rows where `continent` is `params$continent`.
 
 * Assign the result to `filtered`.
 
@@ -82,55 +82,68 @@ params
 
 
 
+
 ```
 
 ```{r filter-params-continent-2, eval=FALSE}
-continents <- params$continent
-
 filtered <- _________ %>% 
-  ______(continent %in% continents)
+  ______(continent %in% ______$continent)
 
 filtered
 ```
 
 ```{r filter-params-continent-3, echo=FALSE}
-continents <- params$continent
-
 filtered <- gapminder %>% 
-  filter(continent %in% continents)
+  filter(continent %in% params$continent)
 
 filtered
 ```
 
 
 
-Subset columns using their names and types:
+* From `filtered`, exclude `country` and `continent` with `select()`.
 
-* Select all columns except `country` and `continent`.
+* Store the result as `selected`.
 
-```{r}
-gapminder %>% select()
+```{r selected-1}
+
+
+
+
 ```
 
+```{r selected-2, eval=FALSE}
+selected <- filtered %>% 
+  ______(-country, -_________)
+  select(-country, -continent)
 
-```{r}
-subset_cols <- gapminder %>% 
-  select(continent, lifeExp, year) %>% 
-  # Returns invisible.
-  glimpse() %>% 
-  filter(year >= 1980)
+selected
+```
 
-subset_cols
+```{r selected-3, echo=FALSE}
+selected <- filtered %>% 
+  select(-country, -continent)
+
+selected
 ```
 
 
 
 * Plot a histogram of `lifeExp` (see `?geom_histogram`).
 
-* Plot each `continent` in its own panel with `facet_wrap()`.
+```{r boxplot-1}
+
+
+```
+
+```{r boxplot-2, eval=FALSE}
+ggplot(data = selected, aes(lifeExp)) +
+  geom_histogram()
+```
 
 ```{r boxplot-3, echo=FALSE}
-ggplot(data = filtered, aes(lifeExp, fill = continent)) +
-  geom_histogram() +
-  facet_wrap(~continent)
+ggplot(data = selected, aes(lifeExp)) +
+  geom_histogram()
 ```
+
+Histogram of life expectancy in `r params$continent` between `r range(gapminder$year)`.

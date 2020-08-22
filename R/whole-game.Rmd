@@ -6,7 +6,9 @@ params:
   continents: !r c("Africa", "Americas")
 ---
 
-**Before you start, collapse all chunks with Alt+o (or Alt+Shift+o).**
+**Collapse all chunks with Alt+O/Cmd+Option+O**
+
+
 
 ## rmarkdown https://rmarkdown.rstudio.com/
 
@@ -40,10 +42,9 @@ knitr::opts_chunk$set(
   collapse = TRUE, 
   cache = FALSE, 
   comment = "#>",
-  error = TRUE
+  error = FALSE
 )
 ```
-
 
 
 
@@ -63,6 +64,7 @@ library(_________)
 
 ```{r use-tidyverse-3}
 library(tidyverse)
+library(here)
 library(fs)
 library(vroom)
 ```
@@ -81,18 +83,21 @@ library(vroom)
 ```
 
 ```{r dir-ls-vroom-2, eval=FALSE}
-(csv_files <- fs::dir_ls("_________________"))
-_____ <- vroom::vroom(csv_files)
+csv_files <- dir_ls(____("data", "____________"))
+messy <- vroom(csv_files)
+messy <- vroom(_________)
 
 messy
 ```
 
 ```{r dir-ls-vroom-3}
-(csv_files <- fs::dir_ls("data-by-continent"))
-messy <- vroom::vroom(csv_files)
+csv_files <- dir_ls(here("data", "by-continent"))
+messy <- vroom(csv_files)
 
 messy
 ```
+
+
 
 ## Transform (part 1) https://dplyr.tidyverse.org/
 

@@ -134,6 +134,21 @@ selected
 * Do it again but subset columns by type with `select(where(` and with `keep()`.
 * Store the result as `selected1` and `selected2`; compare with `identical()`.
 
+```{r iterate-by-type-1}
+
+
+
+
+```
+
+```{r iterate-by-type-2, eval=FALSE}
+selected1 <- filtered %>% ______(where(is._______))
+_________ %>% identical(selected)
+
+selected2 <- filtered %>% ____(is._______)
+_________ %>% identical(selected)
+```
+
 ```{r iterate-by-type-3, echo=FALSE}
 selected1 <- filtered %>% select(where(is.numeric))
 selected1 %>% identical(selected)
@@ -156,7 +171,6 @@ for (i in seq_along(filtered)) {
   pick[[i]] <- is.numeric(filtered[[i]])
 }
 selected3 <- filtered[pick]
-
 selected3 %>% identical(selected)
 ```
 
@@ -168,17 +182,24 @@ In this case, you could also discard character columns with `discard()`:
 ```{r demo-discard}
 # Same
 selected4 <- filtered %>% discard(is.character)
-
 selected4 %>% identical(selected)
 ```
 
-BTW, my use of `identical()` shows inelegant iteration. Let's improve that:
+BTW, my iteration using `identical()` was inelegant; let's improve it:
 
 ```{r}
-list(selected1, selected2, selected3, selected4) %>% 
-  map_lgl(identical, selected) %>% 
-  all()
+to_compare <- list(selected1, selected2, selected3, selected4)
+
+to_compare %>% map_lgl(identical, selected)
+
+# Same
+to_compare %>% map_lgl(~identical(.x, selected))
+
+# Same
+to_compare %>% map_lgl(function(.x) identical(.x, selected))
 ```
+
+You'll learn more about `map()` and friends later.
 
 
 

@@ -159,6 +159,14 @@ selected
 
 <!-- end list -->
 
+``` r
+selected1 <- filtered %>% ______(where(is._______))
+_________ %>% identical(selected)
+
+selected2 <- filtered %>% ____(is._______)
+_________ %>% identical(selected)
+```
+
     #> [1] TRUE
     #> [1] TRUE
 
@@ -175,7 +183,6 @@ for (i in seq_along(filtered)) {
   pick[[i]] <- is.numeric(filtered[[i]])
 }
 selected3 <- filtered[pick]
-
 selected3 %>% identical(selected)
 #> [1] TRUE
 ```
@@ -188,20 +195,28 @@ In this case, you could also discard character columns with `discard()`:
 ``` r
 # Same
 selected4 <- filtered %>% discard(is.character)
-
 selected4 %>% identical(selected)
 #> [1] TRUE
 ```
 
-BTW, my use of `identical()` shows inelegant iteration. Let’s improve
-that:
+BTW, my iteration using `identical()` was inelegant; let’s improve it:
 
 ``` r
-list(selected1, selected2, selected3, selected4) %>% 
-  map_lgl(identical, selected) %>% 
-  all()
-#> [1] TRUE
+to_compare <- list(selected1, selected2, selected3, selected4)
+
+to_compare %>% map_lgl(identical, selected)
+#> [1] TRUE TRUE TRUE TRUE
+
+# Same
+to_compare %>% map_lgl(~identical(.x, selected))
+#> [1] TRUE TRUE TRUE TRUE
+
+# Same
+to_compare %>% map_lgl(function(.x) identical(.x, selected))
+#> [1] TRUE TRUE TRUE TRUE
 ```
+
+You’ll learn more about `map()` and friends later.
 
 ## Your turn
 

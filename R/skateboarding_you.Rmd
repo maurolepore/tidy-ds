@@ -1,0 +1,88 @@
+---
+title: "Skateboarding"
+output: github_document
+---
+
+**Collapse all chunks with Alt+O/Cmd+Option+O**
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+* Use the packages tidyverse and here.
+
+```{r packages-1}
+
+
+```
+
+```{r packages-2, eval = FALSE}
+library(_________)
+_______(here)
+```
+
+```{r packages-3, echo = FALSE}
+library(tidyverse)
+library(here)
+```
+
+* Create a safe `path` to "data/gampinder" with `here()`.
+
+```{r path-1}
+
+```
+
+```{r path-2, eval = FALSE}
+path <- ____("data", "_________.csv")
+```
+
+```{r path-3, echo = FALSE}
+path <- here("data", "gapminder.csv")
+```
+
+* Read the csv file and assign it to `gapminder`.
+
+```{r read-1}
+
+```
+
+```{r read-2, eval = FALSE}
+gapminder <- read____(____)
+```
+
+```{r read-3, echo = FALSE}
+gapminder <- read_csv(path)
+```
+
+* Print and explore the data under the chunk and with `view()`.
+
+```{r gapminder-1}
+
+```
+
+```{r gapminder-2, eval = FALSE}
+_________
+```
+
+```{r gapminder-3, echo = FALSE}
+gapminder
+```
+
+* Boxplot `lifeExp` for each continent `continent` (see `?geom_boxplot()`).
+
+```{r boxplot-1}
+
+
+```
+
+```{r boxplot-2, eval = FALSE}
+ggplot(data = _________, aes(x = _________, y = _______)) +
+  geom________()
+```
+
+```{r boxplot-3, echo = FALSE}
+ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
+  geom_boxplot()
+```

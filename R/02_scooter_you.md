@@ -172,7 +172,7 @@ _________ %>% identical(selected)
 
 ## A note on iteration
 
-You’ve just solved, elegantly, an iteration problem. Solution with
+You’ve just solved an iteration problem; let’s make it explicit with
 `for()`:
 
 ``` r

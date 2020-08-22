@@ -6,7 +6,7 @@ params:
   continents: !r c("Africa", "Americas")
 ---
 
-**Collapse all chunks with Alt+O/Cmd+Option+O**
+**Collapse all chunks with Alt+O / Cmd+Option+O**
 
 
 

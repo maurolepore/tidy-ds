@@ -3,71 +3,33 @@ title: "Scooter"
 output: github_document
 ---
 
-**Collapse all chunks with Alt+O/Cmd+Option+O**
+**Collapse all chunks with Alt+O / Cmd+Option+O**
 
 
+
+## Setup
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
-* Use the packages tidyverse and here.
+* Packages.
 
-```{r packages-1}
-
-
-```
-
-```{r packages-2, eval = FALSE}
-library(_________)
-_______(here)
-```
-
-```{r packages-3, echo = FALSE}
+```{r}
 library(tidyverse)
 library(here)
 ```
 
-* Create a safe `path` to "data/gampinder" with `here()`.
+* Import -- [practice safe paths](https://rstats.wtf/safe-paths.html).
 
-```{r path-1}
-
+```{r}
+gapminder <- read_csv(here("data", "gapminder.csv"))
 ```
 
-```{r path-2, eval = FALSE}
-path <- ____("data", "_________.csv")
-```
+* Explore.
 
-```{r path-3, echo = FALSE}
-path <- here("data", "gapminder.csv")
-```
-
-* Read the csv file and assign it to `gapminder`.
-
-```{r read-1}
-
-```
-
-```{r read-2, eval = FALSE}
-gapminder <- read____(____)
-```
-
-```{r read-3, echo = FALSE}
-gapminder <- read_csv(path)
-```
-
-* Print and explore the data under the chunk and with `view()`.
-
-```{r gapminder-1}
-
-```
-
-```{r gapminder-2, eval = FALSE}
-_________
-```
-
-```{r gapminder-3, echo = FALSE}
-gapminder
+```{r}
+glimpse(gapminder)
 ```
 
 * Boxplot `lifeExp` for each continent `continent` (see `?geom_boxplot()`).

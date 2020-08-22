@@ -1,7 +1,7 @@
 Skate
 ================
 
-**Collapse all chunks with Alt+O/Cmd+Option+O**
+**Collapse all chunks with Alt+O / Cmd+Option+O**
 
   - Use the packages tidyverse and here.
 

@@ -1,7 +1,7 @@
 Whole game
 ================
 
-**Collapse all chunks with Alt+O/Cmd+Option+O**
+**Collapse all chunks with Alt+O / Cmd+Option+O**
 
 ## rmarkdown <https://rmarkdown.rstudio.com/>
 
@@ -115,7 +115,7 @@ messy %>%
   select(!continent & !country) %>% 
   slice_sample(n = 5) %>% 
   pull(1)
-#> [1]   853.5409   406.8841   375.6431 14734.2327  3035.3260
+#> [1]   9867.085 108382.353   5911.315   2627.009   3035.326
 ```
 
   - Round values across numeric columns.

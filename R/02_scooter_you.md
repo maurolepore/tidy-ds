@@ -3,6 +3,8 @@ Scooter
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
 
+## Review
+
   - Packages.
 
 <!-- end list -->
@@ -149,6 +151,59 @@ selected
     #>  9  1992    41.7 16317921      649.
     #> 10  1997    41.8 22227415      635.
     #> # … with 1,694 more rows
+
+  - Do it again but subset columns by type with `select(where(` and with
+    `keep()`.
+  - Store the result as `selected1` and `selected2`; compare with
+    `identical()`.
+
+<!-- end list -->
+
+    #> [1] TRUE
+    #> [1] TRUE
+
+## A note on iteration
+
+You’ve just solved, elegantly, an iteration problem. Solution with
+`for()`:
+
+``` r
+# Preallocate
+pick <- logical(ncol(filtered))
+# Iterate
+for (i in seq_along(filtered)) {
+  pick[[i]] <- is.numeric(filtered[[i]])
+}
+selected3 <- filtered[pick]
+
+selected3 %>% identical(selected)
+#> [1] TRUE
+```
+
+> Of course, someone has to write loops. It doesn’t have to be you. —
+> Jenny Bryan
+
+In this case, you could also discard character columns with `discard()`:
+
+``` r
+# Same
+selected4 <- filtered %>% discard(is.character)
+
+selected4 %>% identical(selected)
+#> [1] TRUE
+```
+
+BTW, my use of `identical()` shows inelegant iteration. Let’s improve
+that:
+
+``` r
+list(selected1, selected2, selected3, selected4) %>% 
+  map_lgl(identical, selected) %>% 
+  all()
+#> [1] TRUE
+```
+
+## Your turn
 
   - Plot a histogram of `lifeExp` (see `?geom_histogram`).
 

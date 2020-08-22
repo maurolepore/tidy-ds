@@ -1,13 +1,22 @@
 ---
-title: "Scooter"
+title: Scooter
 output: github_document
+params:
+  continent:
+    choices: [Africa, Americas, Asia, Europe, Oceania]
+    multiple: true
+    value: [Africa, Americas, Asia, Europe, Oceania]
+  year:
+    value: 2017
+    min: 1952
+    max: 2007
+    step: 1
+    sep: ""
 ---
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
 
 
-
-## Setup
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
@@ -26,25 +35,72 @@ library(here)
 gapminder <- read_csv(here("data", "gapminder.csv"))
 ```
 
+
+
+# Your turn
+
 * Explore.
 
-```{r}
-glimpse(gapminder)
+```{r glimpse-3}
+gapminder %>% 
+  glimpse()
 ```
+
+* Find `distinct()` values of `continent`.
+
+```{r}
+gapminder %>% distinct(continent)
+```
+
+* Subset rows where `continent` is "Americas" or "Europe".
+
+```{r}
+continents <- c("Americas", "Europe")
+gapminder %>% filter(continent %in% continents)
+```
+
+* Subset rows where `continent` is one of `r params$continents`.
+
+```{r}
+continents <- c("Americas", "Europe")
+gapminder %>% filter(continent %in% continents)
+```
+
+
+* Subset rows where `continent` is in `params$continents`.
+
+```{r}
+gapminder %>% filter(continent %in% params$continents)
+```
+
+
+
+Subset columns using their names and types:
+
+* Select all columns except `country` and `continent`.
+
+```{r}
+gapminder %>% select()
+```
+
+
+```{r}
+subset_cols <- gapminder %>% 
+  select(continent, lifeExp, year) %>% 
+  # Returns invisible.
+  glimpse() %>% 
+  filter(year >= 1980)
+
+subset_cols
+```
+
+
+
+
 
 * Boxplot `lifeExp` for each continent `continent` (see `?geom_boxplot()`).
 
-```{r boxplot-1}
-
-
-```
-
-```{r boxplot-2, eval = FALSE}
-ggplot(data = _________, aes(x = _________, y = _______)) +
-  geom________()
-```
-
-```{r boxplot-3, echo = FALSE}
+```{r boxplot}
 ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
   geom_boxplot()
 ```

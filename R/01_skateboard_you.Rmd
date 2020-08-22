@@ -56,7 +56,7 @@ gapminder <- read____(____)
 gapminder <- read_csv(path)
 ```
 
-* Print and explore the data under the chunk and with `view()`.
+* Print and explore `gampinder` under the chunk and with `view()`.
 
 ```{r gapminder-1}
 

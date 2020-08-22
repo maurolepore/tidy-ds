@@ -48,7 +48,7 @@ gapminder <- read____(____)
     #>   gdpPercap = col_double()
     #> )
 
-  - Print and explore the data under the chunk and with `view()`.
+  - Print and explore `gampinder` under the chunk and with `view()`.
 
 <!-- end list -->
 

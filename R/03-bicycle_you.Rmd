@@ -165,6 +165,8 @@ total <- by_continent %>%
 total
 ```
 
+
+
 * Create a bar-plot (`?geom_col()`) of `continent` versus `life_expectancy`.
 * Add a title with `labs()`; it should read "Mean life expectancy (1952-2007)".
 * Create the title combining text and code output with `glue()`.

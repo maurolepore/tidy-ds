@@ -1,5 +1,5 @@
 ---
-title: "Skate"
+title: Skate
 output: github_document
 ---
 

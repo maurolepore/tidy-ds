@@ -1,16 +1,16 @@
-Motorbike
+Bicycle
 ================
 
-Packages.
+## Packages
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ───────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -19,7 +19,7 @@ library(fs)
 library(vroom)
 ```
 
-## Warm up
+## Demo: A messy dataset
 
 This toy dataset is messy. Why?
 
@@ -31,6 +31,8 @@ toy <- tribble(
       "us",   15000,   14000,   13000
 )
 ```
+
+## Demo `pivot_longer()`
 
 To tidy this dataset we pivot over all columns except `country`. We may
 exclude `country` with `-` or select all other columns with
@@ -52,8 +54,6 @@ toy %>% pivot_longer(where(is.numeric))
 #> 9 us      2013  13000
 ```
 
-This dataset is now tidy.
-
 ## Import
 
 Import all datasets in “data/by-continent” into a single data frame:
@@ -61,25 +61,35 @@ Import all datasets in “data/by-continent” into a single data frame:
 
 ``` r
 paths <- dir_ls(here("data", "by-continent"))
-paths
-#> /home/rstudio/tidy-ds/data/by-continent/africa.csv
-#> /home/rstudio/tidy-ds/data/by-continent/americas.csv
-#> /home/rstudio/tidy-ds/data/by-continent/asia.csv
-#> /home/rstudio/tidy-ds/data/by-continent/europe.csv
-#> /home/rstudio/tidy-ds/data/by-continent/oceania.csv
-
-messy <- vroom(paths)
-#> Rows: 142
-#> Columns: 38
-#> Delimiter: ","
-#> chr [ 2]: continent, country
-#> dbl [36]: gdpPercap_1952, gdpPercap_1957, gdpPercap_1962, gdpPercap_1967, gdpPercap_1972, ...
-#> 
-#> Use `spec()` to retrieve the guessed column specification
-#> Pass a specification to the `col_types` argument to quiet this message
+messy <- suppressMessages(vroom(paths))
+messy
+#> # A tibble: 142 x 38
+#>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
+#>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>
+#>  1 Africa    Algeria          2449.          3014.          2551.          3247.
+#>  2 Africa    Angola           3521.          3828.          4269.          5523.
+#>  3 Africa    Benin            1063.           960.           949.          1036.
+#>  4 Africa    Botswa…           851.           918.           984.          1215.
+#>  5 Africa    Burkin…           543.           617.           723.           795.
+#>  6 Africa    Burundi           339.           380.           355.           413.
+#>  7 Africa    Camero…          1173.          1313.          1400.          1508.
+#>  8 Africa    Centra…          1071.          1191.          1193.          1136.
+#>  9 Africa    Chad             1179.          1308.          1390.          1197.
+#> 10 Africa    Comoros          1103.          1211.          1407.          1876.
+#> # … with 132 more rows, and 32 more variables: gdpPercap_1972 <dbl>,
+#> #   gdpPercap_1977 <dbl>, gdpPercap_1982 <dbl>, gdpPercap_1987 <dbl>,
+#> #   gdpPercap_1992 <dbl>, gdpPercap_1997 <dbl>, gdpPercap_2002 <dbl>,
+#> #   gdpPercap_2007 <dbl>, lifeExp_1952 <dbl>, lifeExp_1957 <dbl>,
+#> #   lifeExp_1962 <dbl>, lifeExp_1967 <dbl>, lifeExp_1972 <dbl>,
+#> #   lifeExp_1977 <dbl>, lifeExp_1982 <dbl>, lifeExp_1987 <dbl>,
+#> #   lifeExp_1992 <dbl>, lifeExp_1997 <dbl>, lifeExp_2002 <dbl>,
+#> #   lifeExp_2007 <dbl>, pop_1952 <dbl>, pop_1957 <dbl>, pop_1962 <dbl>,
+#> #   pop_1967 <dbl>, pop_1972 <dbl>, pop_1977 <dbl>, pop_1982 <dbl>,
+#> #   pop_1987 <dbl>, pop_1992 <dbl>, pop_1997 <dbl>, pop_2002 <dbl>,
+#> #   pop_2007 <dbl>
 ```
 
-## Tidy
+## Tidy with `pivot_longer()`: Task
 
   - Pivot over all numeric columns.
   - Store the result as `longer`.
@@ -93,6 +103,8 @@ longer <- messy %>%
 
 longer
 ```
+
+## Tidy with `pivot_longer()`: Result
 
     #> # A tibble: 5,112 x 4
     #>    continent country metric         value
@@ -109,6 +121,10 @@ longer
     #> 10 Africa    Algeria gdpPercap_1997 4797.
     #> # … with 5,102 more rows
 
+## `separate()`: Task
+
+Mess things up again:
+
   - `metric` is still messy; tidy it with `separate()` and `c("metric",
     "year")`.
   - Store the result as `tidy`.
@@ -119,6 +135,8 @@ longer
 tidy <- longer %>% ________(______, c("metric", "____"))
 tidy
 ```
+
+## `separate()`: Result
 
     #> # A tibble: 5,112 x 5
     #>    continent country metric    year  value
@@ -135,7 +153,7 @@ tidy
     #> 10 Africa    Algeria gdpPercap 1997  4797.
     #> # … with 5,102 more rows
 
-Mess things up again:
+## `unite()` and `pivot_wider()`: Task
 
   - Use `unite()` to unite the columns `metric` and `year` as “metric”.
   - Use `pivot_wider()` to take the `names_from` the column `metric` and
@@ -149,6 +167,8 @@ tidy %>%
   _____("metric", ______, year) %>% 
   ___________(names_from = ______, values_from = _____)
 ```
+
+## `unite()` and `pivot_wider()`: Result
 
     #> # A tibble: 142 x 38
     #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
@@ -175,7 +195,7 @@ tidy %>%
     #> #   pop_1987 <dbl>, pop_1992 <dbl>, pop_1997 <dbl>, pop_2002 <dbl>,
     #> #   pop_2007 <dbl>
 
-## Create a small dataset to play with
+## Create a small dataset: Review
 
 Let’s create a small dataset to play with. Explain what this code does.
 
@@ -185,7 +205,7 @@ You should already understand this code:
   - Subset life expectancy values for Argentina and Germany before 1962.
   - Move the life expectancy values to the column `lifeExp`.
 
-<!-- end list -->
+## Create a small dataset: Review
 
 ``` r
 subset1 <- tidy %>% 
@@ -207,8 +227,10 @@ subset1
 #> 4 Germany   1957     69.1
 ```
 
-Now add a new column `mean`, holding the mean life expectancy for each
-country:
+## Create a small dataset: Task
+
+Now add a new column `mean`, holding the mean `lifeExp` for each
+`country`:
 
   - Use `group_by()`.
   - Use `mutate()` to calculate mean `lifeExp` and to make `year`
@@ -227,6 +249,8 @@ subset2 <- subset1 %>%
 subset2
 ```
 
+## Create a small dataset: Result
+
     #> # A tibble: 4 x 4
     #>   country    year lifeExp  mean
     #>   <chr>     <dbl>   <dbl> <dbl>
@@ -234,6 +258,8 @@ subset2
     #> 2 Argentina  1957    64.4  63.4
     #> 3 Germany    1952    67.5  68.3
     #> 4 Germany    1957    69.1  68.3
+
+## Create a small dataset: Tweak
 
 Let’s degrade this dataset a bit for a later example.
 
@@ -248,10 +274,12 @@ subset3
 #> 3 Germany    1957    69.1  68.3
 ```
 
-## `complete()`
+## `complete()`: What’s missing?
 
 Say you start with this dataset, and you care for data between 1952 and
-1957:
+1957.
+
+This dataset has implicit missing for Argentina in 1957:
 
 ``` r
 subset3
@@ -263,7 +291,7 @@ subset3
 #> 3 Germany    1957    69.1  68.3
 ```
 
-This dataset has implicit missing for Argentina in 1957.
+## `complete()`: Task
 
   - Make the implicit missing data explicit with `complete()`.
 
@@ -273,6 +301,8 @@ This dataset has implicit missing for Argentina in 1957.
 subset3 %>% ________(_______, year)
 ```
 
+## `complete()`: Result
+
     #> # A tibble: 4 x 4
     #>   country    year lifeExp  mean
     #>   <chr>     <dbl>   <dbl> <dbl>
@@ -280,6 +310,8 @@ subset3 %>% ________(_______, year)
     #> 2 Argentina  1957    NA    NA  
     #> 3 Germany    1952    67.5  68.3
     #> 4 Germany    1957    69.1  68.3
+
+## `fill`: Task
 
 Extend the previous code:
 
@@ -293,10 +325,23 @@ Extend the previous code:
 
 ``` r
 mean_arg <- subset3 %>% ______(country == "_________") %>% ____(mean)
-
 filled <- subset3 %>% 
   ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
+
+filled
 ```
+
+## `fill`: Result
+
+    #> # A tibble: 4 x 4
+    #>   country    year lifeExp  mean
+    #>   <chr>     <dbl>   <dbl> <dbl>
+    #> 1 Argentina  1952    62.5  63.4
+    #> 2 Argentina  1957    63.4  63.4
+    #> 3 Germany    1952    67.5  68.3
+    #> 4 Germany    1957    69.1  68.3
+
+## `full_seq()`: Task
 
 Let’s now complete the missing data in between 1952-1957.
 
@@ -315,7 +360,11 @@ all_years <- filled %>%
 all_years
 ```
 
+## `full_seq()`: Result
+
     #> [1] 1952 1953 1954 1955 1956 1957
+
+## `fill()`: Task
 
   - Use `all_years` to `complete()` `year`; also complete `country` with
     itself.
@@ -334,6 +383,8 @@ full_mean <- filled %>%
 full_mean
 ```
 
+## `fill()`: Result
+
     #> # A tibble: 12 x 4
     #> # Groups:   country [2]
     #>     year country   lifeExp  mean
@@ -351,6 +402,8 @@ full_mean
     #> 11  1957 Argentina    63.4  63.4
     #> 12  1957 Germany      69.1  68.3
 
+## `case_when()`: Task
+
   - `pull()` the `mean` `lifeExp` for “Germany” and store it as
     `mean_ger`
   - Fill `lifeExp` with corresponding values of `mean`, using
@@ -359,7 +412,7 @@ full_mean
     `lifeExp`.
   - Store the result as `full`.
 
-<!-- end list -->
+## `case_when()`: Task
 
 ``` r
 mean_ger <- subset3 %>% 
@@ -381,6 +434,8 @@ full <- full_mean %>%
 full
 ```
 
+## `case_when()`: Result
+
     #> # A tibble: 12 x 4
     #> # Groups:   country [2]
     #>     year country   lifeExp  mean
@@ -398,18 +453,28 @@ full
     #> 11  1957 Argentina    63.4  63.4
     #> 12  1957 Germany      69.1  68.3
 
-## Plot
+## Plot: Task
 
   - Make a line-plot of `year` versus `lifeExp`.
-  - Add a dotted line intercepting `y` at the `mean` value for each
+  - Add a “dotted” line intercepting `y` at the `mean` value for each
     `country`.
   - Use `facet_wrap()` to plot each country in a separate panel.
 
+<!-- end list -->
+
+``` r
+full %>% 
+  ggplot(aes(____, _______)) + 
+  _____line() +
+  _____hline(aes(__________ = mean), linetype = "______") +
+  __________(~country)
+```
+
+## Plot: Task
+
 ![](03_bicycle_you_files/figure-gfm/line-2-1.png)<!-- -->
 
------
-
-# Take Aways
+## Take Aways
 
 Data comes in many formats but the tidyverse prefers just one: *tidy
 data*.
@@ -418,3 +483,15 @@ A data set is tidy if and only if:
 
 1.  Every variable is in its own column.
 2.  Every observation is in its own row.
+
+## Communicate
+
+  - Run this code on the console to crate a presentation from this file.
+  - The output file is at “R/03\_bicycle\_you.html”; open it.
+
+<!-- end list -->
+
+    rmarkdown::render(
+      input = here("R/03_bicycle_you.Rmd"), 
+      output_format = "ioslides_presentation"
+    )

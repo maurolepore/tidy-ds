@@ -1,5 +1,5 @@
 ---
-title: "Motorbike"
+title: "Bicycle"
 output: github_document
 ---
 
@@ -7,7 +7,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
-Packages.
+## Packages
 
 ```{r}
 library(tidyverse)
@@ -18,7 +18,7 @@ library(vroom)
 
 
 
-## Warm up
+## Demo: A messy dataset
 
 This toy dataset is messy. Why?
 
@@ -31,13 +31,13 @@ toy <- tribble(
 )
 ```
 
+## Demo `pivot_longer()`
+
 To tidy this dataset we pivot over all columns except `country`. We may exclude `country` with `-` or select all other columns with `where(is.numeric)`.
 
 ```{r}
 toy %>% pivot_longer(where(is.numeric))
 ```
-
-This dataset is now tidy.
 
 
 
@@ -47,14 +47,13 @@ Import all datasets in "data/by-continent" into a single data frame: `messy`.
 
 ```{r}
 paths <- dir_ls(here("data", "by-continent"))
-paths
-
-messy <- vroom(paths)
+messy <- suppressMessages(vroom(paths))
+messy
 ```
 
 
 
-## Tidy
+## Tidy with `pivot_longer()`: Task
 
 * Pivot over all numeric columns.
 * Store the result as `longer`.
@@ -67,6 +66,8 @@ longer <- messy %>%
 longer
 ```
 
+## Tidy with `pivot_longer()`: Result
+
 ```{r longer-2, echo=FALSE}
 longer <- messy %>% 
   pivot_longer(where(is.numeric), names_to = "metric")
@@ -76,6 +77,10 @@ longer
 
 
 
+## `separate()`: Task
+
+Mess things up again:
+
 * `metric` is still messy; tidy it with `separate()` and `c("metric", "year")`.
 * Store the result as `tidy`.
 
@@ -84,6 +89,8 @@ tidy <- longer %>% ________(______, c("metric", "____"))
 tidy
 ```
 
+## `separate()`: Result
+
 ```{r separate-2, echo=FALSE}
 tidy <- longer %>% separate(metric, c("metric", "year"))
 tidy
@@ -91,7 +98,7 @@ tidy
 
 
 
-Mess things up again:
+## `unite()` and `pivot_wider()`: Task
 
 * Use `unite()` to unite the columns `metric` and `year` as "metric".
 * Use `pivot_wider()` to take the `names_from` the column `metric` and create new columns -- taking `values_from` the column `value`.
@@ -103,6 +110,8 @@ tidy %>%
   ___________(names_from = ______, values_from = _____)
 ```
 
+## `unite()` and `pivot_wider()`: Result
+
 ```{r mess-up-2, echo=FALSE}
 tidy %>% 
   unite("metric", metric, year) %>% 
@@ -111,7 +120,7 @@ tidy %>%
 
 
 
-## Create a small dataset to play with
+## Create a small dataset: Review
 
 Let's create a small dataset to play with. Explain what this code does.
 
@@ -120,6 +129,8 @@ You should already understand this code:
 - Remove `continent`.
 - Subset life expectancy values for Argentina and Germany before 1962.
 - Move the life expectancy values to the column `lifeExp`.
+
+## Create a small dataset: Review
 
 ```{r}
 subset1 <- tidy %>% 
@@ -136,7 +147,9 @@ subset1
 
 
 
-Now add a new column `mean`, holding the mean life expectancy for each country:
+## Create a small dataset: Task
+
+Now add a new column `mean`, holding the mean `lifeExp` for each `country`:
 
 * Use `group_by()`.
 * Use `mutate()` to calculate mean `lifeExp` and to make `year` numeric.
@@ -152,6 +165,8 @@ subset2 <- subset1 %>%
 subset2
 ```
 
+## Create a small dataset: Result
+
 ```{r group-mutate-2, echo=FALSE}
 subset2 <- subset1 %>% 
   group_by(country) %>% 
@@ -163,6 +178,8 @@ subset2
 
 
 
+## Create a small dataset: Tweak
+
 Let's degrade this dataset a bit for a later example.
 
 ```{r}
@@ -172,17 +189,19 @@ subset3
 
 
 
-## `complete()`
+## `complete()`: What's missing?
 
-Say you start with this dataset, and you care for data between 1952 and 1957:
+Say you start with this dataset, and you care for data between 1952 and 1957.
+
+This dataset has implicit missing for Argentina in 1957:
 
 ```{r}
 subset3
 ```
 
-This dataset has implicit missing for Argentina in 1957.
 
 
+## `complete()`: Task
 
 * Make the implicit missing data explicit with `complete()`.
 
@@ -190,11 +209,15 @@ This dataset has implicit missing for Argentina in 1957.
 subset3 %>% ________(_______, year)
 ```
 
+## `complete()`: Result
+
 ```{r complete-2, echo=FALSE}
 subset3 %>% complete(country, year)
 ```
 
 
+
+## `fill`: Task
 
 Extend the previous code:
 
@@ -205,19 +228,25 @@ Extend the previous code:
 
 ```{r fill-1, eval=FALSE}
 mean_arg <- subset3 %>% ______(country == "_________") %>% ____(mean)
-
 filled <- subset3 %>% 
   ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
+
+filled
 ```
+
+## `fill`: Result
 
 ```{r fill-2, echo=FALSE}
 mean_arg <- subset3 %>% filter(country == "Argentina") %>% pull(mean)
-
 filled <- subset3 %>% 
   complete(country, year, fill = list(lifeExp = mean_arg, mean = mean_arg))
+
+filled
 ```
 
 
+
+## `full_seq()`: Task
 
 Let's now complete the missing data in between 1952-1957.
 
@@ -233,6 +262,8 @@ all_years <- filled %>%
 all_years
 ```
 
+## `full_seq()`: Result
+
 ```{r full-seq-2, echo=FALSE}
 all_years <- filled %>% 
   pull(year) %>% 
@@ -242,6 +273,8 @@ all_years
 ```
 
 
+
+## `fill()`: Task
 
 * Use `all_years` to `complete()` `year`; also complete `country` with itself.
 * `fill()` values of `mean` for each `country`.
@@ -257,6 +290,8 @@ full_mean <- filled %>%
 full_mean
 ```
 
+## `fill()`: Result
+
 ```{r all-years-2, echo=FALSE}
 full_mean <- filled %>% 
   complete(year = all_years, country = country) %>% 
@@ -267,11 +302,14 @@ full_mean
 ```
 
 
+## `case_when()`: Task
 
 * `pull()` the `mean` `lifeExp` for "Germany" and store it as `mean_ger`
 * Fill `lifeExp` with corresponding values of `mean`, using `case_when()`.
 * There are 3 cases: the result should be `mean_arg`, `mean_ger`, or `lifeExp`.
 * Store the result as `full`.
+
+## `case_when()`: Task
 
 ```{r full-1, eval=FALSE}
 mean_ger <- subset3 %>% 
@@ -292,6 +330,8 @@ full <- full_mean %>%
 
 full
 ```
+
+## `case_when()`: Result
 
 ```{r full-2, echo=FALSE}
 mean_ger <- subset3 %>% 
@@ -315,11 +355,21 @@ full
 
 
 
-## Plot
+## Plot: Task
 
 * Make a line-plot of `year` versus `lifeExp`.
-* Add a dotted line intercepting `y` at the `mean` value for each `country`.
+* Add a "dotted" line intercepting `y` at the `mean` value for each `country`.
 * Use `facet_wrap()` to plot each country in a separate panel.
+
+```{r line-1, eval=FALSE}
+full %>% 
+  ggplot(aes(____, _______)) + 
+  _____line() +
+  _____hline(aes(__________ = mean), linetype = "______") +
+  __________(~country)
+```
+
+## Plot: Task
 
 ```{r line-2, echo=FALSE}
 full %>% 
@@ -331,9 +381,7 @@ full %>%
 
 
 
-***
-
-# Take Aways
+## Take Aways
 
 Data comes in many formats but the tidyverse prefers just one: _tidy data_.
 
@@ -341,3 +389,17 @@ A data set is tidy if and only if:
 
 1. Every variable is in its own column.
 2. Every observation is in its own row.
+
+## Communicate
+
+* Run this code on the console to crate a presentation from this file.
+* The output file is at "R/03_bicycle_you.html"; open it.
+
+```
+rmarkdown::render(
+  input = here("R/03_bicycle_you.Rmd"), 
+  output_format = "ioslides_presentation"
+)
+```
+
+

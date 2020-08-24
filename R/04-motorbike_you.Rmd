@@ -1,339 +1,216 @@
 ---
-title: "Motorbike"
+title: "Bicycle"
 output: github_document
 ---
 
+**Collapse all chunks with Alt+O / Cmd+Option+O**
+
+
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
-
-## Warm up
-
-This toy dataset is messy. Why?
-
-```{r demo-toy}
-toy <- tribble(
-  ~country, ~"2011", ~"2012", ~"2013",
-      "fr",    7000,    6900,    7000,
-      "de",    5800,    6000,    6200,
-      "us",   15000,   14000,   13000
-)
-
-toy
-```
-
-To tidy this dataset we pivot over all columns except `country`. We may exclude `country` with `-` or select all other columns with `where(is.numeric)`L
+Packages.
 
 ```{r}
-longer <- toy %>% pivot_longer(cols = where(is.numeric))
-longer
-
-# Same
-longer1 <- toy %>% pivot_longer(cols = where(is.numeric))
-identical(longer1, longer)
-```
-
-## tidyr
-
-* Pivot on the columns that start with "gdp" (see `?tidyselect::starts_with`).
-* How long is the input?
-* How long is the output?
-
-```{r pivot-1}
-
-
-```
-
-```{r pivot-2}
-gap_wide %>% 
-  ____________(cols = starts_with("___"))
-```
-
-```{r pivot-3}
-gap_wide %>% 
-  pivot_longer(cols = starts_with("gdp"))
+library(tidyverse)
+library(here)
+library(vroom)
+library(fs)
+library(glue)
 ```
 
 
 
-* Pivot on all columns except `continent` and `country`.
-* Refer to the columns you want to pivot on using `starts_with()` (`|` means or)
+This messy dataset comes in multiple files -- one per continent:
 
-```{r multiple-conditions-1}
+```{r demo-paths}
+paths <- dir_ls(here("data", "by-continent"))
+paths
+```
+
+You can use `map_df()` to interactively call `read_csv()` on each path.
+
+```{r message=FALSE}
+paths %>% map_df(read_csv)
+```
+
+But `vroom()` does this faster and in one step (it's "vectorized" over `file`).
 
 
+
+* Read the data from all `paths` into a single data frame with `vroom()`.
+* Store the result as `messy` and `glimpse()` it.
+
+```{r vroom-messy-1}
 
 
 ```
 
-```{r multiple-conditions-2}
-________ %>% 
-  pivot_longer(
-    cols = ___________("gdp") | ___________("life") | ___________("pop")
-  )
+```{r vroom-messy-2, eval=FALSE}
+messy <- _____(paths)
+messy %>% _______()
 ```
 
-```{r multiple-conditions-3}
-gap_wide %>% 
-  pivot_longer(
-    cols = starts_with("gdp") | starts_with("life") | starts_with("pop")
-  )
+```{r vroom-messy-3, echo=FALSE}
+messy <- vroom(paths)
+messy %>% glimpse()
 ```
 
 
 
-This alternative is identical but shorter to type.
+This messy dataset is hard to work with but not impossible. Let's study the mean life expectancy through time.
 
-* The result is still messy. Why?
+Let's focus on `continent` and all columns that `start_with()` "lifeExp":
 
-```{r exclude-1}
+```{r start-with-3, echo=FALSE}
+life_exp <- messy %>% 
+  select(continent, starts_with("lifeExp_"))
 
-
+life_exp
 ```
 
-```{r exclude-2}
-gap_wide ___
-  pivot_longer(cols = -_________:-_______)
-```
-
-```{r exclude-3}
-gap_wide %>% 
-  pivot_longer(cols = -continent:-country)
-```
-
-
-
-* Now also use `separate()` and the vector `c("metric", "year")`.
-* We now achieved a tidy dataset. Why?
-
-```{r separate-1}
-
-
-
-
-
-```
-
-```{r separate-2}
-tidy <- gap_wide %>% 
-  pivot_longer(cols = -continent:-country) %>% 
-  ________(col = name, into = c("______", "____"))
-
-tidy
-```
-
-```{r separate-3}
-tidy <- gap_wide %>% 
-  pivot_longer(cols = -continent:-country) %>% 
-  separate(col = name, into = c("metric", "year"))
-
-tidy
-```
-
-
-
-* Use `unite()` and `pivot_wider()` to mess things up back again.
-
-```{r messy-1}
-
-
-
-
-
-
-
-```
-
-```{r messy-2}
-messy <- tidy %>% 
-  _____("name", metric, year) %>% 
-  pivot______()
-
-messy
-
-gap_wide
-```
-
-```{r messy-3}
-messy <- tidy %>% 
-  unite("name", metric, year) %>% 
-  pivot_wider()
-
-messy
-
-gap_wide
-```
-
-## Filling missing data with `complete()`
-
-This toy dataset has implicit missing data in year 2000. Why?
+The prefix "lifeExp" is redundant and we could remove it.
 
 ```{r}
-kelp <- tibble(
-  year = c(1999, 1999, 2000, 2004, 2004),
-  taxon = c("Agarum", "Saccharina", "Saccharina", "Agarum", "Saccharina"),
-  abundance = c(1, 4, 5, 8, 2)
-)
+remove_prefix <- function(.x) str_replace(.x, "lifeExp_", "")
 
-kelp
+life_exp1 <- life_exp %>% 
+  rename_with(remove_prefix)
+
+# Same with the `~` shortcut, like in `map()` and friends
+life_exp1 <- life_exp %>% 
+  rename_with(~str_replace(.x, "lifeExp_", ""))
+
+life_exp1
 ```
 
-
-
-* Use `complete()` to make explicit the missing data in `year` and `taxon`.
-
-```{r complete-1}
-
-
-```
-
-```{r complete-2}
-kelp %>% 
-  ________(year, _____)
-
-```
-
-```{r complete-1}
-kelp %>% 
-  complete(year, taxon)
-```
+(The resulting names are non-syntactic so R surrounds them in backticks. Such names are awkward and you should avoid them. As you will soon see, here we won't refer to them directly; instead we'll use the tidyselect helpers -- see `?select()`.)
 
 
 
-In `year = 2000` you found no individual of `taxon` "Agarum".
+* Use `summarize()` to get the `mean` `across()` all columns except `continent`.
 
-* Use the argument `fill` to fill missing data with the value `0`.
-
-```{r fill-1}
+```{r summarize-across-1}
 
 
 ```
 
-```{r fill-2}
-kelp %>% 
-  complete(____, taxon, ____ = list(abundance = _))
+```{r summarize-across-2, eval=FALSE}
+life_exp1 %>% 
+  _________(across(-_________, mean))
 ```
 
-```{r fill-3}
-kelp %>% 
-  complete(year, taxon, fill = list(abundance = 0))
+```{r summarize-across-3, echo=FALSE}
+life_exp1 %>% 
+  summarize(across(-continent, mean))
 ```
 
 
 
-You surveyed every year between 1999-2004 but found nothing between 2001-2003.
+* Now iterate over each `continent`, by grouping column-wise with `group_by()`.
+* Compute across `everything()` (the grouping variable is excluded by default).
+* Compute the number of observations per group (use `n = n()`).
+* Relocate the `n` column to the front with `relocate()`.
+* Store the result as `by_continent`.
 
-```{r}
-success_years <- kelp %>% 
-  distinct(year) %>% 
-  pull(year)
+```{r summarise-group-by-1}
 
-success_years
-```
 
-* Use `full_seq()` to produce the full sequence of the years you surveyed.
-
-```{r full-seq-1}
 
 
 
 
 ```
 
-```{r full-seq-2}
-all_years <- success_years %>% 
-  ________(period = 1)
+```{r summarise-group-by-2, eval=FALSE}
+by_continent <- life_exp1 %>% 
+  ________(continent) %>% 
+  summarize(across(everything(), mean), n = n()) %>% 
+  ________(n)
 
-all_years
+by_continent
 ```
 
-```{r full-seq-3}
-all_years <- success_years %>% 
-  full_seq(period = 1)
+```{r summarise-group-by-3, echo=FALSE}
+by_continent <- life_exp1 %>% 
+  group_by(continent) %>% 
+  summarize(across(everything(), mean), n = n()) %>% 
+  relocate(n)
 
-all_years
-```
-
-
-
-* Use `all_years` to `complete()` your dataset with explicit missing values.
-
-```{r all-years-1}
-
-
-```
-
-```{r all-years-2}
-kelp %>% 
-  ________(year = _________, taxon = taxon)
-```
-
-```{r all-years-3}
-kelp %>% 
-  complete(year = all_years, taxon = taxon)
+by_continent
 ```
 
 
 
-You now want to study "Agarum" only.
+* Now iterate over each year, by grouping row-wise with `rowwise()`.
+* Create the new column `life_expectancy`: as `mean(c_across())`
+* Create the new column `se`() standard error) as `sd(c_across()) / sqrt(n)`.
 
-```{r}
-agarum <- kelp %>% 
-  filter(taxon == "Agarum") %>% 
-  complete(year = all_years)
+(See `?c_across()` -- its like `across()` but works with `rowwise()`.)
 
-agarum
-```
+```{r summarize-rowwise-1}
 
 
-
-* `fill()` the missing values of `taxon`.
-
-```{r fill-taxon-1}
-
-
-```
-
-```{r fill-taxon-2}
-agarum ___ 
-  ____(_____)
-```
-
-```{r fill-taxon-3}
-agarum %>% 
-  fill(taxon)
-```
-
-* Now also `replace_na()` in `abundance` with the value `0`.
-
-```{r replace-na-1}
 
 
 
 ```
 
-```{r replace-na-2}
-agarum %>% 
-  fill(taxon) %>% 
-  __________(list(_________ = _))
+```{r summarize-rowwise-2, eval=FALSE}
+total <- by_continent %>% 
+  _______(continent) %>% 
+  _________(life_expectancy = ____(c_across()), se = __(c_across()) / sqrt(_))
+
+total
 ```
 
-```{r replace-na-3}
-agarum %>% 
-  fill(taxon) %>% 
-  replace_na(list(abundance = 0))
+```{r summarize-rowwise-3, echo=FALSE}
+total <- by_continent %>% 
+  rowwise(continent, n) %>% 
+  summarise(life_expectancy = mean(c_across()), se = sd(c_across()) / sqrt(n))
+
+total
 ```
 
 
 
-***
+* Create a bar-plot (`?geom_col()`) of `continent` versus `life_expectancy`.
+* Use `geom_errorbar()` to show uncertainty as `life_expectancy + se`.
+* Add this title with `labs()`: "Mean life expectancy (1952-2007)".
 
-# Take Aways
+```{r geom-col-1}
 
-Data comes in many formats but the tidyverse prefers just one: _tidy data_.
 
-A data set is tidy if and only if:
 
-1. Every variable is in its own column.
-2. Every observation is in its own row.
+
+
+```
+
+```{r geom-col-2, eval=FALSE}
+total %>% 
+  ggplot(___(_________, life_expectancy)) +
+  geom____() +
+  _____________(aes(ymin = life_expectancy, ymax = _______________ + se)) +
+  ____(_____ = "Mean life expectancy (1952-2007)")
+```
+
+```{r geom-col-3, echo=FALSE}
+total %>% 
+  ggplot(aes(continent, life_expectancy)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = life_expectancy, ymax = life_expectancy + se)) +
+  labs(title = "Mean life expectancy (1952-2007)")
+```
+
+
+
+* Knit the data with different values of the `params` `min_year` and `max_year`.
+
+
+
+That was hard work. R is column-oriented so it's best to first tidy the data.
+
+
+

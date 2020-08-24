@@ -7,12 +7,12 @@ Packages.
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ─────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -206,8 +206,12 @@ life_exp1 %>%
     #> 1   49.1   51.5   53.6   55.7   57.6   59.6   61.5   63.2   64.2   65.0   65.7
     #> # … with 1 more variable: `2007` <dbl>
 
-  - Now iterate over each continent, by grouping column-wise with
+  - Now iterate over each `continent`, by grouping column-wise with
     `group_by()`.
+  - Compute across `everything()` (the grouping variable is excluded by
+    default).
+  - Compute the number of observations per group (use `n = n()`).
+  - Relocate the `n` column to the front with `relocate()`.
   - Store the result as `by_continent`.
 
 <!-- end list -->
@@ -215,86 +219,68 @@ life_exp1 %>%
 ``` r
 by_continent <- life_exp1 %>% 
   ________(continent) %>% 
-  summarize(______(everything(), ____))
+  summarize(across(everything(), mean), n = n()) %>% 
+  ________(n)
 
 by_continent
 ```
 
     #> `summarise()` ungrouping output (override with `.groups` argument)
-    #> # A tibble: 5 x 13
-    #>   continent `1952` `1957` `1962` `1967` `1972` `1977` `1982` `1987` `1992`
-    #>   <chr>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-    #> 1 Africa      39.1   41.3   43.3   45.3   47.5   49.6   51.6   53.3   53.6
-    #> 2 Americas    53.3   56.0   58.4   60.4   62.4   64.4   66.2   68.1   69.6
-    #> 3 Asia        46.3   49.3   51.6   54.7   57.3   59.6   62.6   64.9   66.5
-    #> 4 Europe      64.4   66.7   68.5   69.7   70.8   71.9   72.8   73.6   74.4
-    #> 5 Oceania     69.3   70.3   71.1   71.3   71.9   72.9   74.3   75.3   76.9
+    #> # A tibble: 5 x 14
+    #>       n continent `1952` `1957` `1962` `1967` `1972` `1977` `1982` `1987` `1992`
+    #>   <int> <chr>      <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
+    #> 1    52 Africa      39.1   41.3   43.3   45.3   47.5   49.6   51.6   53.3   53.6
+    #> 2    25 Americas    53.3   56.0   58.4   60.4   62.4   64.4   66.2   68.1   69.6
+    #> 3    33 Asia        46.3   49.3   51.6   54.7   57.3   59.6   62.6   64.9   66.5
+    #> 4    30 Europe      64.4   66.7   68.5   69.7   70.8   71.9   72.8   73.6   74.4
+    #> 5     2 Oceania     69.3   70.3   71.1   71.3   71.9   72.9   74.3   75.3   76.9
     #> # … with 3 more variables: `1997` <dbl>, `2002` <dbl>, `2007` <dbl>
 
   - Now iterate over each year, by grouping row-wise with `rowwise()`.
-  - Create the new column `life_expectancy`, and inside `mean()` access
-    tidyselect syntax with `c_across()` – which defaults to
-    `everything()`.
+  - Create the new column `life_expectancy`: as `mean(c_across())`
+  - Create the new column `se`() standard error) as `sd(c_across()) /
+    sqrt(n)`.
 
-<!-- end list -->
-
-``` r
-total <- by_continent %>% 
-  rowwise(continent) %>% 
-  summarise(life_expectancy = mean(c_across(everything())))
-#> `summarise()` regrouping output by 'continent' (override with `.groups` argument)
-
-total
-#> # A tibble: 5 x 2
-#> # Groups:   continent [5]
-#>   continent life_expectancy
-#>   <chr>               <dbl>
-#> 1 Africa               48.9
-#> 2 Americas             64.7
-#> 3 Asia                 60.1
-#> 4 Europe               71.9
-#> 5 Oceania              74.3
-```
+(See `?c_across()` – its like `across()` but works with `rowwise()`.)
 
 ``` r
 total <- by_continent %>% 
   _______(continent) %>% 
-  summarise(life_expectancy = mean(c_______()))
+  _________(life_expectancy = ____(c_across()), se = __(c_across()) / sqrt(_))
 
 total
 ```
 
-    #> `summarise()` regrouping output by 'continent' (override with `.groups` argument)
-    #> # A tibble: 5 x 2
-    #> # Groups:   continent [5]
-    #>   continent life_expectancy
-    #>   <chr>               <dbl>
-    #> 1 Africa               48.9
-    #> 2 Americas             64.7
-    #> 3 Asia                 60.1
-    #> 4 Europe               71.9
-    #> 5 Oceania              74.3
+    #> `summarise()` regrouping output by 'continent', 'n' (override with `.groups` argument)
+    #> # A tibble: 5 x 4
+    #> # Groups:   continent, n [5]
+    #>   continent     n life_expectancy    se
+    #>   <chr>     <int>           <dbl> <dbl>
+    #> 1 Africa       52            48.9 0.723
+    #> 2 Americas     25            64.7 1.28 
+    #> 3 Asia         33            60.1 1.37 
+    #> 4 Europe       30            71.9 0.707
+    #> 5 Oceania       2            74.3 2.60
 
   - Create a bar-plot (`?geom_col()`) of `continent` versus
     `life_expectancy`.
-  - Add a title with `labs()`; it should read “Mean life expectancy
-    (1952-2007)”.
-  - Create the title combining text and code output with `glue()`.
-  - Get the `first()` and `last()` year from the dataset `names()`.
+  - Use `geom_errorbar()` to show uncertainty as `life_expectancy + se`.
+  - Add this title with `labs()`: “Mean life expectancy (1952-2007)”.
 
 <!-- end list -->
 
 ``` r
-year <- by_continent %>% select(-continent) %>% names()
-plot_title <- ____("Mean life expectancy ({first(____)}-{____(year)})")
-
 total %>% 
-  ggplot(aes(continent, life_expectancy)) +
-  geom_col() +
-  labs(title = plot_title)
+  ggplot(___(_________, life_expectancy)) +
+  geom____() +
+  _____________(aes(ymin = life_expectancy, ymax = _______________ + se)) +
+  ____(_____ = "Mean life expectancy (1952-2007)")
 ```
 
-![](03-bicycle_you_files/figure-gfm/geom-col-3-1.png)<!-- -->
+![](04-motorbike_you_files/figure-gfm/geom-col-3-1.png)<!-- -->
+
+  - Knit the data with different values of the `params` `min_year` and
+    `max_year`.
 
 That was hard work. R is column-oriented so it’s best to first tidy the
 data.

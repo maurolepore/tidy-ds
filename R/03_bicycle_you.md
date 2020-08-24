@@ -5,12 +5,12 @@ Bicycle
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -264,31 +264,27 @@ subset2
 Let’s degrade this dataset a bit for a later example.
 
 ``` r
-subset3 <- subset2 %>% slice(-2)
-subset3
-#> # A tibble: 3 x 4
-#>   country    year lifeExp  mean
-#>   <chr>     <dbl>   <dbl> <dbl>
-#> 1 Argentina  1952    62.5  63.4
-#> 2 Germany    1952    67.5  68.3
-#> 3 Germany    1957    69.1  68.3
+arg_ger <- subset2 %>% slice(-2) %>% select(-mean)
 ```
 
 ## `complete()`: What’s missing?
 
-Say you start with this dataset, and you care for data between 1952 and
-1957.
-
-This dataset has implicit missing for Argentina in 1957:
+Say you have the dataset `arg_ger`; it is missing data in between 1952
+and 1957, but – somehow – you know the historical mean for each country.
+Let’s use this data and knowledge to try fill the missing data.
 
 ``` r
-subset3
-#> # A tibble: 3 x 4
-#>   country    year lifeExp  mean
-#>   <chr>     <dbl>   <dbl> <dbl>
-#> 1 Argentina  1952    62.5  63.4
-#> 2 Germany    1952    67.5  68.3
-#> 3 Germany    1957    69.1  68.3
+arg_ger
+#> # A tibble: 3 x 3
+#>   country    year lifeExp
+#>   <chr>     <dbl>   <dbl>
+#> 1 Argentina  1952    62.5
+#> 2 Germany    1952    67.5
+#> 3 Germany    1957    69.1
+
+# Historical mean life expectancy
+mean_argentina <- 63.5
+mean_germany <- 68.3
 ```
 
 ## `complete()`: Task
@@ -298,48 +294,44 @@ subset3
 <!-- end list -->
 
 ``` r
-subset3 %>% ________(_______, year)
+arg_ger %>% ________(_______, year)
 ```
 
 ## `complete()`: Result
 
-    #> # A tibble: 4 x 4
-    #>   country    year lifeExp  mean
-    #>   <chr>     <dbl>   <dbl> <dbl>
-    #> 1 Argentina  1952    62.5  63.4
-    #> 2 Argentina  1957    NA    NA  
-    #> 3 Germany    1952    67.5  68.3
-    #> 4 Germany    1957    69.1  68.3
+    #> # A tibble: 4 x 3
+    #>   country    year lifeExp
+    #>   <chr>     <dbl>   <dbl>
+    #> 1 Argentina  1952    62.5
+    #> 2 Argentina  1957    NA  
+    #> 3 Germany    1952    67.5
+    #> 4 Germany    1957    69.1
 
 ## `fill`: Task
 
 Extend the previous code:
 
-  - Use the argument `fill`, and fill the missing data with Argentina’s
-    `mean`.
-  - You may `filter()` data from Argentina an `pull()` the `mean`.
   - You’ll need to pass each value to fill as a named list.
   - Store the result as `filled`.
 
 <!-- end list -->
 
 ``` r
-mean_arg <- subset3 %>% ______(country == "_________") %>% ____(mean)
-filled <- subset3 %>% 
-  ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
+filled <- arg_ger %>% 
+  ________(country, year, fill = list(lifeExp = ________, ____ = mean_argentina))
 
 filled
 ```
 
 ## `fill`: Result
 
-    #> # A tibble: 4 x 4
-    #>   country    year lifeExp  mean
-    #>   <chr>     <dbl>   <dbl> <dbl>
-    #> 1 Argentina  1952    62.5  63.4
-    #> 2 Argentina  1957    63.4  63.4
-    #> 3 Germany    1952    67.5  68.3
-    #> 4 Germany    1957    69.1  68.3
+    #> # A tibble: 4 x 3
+    #>   country    year lifeExp
+    #>   <chr>     <dbl>   <dbl>
+    #> 1 Argentina  1952    62.5
+    #> 2 Argentina  1957    63.5
+    #> 3 Germany    1952    67.5
+    #> 4 Germany    1957    69.1
 
 ## `full_seq()`: Task
 
@@ -368,66 +360,53 @@ all_years
 
   - Use `all_years` to `complete()` `year`; also complete `country` with
     itself.
-  - `fill()` values of `mean` for each `country`.
-  - What happens if your forget to `group_by()`?
   - Store the result as `full_mean`.
 
 <!-- end list -->
 
 ``` r
-full_mean <- filled %>% 
-  ________(year = _________, country = _______) %>% 
-  ________(country) %>%
-  ____(mean)
+full_mean <- filled %>% ________(year = _________, country = _______)
 
 full_mean
 ```
 
 ## `fill()`: Result
 
-    #> # A tibble: 12 x 4
-    #> # Groups:   country [2]
-    #>     year country   lifeExp  mean
-    #>    <dbl> <chr>       <dbl> <dbl>
-    #>  1  1952 Argentina    62.5  63.4
-    #>  2  1952 Germany      67.5  68.3
-    #>  3  1953 Argentina    NA    63.4
-    #>  4  1953 Germany      NA    68.3
-    #>  5  1954 Argentina    NA    63.4
-    #>  6  1954 Germany      NA    68.3
-    #>  7  1955 Argentina    NA    63.4
-    #>  8  1955 Germany      NA    68.3
-    #>  9  1956 Argentina    NA    63.4
-    #> 10  1956 Germany      NA    68.3
-    #> 11  1957 Argentina    63.4  63.4
-    #> 12  1957 Germany      69.1  68.3
+    #> # A tibble: 12 x 3
+    #>     year country   lifeExp
+    #>    <dbl> <chr>       <dbl>
+    #>  1  1952 Argentina    62.5
+    #>  2  1952 Germany      67.5
+    #>  3  1953 Argentina    NA  
+    #>  4  1953 Germany      NA  
+    #>  5  1954 Argentina    NA  
+    #>  6  1954 Germany      NA  
+    #>  7  1955 Argentina    NA  
+    #>  8  1955 Germany      NA  
+    #>  9  1956 Argentina    NA  
+    #> 10  1956 Germany      NA  
+    #> 11  1957 Argentina    63.5
+    #> 12  1957 Germany      69.1
 
 ## `case_when()`: Task
 
-  - `pull()` the `mean` `lifeExp` for “Germany” and store it as
-    `mean_ger`
-  - Fill `lifeExp` with corresponding values of `mean`, using
-    `case_when()`.
-  - There are 3 cases: the result should be `mean_arg`, `mean_ger`, or
+Fill `lifeExp` with the mean historical values for each country:
+
+  - Use `mutate()` and `case_when()`.
+  - The 3 possible results are `mean_argentina`, `mean_germany`, or
     `lifeExp`.
   - Store the result as `full`.
 
 ## `case_when()`: Task
 
 ``` r
-mean_ger <- subset3 %>% 
-  ________(country, mean) %>% 
-  ______(country == "Germany") %>% 
-  ____(mean)
-
-other <- TRUE
-
 full <- full_mean %>% 
   mutate(
     lifeExp = _________(
-      is.na(lifeExp) & country == "Argentina" ~ ________,
-      is.na(lifeExp) & country == "Germany"   ~ ________,
-      other                                   ~ lifeExp
+      _____(lifeExp) & country == "_________" ~ mean_argentina,
+      is.na(_______) & _______ == "Germany"   ~ ____________,
+      # Any other case
+      TRUE                                    ~ lifeExp
     )
   )
 
@@ -436,28 +415,27 @@ full
 
 ## `case_when()`: Result
 
-    #> # A tibble: 12 x 4
-    #> # Groups:   country [2]
-    #>     year country   lifeExp  mean
-    #>    <dbl> <chr>       <dbl> <dbl>
-    #>  1  1952 Argentina    62.5  63.4
-    #>  2  1952 Germany      67.5  68.3
-    #>  3  1953 Argentina    63.4  63.4
-    #>  4  1953 Germany      68.3  68.3
-    #>  5  1954 Argentina    63.4  63.4
-    #>  6  1954 Germany      68.3  68.3
-    #>  7  1955 Argentina    63.4  63.4
-    #>  8  1955 Germany      68.3  68.3
-    #>  9  1956 Argentina    63.4  63.4
-    #> 10  1956 Germany      68.3  68.3
-    #> 11  1957 Argentina    63.4  63.4
-    #> 12  1957 Germany      69.1  68.3
+    #> # A tibble: 12 x 3
+    #>     year country   lifeExp
+    #>    <dbl> <chr>       <dbl>
+    #>  1  1952 Argentina    62.5
+    #>  2  1952 Germany      67.5
+    #>  3  1953 Argentina    63.5
+    #>  4  1953 Germany      68.3
+    #>  5  1954 Argentina    63.5
+    #>  6  1954 Germany      68.3
+    #>  7  1955 Argentina    63.5
+    #>  8  1955 Germany      68.3
+    #>  9  1956 Argentina    63.5
+    #> 10  1956 Germany      68.3
+    #> 11  1957 Argentina    63.5
+    #> 12  1957 Germany      69.1
 
 ## Plot: Task
 
   - Make a line-plot of `year` versus `lifeExp`.
-  - Add a “dotted” line intercepting `y` at the `mean` value for each
-    `country`.
+  - Add a “dotted” line intercepting `y` at the historical mean of each
+    country.
   - Use `facet_wrap()` to plot each country in a separate panel.
 
 <!-- end list -->
@@ -466,7 +444,7 @@ full
 full %>% 
   ggplot(aes(____, _______)) + 
   _____line() +
-  _____hline(aes(__________ = mean), linetype = "______") +
+  _____hline(__________ = c(mean_argentina, mean_germany), linetype = "______") +
   __________(~country)
 ```
 

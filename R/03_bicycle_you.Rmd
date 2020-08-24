@@ -183,20 +183,21 @@ subset2
 Let's degrade this dataset a bit for a later example.
 
 ```{r}
-subset3 <- subset2 %>% slice(-2)
-subset3
+arg_ger <- subset2 %>% slice(-2) %>% select(-mean)
 ```
 
 
 
 ## `complete()`: What's missing?
 
-Say you start with this dataset, and you care for data between 1952 and 1957.
-
-This dataset has implicit missing for Argentina in 1957:
+Say you have the dataset `arg_ger`; it is missing data in between 1952 and 1957, but -- somehow -- you know the historical mean for each country. Let's use this data and knowledge to try fill the missing data.
 
 ```{r}
-subset3
+arg_ger
+
+# Historical mean life expectancy
+mean_argentina <- 63.5
+mean_germany <- 68.3
 ```
 
 
@@ -206,13 +207,13 @@ subset3
 * Make the implicit missing data explicit with `complete()`.
 
 ```{r complete-1, eval=FALSE}
-subset3 %>% ________(_______, year)
+arg_ger %>% ________(_______, year)
 ```
 
 ## `complete()`: Result
 
 ```{r complete-2, echo=FALSE}
-subset3 %>% complete(country, year)
+arg_ger %>% complete(country, year)
 ```
 
 
@@ -221,15 +222,12 @@ subset3 %>% complete(country, year)
 
 Extend the previous code:
 
-* Use the argument `fill`, and fill the missing data with Argentina's `mean`.
-* You may `filter()` data from Argentina an `pull()` the `mean`.
 * You'll need to pass each value to fill as a named list.
 * Store the result as `filled`.
 
 ```{r fill-1, eval=FALSE}
-mean_arg <- subset3 %>% ______(country == "_________") %>% ____(mean)
-filled <- subset3 %>% 
-  ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
+filled <- arg_ger %>% 
+  ________(country, year, fill = list(lifeExp = ________, ____ = mean_argentina))
 
 filled
 ```
@@ -237,9 +235,8 @@ filled
 ## `fill`: Result
 
 ```{r fill-2, echo=FALSE}
-mean_arg <- subset3 %>% filter(country == "Argentina") %>% pull(mean)
-filled <- subset3 %>% 
-  complete(country, year, fill = list(lifeExp = mean_arg, mean = mean_arg))
+filled <- arg_ger %>% 
+  complete(country, year, fill = list(lifeExp = mean_argentina, mean = mean_argentina))
 
 filled
 ```
@@ -277,15 +274,10 @@ all_years
 ## `fill()`: Task
 
 * Use `all_years` to `complete()` `year`; also complete `country` with itself.
-* `fill()` values of `mean` for each `country`.
-* What happens if your forget to `group_by()`?
 * Store the result as `full_mean`.
 
 ```{r all-years-1, eval=FALSE}
-full_mean <- filled %>% 
-  ________(year = _________, country = _______) %>% 
-  ________(country) %>%
-  ____(mean)
+full_mean <- filled %>% ________(year = _________, country = _______)
 
 full_mean
 ```
@@ -293,38 +285,31 @@ full_mean
 ## `fill()`: Result
 
 ```{r all-years-2, echo=FALSE}
-full_mean <- filled %>% 
-  complete(year = all_years, country = country) %>% 
-  group_by(country) %>%
-  fill(mean)
+full_mean <- filled %>% complete(year = all_years, country = country)
 
 full_mean
 ```
 
 
+
 ## `case_when()`: Task
 
-* `pull()` the `mean` `lifeExp` for "Germany" and store it as `mean_ger`
-* Fill `lifeExp` with corresponding values of `mean`, using `case_when()`.
-* There are 3 cases: the result should be `mean_arg`, `mean_ger`, or `lifeExp`.
+Fill `lifeExp` with the mean historical values for each country:
+
+* Use `mutate()` and `case_when()`.
+* The 3 possible results are `mean_argentina`, `mean_germany`, or `lifeExp`.
 * Store the result as `full`.
 
 ## `case_when()`: Task
 
 ```{r full-1, eval=FALSE}
-mean_ger <- subset3 %>% 
-  ________(country, mean) %>% 
-  ______(country == "Germany") %>% 
-  ____(mean)
-
-other <- TRUE
-
 full <- full_mean %>% 
   mutate(
     lifeExp = _________(
-      is.na(lifeExp) & country == "Argentina" ~ ________,
-      is.na(lifeExp) & country == "Germany"   ~ ________,
-      other                                   ~ lifeExp
+      _____(lifeExp) & country == "_________" ~ mean_argentina,
+      is.na(_______) & _______ == "Germany"   ~ ____________,
+      # Any other case
+      TRUE                                    ~ lifeExp
     )
   )
 
@@ -334,19 +319,13 @@ full
 ## `case_when()`: Result
 
 ```{r full-2, echo=FALSE}
-mean_ger <- subset3 %>% 
-  distinct(country, mean) %>% 
-  filter(country == "Germany") %>% 
-  pull(mean)
-
-other <- TRUE
-
 full <- full_mean %>% 
   mutate(
     lifeExp = case_when(
-      is.na(lifeExp) & country == "Argentina" ~ mean_arg,
-      is.na(lifeExp) & country == "Germany"   ~ mean_ger,
-      other                                   ~ lifeExp
+      is.na(lifeExp) & country == "Argentina" ~ mean_argentina,
+      is.na(lifeExp) & country == "Germany"   ~ mean_germany,
+      # Any other case
+      TRUE                                    ~ lifeExp
     )
   )
 
@@ -358,14 +337,14 @@ full
 ## Plot: Task
 
 * Make a line-plot of `year` versus `lifeExp`.
-* Add a "dotted" line intercepting `y` at the `mean` value for each `country`.
+* Add a "dotted" line intercepting `y` at the historical mean of each country.
 * Use `facet_wrap()` to plot each country in a separate panel.
 
 ```{r line-1, eval=FALSE}
 full %>% 
   ggplot(aes(____, _______)) + 
   _____line() +
-  _____hline(aes(__________ = mean), linetype = "______") +
+  _____hline(__________ = c(mean_argentina, mean_germany), linetype = "______") +
   __________(~country)
 ```
 
@@ -375,7 +354,7 @@ full %>%
 full %>% 
   ggplot(aes(year, lifeExp)) + 
   geom_line() +
-  geom_hline(aes(yintercept = mean), linetype = "dotted") +
+  geom_hline(yintercept = c(mean_argentina, mean_germany), linetype = "dotted") +
   facet_wrap(~country)
 ```
 

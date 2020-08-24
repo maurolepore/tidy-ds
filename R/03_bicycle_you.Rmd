@@ -294,7 +294,7 @@ all_years
 * Use `all_years` to `complete()` `year`; also complete `country` with itself.
 
 TODO
-
+  
 ```{r all-years-3}
 filled2 <- filled %>% 
   complete(year = all_years, country = country)

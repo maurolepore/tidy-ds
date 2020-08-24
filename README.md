@@ -48,9 +48,6 @@ install.packages(c("tidyverse", "here", "vroom"))
 1. _Copy_ (don't rename) `prefix_you.Rmd` (a new file with your name).
 1. Submit a draft pull request with `pr_push()`.
 1. Open `prefix_you.Rmd` and collapse all chunks with Alt+o (or Alt+Shift+o).
-1. Attempt each sub-task expanding only one of the three chunks:
-  * `sub-task-1` is harder; type everything from scratch.
-  * `sub-task-2` is easier; fill the blanks then set `eval = TRUE`.
-  * `sub-task-3` is done; check it to debug or confirm.
-1. Commit your sub-task with a meaningful message
+1. Attempt each challenge in a new chunk or in `chunk-1`; check with `chunk-2`.
+1. Commit your work with a meaningful message.
 1. Update the pull-request with `pr_sync()`.

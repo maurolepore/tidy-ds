@@ -43,12 +43,12 @@ But `vroom()` does this faster and in one step (it's "vectorized" over `file`).
 * Read the data from all `paths` into a single data frame with `vroom()`.
 * Pipe it into `glimpse()` and store the result as `messy` and print it.
 
-```{r vroom-messy-2, eval=FALSE}
+```{r vroom-messy-1, eval=FALSE}
 messy <- _____(paths) %>% _______()
 messy
 ```
 
-```{r vroom-messy-3, echo=FALSE}
+```{r vroom-messy-2, echo=FALSE}
 messy <- vroom(paths) %>% glimpse()
 messy
 ```
@@ -70,13 +70,13 @@ A common way to explore data is by counting rows:
 * `count()` rows by `continent`.
 * Confirm no `country` has more than one row using `count()` and `filter()`.
 
-```{r count-2, eval=FALSE}
+```{r count-1, eval=FALSE}
 messy %>% _____(continent)
 
 messy %>% _____(country) %>% ______(_ > 1)
 ```
 
-```{r count-3, echo=TRUE}
+```{r count-2, echo=TRUE}
 messy %>% count(continent)
 
 messy %>% count(country) %>% filter(n > 1)
@@ -116,12 +116,12 @@ life_exp1
 
 * Use `summarize()` to get the `mean` `across()` all columns except `continent`.
 
-```{r summarize-across-2, eval=FALSE}
+```{r summarize-across-1, eval=FALSE}
 life_exp1 %>% 
   _________(across(-_________, mean))
 ```
 
-```{r summarize-across-3, echo=FALSE}
+```{r summarize-across-2, echo=FALSE}
 life_exp1 %>% 
   summarize(across(-continent, mean))
 ```
@@ -134,7 +134,7 @@ life_exp1 %>%
 * Relocate the `n` column to the front with `relocate()`.
 * Store the result as `by_continent`.
 
-```{r summarise-group-by-2, eval=FALSE}
+```{r summarise-group-by-1, eval=FALSE}
 by_continent <- life_exp1 %>% 
   ________(continent) %>% 
   summarize(across(everything(), mean), n = n()) %>% 
@@ -143,7 +143,7 @@ by_continent <- life_exp1 %>%
 by_continent
 ```
 
-```{r summarise-group-by-3, echo=FALSE}
+```{r summarise-group-by-2, echo=FALSE}
 by_continent <- life_exp1 %>% 
   group_by(continent) %>% 
   summarize(across(everything(), mean), n = n()) %>% 
@@ -160,7 +160,7 @@ by_continent
 
 (See `?c_across()` -- its like `across()` but works with `rowwise()`.)
 
-```{r summarize-rowwise-2, eval=FALSE}
+```{r summarize-rowwise-1, eval=FALSE}
 total <- by_continent %>% 
   _______(continent) %>% 
   _________(life_expectancy = ____(c_across()), se = __(c_across()) / sqrt(_))
@@ -168,7 +168,7 @@ total <- by_continent %>%
 total
 ```
 
-```{r summarize-rowwise-3, echo=FALSE}
+```{r summarize-rowwise-2, echo=FALSE}
 total <- by_continent %>% 
   rowwise(continent, n) %>% 
   summarise(life_expectancy = mean(c_across()), se = sd(c_across()) / sqrt(n))
@@ -182,7 +182,7 @@ total
 * Use `geom_errorbar()` to show uncertainty as `life_expectancy + se`.
 * Add this title with `labs()`: "Mean life expectancy (1952-2007)".
 
-```{r geom-col-2, eval=FALSE}
+```{r geom-col-1, eval=FALSE}
 total %>% 
   ggplot(___(_________, life_expectancy)) +
   geom____() +
@@ -190,7 +190,7 @@ total %>%
   ____(_____ = "Mean life expectancy (1952-2007)")
 ```
 
-```{r geom-col-3, echo=FALSE}
+```{r geom-col-2, echo=FALSE}
 total %>% 
   ggplot(aes(continent, life_expectancy)) +
   geom_col() +

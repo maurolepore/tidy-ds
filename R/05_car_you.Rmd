@@ -15,7 +15,7 @@ params:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
 Packages.
@@ -113,7 +113,13 @@ Plot a linear model of life expectancy through time:
 * Use `geom_smooth()`; use the "lm" `method`.
 * For clarity, remote the `se` shade, and reduce `alpha` and `size` to 1/3.
 
-```{r TODO-lines-2}
+```{r plot-lines-1, eval=FALSE}
+picked %>% 
+  ggplot(aes(____, lifeExp, group = _______)) +
+  ___________(method = "__", se = _____, alpha = ___, ____ = 1/3)
+```
+
+```{r plot-lines-2, echo=FALSE}
 picked %>% 
   ggplot(aes(year, lifeExp, group = country)) +
   geom_smooth(method = "lm", se = FALSE, alpha = 1/3, size = 1/3)
@@ -129,22 +135,22 @@ picked %>%
 Put the variables needed for country-specific models into nested data frame:
 
 * Use `group_by()` and `nest()` to create a list column with the `country` data.
-* Inspect the list `nested$data` with `View()`.
+* You may inspect the list `nested$data` with `View()`.
 
 ```{r}
-nested <- picked %>% nest_by(country)
+nested <- picked %>% 
+  group_by(country) %>% 
+  nest()
+
 nested
 ```
 
 
 
-* Use `map()` inside `mutate()` to pull interesting information out of each fitted linear model.
-* Inspect the resulting list column `mod` with `View()`.
+* Use `map()` inside `mutate()` to fit linear models of `lifeExp` versus `year`.
 
 ```{r}
-mods <- tidy %>% 
-  group_by(country) %>% 
-  nest() %>% 
+mods <- nested %>% 
   mutate(mod = map(data, ~ lm(lifeExp ~ year, data = .x)))
 
 mods
@@ -152,15 +158,15 @@ mods
 
 
 
-* Use `broom::tidy()` to access the parameters of each model.
-* Remove the now unnecessary columns `data` and `mod`.
-* `unnest()` the `parameters` column.
+* Use `map()` inside `mutate()`; apply `broom::tidy()` to get model parameters.
+* Remove the needless columns `data` and `mod`.
+* `unnest()` the `params` column.
 
 ```{r}
 mods %>% 
-  mutate(parameters = map(mod, broom::tidy)) %>% 
+  mutate(params = map(mod, broom::tidy)) %>% 
   select(-data, -mod) %>% 
-  unnest(parameters)
+  unnest(params)
 ```
 
 
@@ -176,6 +182,7 @@ mods %>%
 
 ```{r}
 nested2 <- tidy %>% nest_by(country)
+
 nested2
 ```
 
@@ -191,12 +198,141 @@ mods2
 
 
 
-* Access the model parameters with `summarise()` and `broom::tidy()`.
+* Use `broom::tidy()` inside `summarise()` to access model parameters.
 
 ```{r}
-mods2 %>% summarise(broom::tidy(mod))
+parameters2 <- mods2 %>% summarise(broom::tidy(mod))
+parameters2
 ```
 
 
 
-## TODO
+## Plotting from the model parameters
+
+Here are two ways to get the r.squared from the model of each country:
+
+```{r}
+# purrr: List approach
+country <- mods %>% pluck("country")
+rsq <- mods %>% pluck("mod") %>% map(summary) %>% map_dbl("r.squared")
+list(country, rsq) %>% map(head)
+
+# dplyr: Data frame approach
+country_rsq <- mods2 %>% summarise(rsq = summary(mod)$r.squared)
+head(country_rsq)
+```
+
+
+
+The data frame approach keeps `country` and `rsq` in sync. This makes it easy to work with the two vectors at the same time. 
+
+* `ungroup()` the dataset `country_rsq` (what happens if you don't?).
+* `arrange()` to find the 3 countries with highest and lowest `rsq`.
+* Use `slice_head()` and `pull()` to pull the names of those countries.
+
+```{r}
+high <- country_rsq %>% 
+  ungroup() %>% 
+  arrange(desc(rsq)) %>% 
+  slice_head(n = 3) %>% 
+  pull(country)
+
+low <- country_rsq %>% 
+  ungroup() %>% 
+  arrange(rsq) %>% 
+  slice_head(n = 3) %>% 
+  pull(country)
+
+high_low <- c(high, low)
+high_low
+```
+
+
+
+Confirm your findings with a plot:
+
+* `filter()` the `picked` dataset; get countries with the highest/lowest `rsq`.
+* Plot a linear model with `geom_smooth()`; keep map `colour` to `country`.
+* Facet each `country` into a separate panel.
+* Use `theme_bw()` (or any other theme you like).
+
+```{r}
+picked %>% 
+  filter(country %in% high_low) %>% 
+  ggplot(aes(year, lifeExp)) + 
+  geom_smooth(method = "lm") +
+  facet_wrap(~country) +
+  theme_bw()
+```
+
+
+
+The data frame is a very flexible data structure; can can store anythingn in it:
+
+Let's save each plot in a single .png file. Let's first create a helper function to make the plot for each country, and also create the paths to the plots we'll soon save.
+
+```{r}
+make_plot <- function(data) {
+  data %>% 
+    ggplot(aes(year, lifeExp)) + 
+    geom_smooth(method = "lm") +
+    theme_bw()
+}
+
+# Ensure the parent directory exists, or create it
+if (!dir_exists(here("output"))) {
+  dir_create(here("output"))
+}
+```
+
+
+
+```{r}
+plots_df <- picked %>% 
+  filter(country %in% high_low) %>%
+  nest_by(country) %>% 
+  summarise(plot = list(make_plot(data))) %>% 
+  ungroup() %>%
+  mutate(filename = here("output", glue("{country}.png"))) %>% 
+  select(-country)
+
+plots_df
+```
+
+
+We can now use both a list and data frame approach to saving the plots:
+
+- List approach:
+
+```{r}
+# Nothing plots
+dir_ls(here("output"))
+
+pwalk(plots_df, ggsave)
+
+# Confirm
+dir_ls(here("output"))
+# Cleanup
+file_delete(dir_ls(here("output")))
+```
+
+- Data frame approach:
+
+```{r}
+# Nothing plots yet
+dir_ls(here("output"))
+
+plots_df %>% 
+  rowwise() %>% 
+  summarise(trash = list(suppressMessages(ggsave(filename, plot))))
+
+# Confirm
+dir_ls(here("output"))
+
+# Cleanup
+file_delete(dir_ls(here("output")))
+```
+
+
+
+* Knit with params and set the year range however you like.

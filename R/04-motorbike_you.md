@@ -7,12 +7,12 @@ Packages.
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ───────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ──────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -74,13 +74,14 @@ But `vroom()` does this faster and in one step (it’s “vectorized” over
 
   - Read the data from all `paths` into a single data frame with
     `vroom()`.
-  - Store the result as `messy` and `glimpse()` it.
+  - Pipe it into `glimpse()` and store the result as `messy` and print
+    it.
 
 <!-- end list -->
 
 ``` r
-messy <- _____(paths)
-messy %>% _______()
+messy <- _____(paths) %>% _______()
+messy
 ```
 
     #> Rows: 142
@@ -131,6 +132,77 @@ messy %>% _______()
     #> $ pop_1997       <dbl> 29072015, 9875024, 6066080, 1536536, 10352843, 6121610…
     #> $ pop_2002       <dbl> 31287142, 10866106, 7026113, 1630347, 12251209, 702107…
     #> $ pop_2007       <dbl> 33333216, 12420476, 8078314, 1639131, 14326203, 839050…
+    #> # A tibble: 142 x 38
+    #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
+    #>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>
+    #>  1 Africa    Algeria          2449.          3014.          2551.          3247.
+    #>  2 Africa    Angola           3521.          3828.          4269.          5523.
+    #>  3 Africa    Benin            1063.           960.           949.          1036.
+    #>  4 Africa    Botswa…           851.           918.           984.          1215.
+    #>  5 Africa    Burkin…           543.           617.           723.           795.
+    #>  6 Africa    Burundi           339.           380.           355.           413.
+    #>  7 Africa    Camero…          1173.          1313.          1400.          1508.
+    #>  8 Africa    Centra…          1071.          1191.          1193.          1136.
+    #>  9 Africa    Chad             1179.          1308.          1390.          1197.
+    #> 10 Africa    Comoros          1103.          1211.          1407.          1876.
+    #> # … with 132 more rows, and 32 more variables: gdpPercap_1972 <dbl>,
+    #> #   gdpPercap_1977 <dbl>, gdpPercap_1982 <dbl>, gdpPercap_1987 <dbl>,
+    #> #   gdpPercap_1992 <dbl>, gdpPercap_1997 <dbl>, gdpPercap_2002 <dbl>,
+    #> #   gdpPercap_2007 <dbl>, lifeExp_1952 <dbl>, lifeExp_1957 <dbl>,
+    #> #   lifeExp_1962 <dbl>, lifeExp_1967 <dbl>, lifeExp_1972 <dbl>,
+    #> #   lifeExp_1977 <dbl>, lifeExp_1982 <dbl>, lifeExp_1987 <dbl>,
+    #> #   lifeExp_1992 <dbl>, lifeExp_1997 <dbl>, lifeExp_2002 <dbl>,
+    #> #   lifeExp_2007 <dbl>, pop_1952 <dbl>, pop_1957 <dbl>, pop_1962 <dbl>,
+    #> #   pop_1967 <dbl>, pop_1972 <dbl>, pop_1977 <dbl>, pop_1982 <dbl>,
+    #> #   pop_1987 <dbl>, pop_1992 <dbl>, pop_1997 <dbl>, pop_2002 <dbl>,
+    #> #   pop_2007 <dbl>
+
+`glimpse()` is safe to use in pipelines. As it’s called for its side
+effect, it returns its first argument `invisible()`.
+
+``` r
+formalArgs(tibble:::glimpse.data.frame)
+#> [1] "x"     "width" "..."
+
+tail(tibble:::glimpse.data.frame)
+#>                                                                   
+#> 22     data_width <- width - crayon::col_nchar(var_names) - 2     
+#> 23     formatted <- map_chr(df, function(x) collapse(format_v(x)))
+#> 24     truncated <- str_trunc(formatted, data_width)              
+#> 25     cli::cat_line(var_names, truncated)                        
+#> 26     invisible(x)                                               
+#> 27 }
+```
+
+A common way to explore data is by counting rows:
+
+  - `count()` rows by `continent`.
+  - Confirm no `country` has more than one row using `count()` and
+    `filter()`.
+
+<!-- end list -->
+
+``` r
+messy %>% _____(continent)
+
+messy %>% _____(country) %>% ______(_ > 1)
+```
+
+``` r
+messy %>% count(continent)
+#> # A tibble: 5 x 2
+#>   continent     n
+#>   <chr>     <int>
+#> 1 Africa       52
+#> 2 Americas     25
+#> 3 Asia         33
+#> 4 Europe       30
+#> 5 Oceania       2
+
+messy %>% count(country) %>% filter(n > 1)
+#> # A tibble: 0 x 2
+#> # … with 2 variables: country <chr>, n <int>
+```
 
 This messy dataset is hard to work with but not impossible. Let’s study
 the mean life expectancy through time.
@@ -138,22 +210,28 @@ the mean life expectancy through time.
 Let’s focus on `continent` and all columns that `start_with()`
 “lifeExp”:
 
-    #> # A tibble: 142 x 13
-    #>    continent lifeExp_1952 lifeExp_1957 lifeExp_1962 lifeExp_1967 lifeExp_1972
-    #>    <chr>            <dbl>        <dbl>        <dbl>        <dbl>        <dbl>
-    #>  1 Africa            43.1         45.7         48.3         51.4         54.5
-    #>  2 Africa            30.0         32.0         34           36.0         37.9
-    #>  3 Africa            38.2         40.4         42.6         44.9         47.0
-    #>  4 Africa            47.6         49.6         51.5         53.3         56.0
-    #>  5 Africa            32.0         34.9         37.8         40.7         43.6
-    #>  6 Africa            39.0         40.5         42.0         43.5         44.1
-    #>  7 Africa            38.5         40.4         42.6         44.8         47.0
-    #>  8 Africa            35.5         37.5         39.5         41.5         43.5
-    #>  9 Africa            38.1         39.9         41.7         43.6         45.6
-    #> 10 Africa            40.7         42.5         44.5         46.5         48.9
-    #> # … with 132 more rows, and 7 more variables: lifeExp_1977 <dbl>,
-    #> #   lifeExp_1982 <dbl>, lifeExp_1987 <dbl>, lifeExp_1992 <dbl>,
-    #> #   lifeExp_1997 <dbl>, lifeExp_2002 <dbl>, lifeExp_2007 <dbl>
+``` r
+life_exp <- messy %>% 
+  select(continent, starts_with("lifeExp_"))
+
+life_exp
+#> # A tibble: 142 x 13
+#>    continent lifeExp_1952 lifeExp_1957 lifeExp_1962 lifeExp_1967 lifeExp_1972
+#>    <chr>            <dbl>        <dbl>        <dbl>        <dbl>        <dbl>
+#>  1 Africa            43.1         45.7         48.3         51.4         54.5
+#>  2 Africa            30.0         32.0         34           36.0         37.9
+#>  3 Africa            38.2         40.4         42.6         44.9         47.0
+#>  4 Africa            47.6         49.6         51.5         53.3         56.0
+#>  5 Africa            32.0         34.9         37.8         40.7         43.6
+#>  6 Africa            39.0         40.5         42.0         43.5         44.1
+#>  7 Africa            38.5         40.4         42.6         44.8         47.0
+#>  8 Africa            35.5         37.5         39.5         41.5         43.5
+#>  9 Africa            38.1         39.9         41.7         43.6         45.6
+#> 10 Africa            40.7         42.5         44.5         46.5         48.9
+#> # … with 132 more rows, and 7 more variables: lifeExp_1977 <dbl>,
+#> #   lifeExp_1982 <dbl>, lifeExp_1987 <dbl>, lifeExp_1992 <dbl>,
+#> #   lifeExp_1997 <dbl>, lifeExp_2002 <dbl>, lifeExp_2007 <dbl>
+```
 
 The prefix “lifeExp” is redundant and we could remove it.
 

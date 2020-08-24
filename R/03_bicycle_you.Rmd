@@ -163,7 +163,7 @@ Now add a new column `mean`, holding the mean life expectancy for each country:
 ```{r group-mutate-1}
 subset2 <- subset1 %>% 
   group_by(country) %>% 
-  mutate(mean = mean(lifeExp), year = as.integer(year)) %>% 
+  mutate(mean = mean(lifeExp), year = as.numeric(year)) %>% 
   ungroup()
 
 subset2
@@ -172,7 +172,7 @@ subset2
 ```{r group-mutate-2, eval=FALSE}
 subset2 <- subset1 %>% 
   ________(country) %>% 
-  ______(mean = ____(lifeExp), year = as.integer(____)) %>% 
+  ______(mean = ____(lifeExp), year = as.numeric(____)) %>% 
   _______()
 
 subset2
@@ -181,7 +181,7 @@ subset2
 ```{r group-mutate-3, echo=FALSE}
 subset2 <- subset1 %>% 
   group_by(country) %>% 
-  mutate(mean = mean(lifeExp), year = as.integer(year)) %>% 
+  mutate(mean = mean(lifeExp), year = as.numeric(year)) %>% 
   ungroup()
 
 subset2
@@ -237,23 +237,17 @@ Extend the previous code:
 
 
 
-
-
 ```
 
 ```{r fill-2, eval=FALSE}
-mean_arg <- subset3 %>% 
-  ______(country == "_________") %>% 
-  ____(mean)
+mean_arg <- subset3 %>% ______(country == "_________") %>% ____(mean)
 
 filled <- subset3 %>% 
   ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
 ```
 
 ```{r fill-3, echo=FALSE}
-mean_arg <- subset3 %>% 
-  filter(country == "Argentina") %>% 
-  pull(mean)
+mean_arg <- subset3 %>% filter(country == "Argentina") %>% pull(mean)
 
 filled <- subset3 %>% 
   complete(country, year, fill = list(lifeExp = mean_arg, mean = mean_arg))

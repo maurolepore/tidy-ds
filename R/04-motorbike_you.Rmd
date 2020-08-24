@@ -36,26 +36,50 @@ You can use `map_df()` to interactively call `read_csv()` on each path.
 paths %>% map_df(read_csv)
 ```
 
+
+
 But `vroom()` does this faster and in one step (it's "vectorized" over `file`).
 
-
-
 * Read the data from all `paths` into a single data frame with `vroom()`.
-* Store the result as `messy` and `glimpse()` it.
-
-```{r vroom-messy-1}
-
-
-```
+* Pipe it into `glimpse()` and store the result as `messy` and print it.
 
 ```{r vroom-messy-2, eval=FALSE}
-messy <- _____(paths)
-messy %>% _______()
+messy <- _____(paths) %>% _______()
+messy
 ```
 
 ```{r vroom-messy-3, echo=FALSE}
-messy <- vroom(paths)
-messy %>% glimpse()
+messy <- vroom(paths) %>% glimpse()
+messy
+```
+
+
+
+`glimpse()` is safe to use in pipelines. As it's called for its side effect, it returns its first argument `invisible()`.
+
+```{r demo-invisible}
+formalArgs(tibble:::glimpse.data.frame)
+
+tail(tibble:::glimpse.data.frame)
+```
+
+
+
+A common way to explore data is by counting rows:
+
+* `count()` rows by `continent`.
+* Confirm no `country` has more than one row using `count()` and `filter()`.
+
+```{r count-2, eval=FALSE}
+messy %>% _____(continent)
+
+messy %>% _____(country) %>% ______(_ > 1)
+```
+
+```{r count-3, echo=TRUE}
+messy %>% count(continent)
+
+messy %>% count(country) %>% filter(n > 1)
 ```
 
 
@@ -64,7 +88,7 @@ This messy dataset is hard to work with but not impossible. Let's study the mean
 
 Let's focus on `continent` and all columns that `start_with()` "lifeExp":
 
-```{r start-with-3, echo=FALSE}
+```{r demo-starts-with}
 life_exp <- messy %>% 
   select(continent, starts_with("lifeExp_"))
 
@@ -73,7 +97,7 @@ life_exp
 
 The prefix "lifeExp" is redundant and we could remove it.
 
-```{r}
+```{r demo-rename-with}
 remove_prefix <- function(.x) str_replace(.x, "lifeExp_", "")
 
 life_exp1 <- life_exp %>% 
@@ -92,11 +116,6 @@ life_exp1
 
 * Use `summarize()` to get the `mean` `across()` all columns except `continent`.
 
-```{r summarize-across-1}
-
-
-```
-
 ```{r summarize-across-2, eval=FALSE}
 life_exp1 %>% 
   _________(across(-_________, mean))
@@ -114,15 +133,6 @@ life_exp1 %>%
 * Compute the number of observations per group (use `n = n()`).
 * Relocate the `n` column to the front with `relocate()`.
 * Store the result as `by_continent`.
-
-```{r summarise-group-by-1}
-
-
-
-
-
-
-```
 
 ```{r summarise-group-by-2, eval=FALSE}
 by_continent <- life_exp1 %>% 
@@ -150,14 +160,6 @@ by_continent
 
 (See `?c_across()` -- its like `across()` but works with `rowwise()`.)
 
-```{r summarize-rowwise-1}
-
-
-
-
-
-```
-
 ```{r summarize-rowwise-2, eval=FALSE}
 total <- by_continent %>% 
   _______(continent) %>% 
@@ -179,14 +181,6 @@ total
 * Create a bar-plot (`?geom_col()`) of `continent` versus `life_expectancy`.
 * Use `geom_errorbar()` to show uncertainty as `life_expectancy + se`.
 * Add this title with `labs()`: "Mean life expectancy (1952-2007)".
-
-```{r geom-col-1}
-
-
-
-
-
-```
 
 ```{r geom-col-2, eval=FALSE}
 total %>% 

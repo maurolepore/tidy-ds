@@ -204,13 +204,4 @@ total %>%
   labs(title = "Mean life expectancy (1952-2007)")
 ```
 
-
-
-* Knit the data with different values of the `params` `min_year` and `max_year`.
-
-
-
 That was hard work. R is column-oriented so it's best to first tidy the data.
-
-
-

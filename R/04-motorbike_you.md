@@ -279,8 +279,5 @@ total %>%
 
 ![](04-motorbike_you_files/figure-gfm/geom-col-3-1.png)<!-- -->
 
-  - Knit the data with different values of the `params` `min_year` and
-    `max_year`.
-
 That was hard work. R is column-oriented so it’s best to first tidy the
 data.

@@ -11,6 +11,9 @@ Packages.
 
 ```{r}
 library(tidyverse)
+library(here)
+library(fs)
+library(vroom)
 ```
 
 
@@ -56,11 +59,13 @@ messy <- vroom(paths)
 * Pivot over all numeric columns.
 * Store the result as `longer`.
 * Use `names_to = metric` (see `?pivot_longer()`).
-* Compare the number of rows in the input and output.
 
 ```{r longer-1}
 
+
+
 ```
+
 ```{r longer-2, eval=FALSE}
 longer <- messy %>% 
   ____________(where(__________), ________ = "metric")
@@ -71,6 +76,7 @@ longer
 ```{r longer-3, echo=FALSE}
 longer <- messy %>% 
   pivot_longer(where(is.numeric), names_to = "metric")
+
 longer
 ```
 
@@ -81,110 +87,203 @@ longer
 
 ```{r separate-1}
 
+
 ```
 
 ```{r separate-2, eval=FALSE}
 tidy <- longer %>% ________(______, c("metric", "____"))
+tidy
 ```
 
 ```{r separate-3, echo=FALSE}
 tidy <- longer %>% separate(metric, c("metric", "year"))
+tidy
 ```
 
 
 
+Mess things up again:
 
-* Use `unite()` and `pivot_wider()` to mess things up back again.
+* Use `unite()` to unite the columns `metric` and `year` as "metric".
+* Use `pivot_wider()` to take the `names_from` the column `metric` and create new columns -- taking `values_from` the column `value`.
+* Is the output wider than the input?
+
+```{r mess-up-1}
 
 
-TODO
+
+```
+
+```{r mess-up-2, eval=FALSE}
+tidy %>% 
+  _____("metric", ______, year) %>% 
+  ___________(names_from = ______, values_from = _____)
+```
+
+```{r mess-up-3, echo=FALSE}
+tidy %>% 
+  unite("metric", metric, year) %>% 
+  pivot_wider(names_from = metric, values_from = value)
+```
 
 
-## Filling missing data with `complete()`
 
-This toy dataset has implicit missing data in year 2000. Why?
+## Create a small dataset to play with
+
+Let's create a small dataset to play with. Explain what this code does.
+
+You should already understand this code:
+
+- Remove `continent`.
+- Subset life expectancy values for Argentina and Germany before 1962.
+- Move the life expectancy values to the column `lifeExp`.
 
 ```{r}
-kelp <- tibble(
-  year = c(1999, 1999, 2000, 2004, 2004),
-  taxon = c("Agarum", "Saccharina", "Saccharina", "Agarum", "Saccharina"),
-  abundance = c(1, 4, 5, 8, 2)
-)
+subset1 <- tidy %>% 
+  select(-continent) %>% 
+  filter(
+    country %in% c("Argentina", "Germany"), 
+    metric == "lifeExp",
+    year < 1962
+  ) %>% 
+  pivot_wider(names_from = metric)
 
-kelp
+subset1
 ```
 
 
 
-* Use `complete()` to make explicit the missing data in `year` and `taxon`.
+Now add a new column `mean`, holding the mean life expectancy for each country:
+
+* Use `group_by()`.
+* Use `mutate()` to calculate mean `lifeExp` and to make `year` numeric.
+* `ungroup()`.
+* Store the result as `subset2`.
+
+```{r group-mutate-1}
+subset2 <- subset1 %>% 
+  group_by(country) %>% 
+  mutate(mean = mean(lifeExp), year = as.integer(year)) %>% 
+  ungroup()
+
+subset2
+```
+
+```{r group-mutate-2, eval=FALSE}
+subset2 <- subset1 %>% 
+  ________(country) %>% 
+  ______(mean = ____(lifeExp), year = as.integer(____)) %>% 
+  _______()
+
+subset2
+```
+
+```{r group-mutate-3, echo=FALSE}
+subset2 <- subset1 %>% 
+  group_by(country) %>% 
+  mutate(mean = mean(lifeExp), year = as.integer(year)) %>% 
+  ungroup()
+
+subset2
+```
+
+
+
+I now degrade this dataset a bit for a later example.
+
+```{r}
+subset3 <- subset2 %>% slice(-2)
+subset3
+```
+
+
+
+## `complete()`
+
+Say you start with this dataset, and you care for data between 1952 and 1957:
+
+```{r}
+subset3
+```
+
+This dataset has implicit missing for Argentina in 1957.
+
+
+
+* Make the implicit missing data explicit with `complete()`.
 
 ```{r complete-1}
 
-
+```
+```{r complete-2, eval=FALSE}
+subset3 %>% ________(_______, year)
 ```
 
-```{r complete-2}
-kelp %>% 
-  ________(year, _____)
-
-```
-
-```{r complete-1}
-kelp %>% 
-  complete(year, taxon)
+```{r complete-3, echo=FALSE}
+subset3 %>% complete(country, year)
 ```
 
 
 
-In `year = 2000` you found no individual of `taxon` "Agarum".
+Extend the previous code:
 
-* Use the argument `fill` to fill missing data with the value `0`.
+* Use the argument `fill`, and fill the missing data with Argentina's `mean`.
+* You may `filter()` data from Argentina an `pull()` the `mean`.
+* You'll need to pass each value to fill as a named list.
+* Store the result as `filled`.
 
 ```{r fill-1}
 
 
+
+
+
+
 ```
 
-```{r fill-2}
-kelp %>% 
-  complete(____, taxon, ____ = list(abundance = _))
+```{r fill-2, eval=FALSE}
+mean_arg <- subset3 %>% 
+  ______(country == "_________") %>% 
+  ____(mean)
+
+filled <- subset3 %>% 
+  ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
 ```
 
-```{r fill-3}
-kelp %>% 
-  complete(year, taxon, fill = list(abundance = 0))
+```{r fill-3, echo=FALSE}
+mean_arg <- subset3 %>% 
+  filter(country == "Argentina") %>% 
+  pull(mean)
+
+filled <- subset3 %>% 
+  complete(country, year, fill = list(lifeExp = mean_arg, mean = mean_arg))
 ```
 
 
 
-You surveyed every year between 1999-2004 but found nothing between 2001-2003.
+You lack data in between 1952-1957:
 
-```{r}
-success_years <- kelp %>% 
-  distinct(year) %>% 
-  pull(year)
-
-success_years
-```
-
-* Use `full_seq()` to produce the full sequence of the years you surveyed.
+* Use `pull()` to  pull the available years.
+* Use `full_seq()` to produce the full sequence of every year in the range.
+* Store the result as `all_years`.
 
 ```{r full-seq-1}
 
 
 
-
 ```
 
-```{r full-seq-2}
-all_years <- success_years %>% 
+```{r full-seq-2, eval=FALSE}
+all_years <- filled %>% 
+  ____(year) %>% 
   ________(period = 1)
 
 all_years
 ```
 
-```{r full-seq-3}
-all_years <- success_years %>% 
+```{r full-seq-3, echo=FALSE}
+all_years <- filled %>% 
+  pull(year) %>% 
   full_seq(period = 1)
 
 all_years
@@ -192,72 +291,34 @@ all_years
 
 
 
-* Use `all_years` to `complete()` your dataset with explicit missing values.
+* Use `all_years` to `complete()` `year`; also complete `country` with itself.
 
-```{r all-years-1}
-
-
-```
-
-```{r all-years-2}
-kelp %>% 
-  ________(year = _________, taxon = taxon)
-```
+TODO
 
 ```{r all-years-3}
-kelp %>% 
-  complete(year = all_years, taxon = taxon)
+filled2 <- filled %>% 
+  complete(year = all_years, country = country)
+
+filled2
 ```
 
 
 
-You now want to study "Agarum" only.
+This code uses other two approaches to fill data: `if_else()` and `case_when()`:
 
 ```{r}
-agarum <- kelp %>% 
-  filter(taxon == "Agarum") %>% 
-  complete(year = all_years)
+mean_ger <- means %>% filter(country == "Germany") %>% pull(mean)
 
-agarum
-```
-
-
-
-* `fill()` the missing values of `taxon`.
-
-```{r fill-taxon-1}
-
-
-```
-
-```{r fill-taxon-2}
-agarum ___ 
-  ____(_____)
-```
-
-```{r fill-taxon-3}
-agarum %>% 
-  fill(taxon)
-```
-
-* Now also `replace_na()` in `abundance` with the value `0`.
-
-```{r replace-na-1}
-
-
-
-```
-
-```{r replace-na-2}
-agarum %>% 
-  fill(taxon) %>% 
-  __________(list(_________ = _))
-```
-
-```{r replace-na-3}
-agarum %>% 
-  fill(taxon) %>% 
-  replace_na(list(abundance = 0))
+filled %>% 
+  complete(year = all_years, country = country) %>% 
+  mutate(mean = if_else(country == "Argentina", mean_arg, mean_ger)) %>%
+  mutate(
+    lifeExp = case_when(
+      is.na(.data$lifeExp) & .data$country == "Argentina" ~ mean_arg,
+      is.na(.data$lifeExp) & .data$country == "Germany"   ~ mean_ger,
+      TRUE                                                ~ lifeExp
+    )
+  )
 ```
 
 

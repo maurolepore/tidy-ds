@@ -26,6 +26,7 @@ library(here)
 library(vroom)
 library(fs)
 library(broom)
+library(glue)
 ```
 
 `vroom()` reads multiple datasets into a single data frame, elegantly and fast:
@@ -305,13 +306,11 @@ We can now use both a list and data frame approach to saving the plots:
 - List approach:
 
 ```{r}
-# Nothing plots
-dir_ls(here("output"))
-
 pwalk(plots_df, ggsave)
 
 # Confirm
 dir_ls(here("output"))
+
 # Cleanup
 file_delete(dir_ls(here("output")))
 ```
@@ -319,18 +318,12 @@ file_delete(dir_ls(here("output")))
 - Data frame approach:
 
 ```{r}
-# Nothing plots yet
-dir_ls(here("output"))
-
 plots_df %>% 
   rowwise() %>% 
   summarise(trash = list(suppressMessages(ggsave(filename, plot))))
 
 # Confirm
 dir_ls(here("output"))
-
-# Cleanup
-file_delete(dir_ls(here("output")))
 ```
 
 

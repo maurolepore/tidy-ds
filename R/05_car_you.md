@@ -171,18 +171,18 @@ nested <- picked %>%
 nested
 #> # A tibble: 142 x 2
 #> # Groups:   country [142]
-#>    country                  data            
-#>    <chr>                    <list>          
-#>  1 Algeria                  <tibble [7 × 5]>
-#>  2 Angola                   <tibble [7 × 5]>
-#>  3 Benin                    <tibble [7 × 5]>
-#>  4 Botswana                 <tibble [7 × 5]>
-#>  5 Burkina Faso             <tibble [7 × 5]>
-#>  6 Burundi                  <tibble [7 × 5]>
-#>  7 Cameroon                 <tibble [7 × 5]>
-#>  8 Central African Republic <tibble [7 × 5]>
-#>  9 Chad                     <tibble [7 × 5]>
-#> 10 Comoros                  <tibble [7 × 5]>
+#>    country                  data             
+#>    <chr>                    <list>           
+#>  1 Algeria                  <tibble [12 × 5]>
+#>  2 Angola                   <tibble [12 × 5]>
+#>  3 Benin                    <tibble [12 × 5]>
+#>  4 Botswana                 <tibble [12 × 5]>
+#>  5 Burkina Faso             <tibble [12 × 5]>
+#>  6 Burundi                  <tibble [12 × 5]>
+#>  7 Cameroon                 <tibble [12 × 5]>
+#>  8 Central African Republic <tibble [12 × 5]>
+#>  9 Chad                     <tibble [12 × 5]>
+#> 10 Comoros                  <tibble [12 × 5]>
 #> # … with 132 more rows
 ```
 
@@ -198,18 +198,18 @@ mods <- nested %>%
 mods
 #> # A tibble: 142 x 3
 #> # Groups:   country [142]
-#>    country                  data             mod   
-#>    <chr>                    <list>           <list>
-#>  1 Algeria                  <tibble [7 × 5]> <lm>  
-#>  2 Angola                   <tibble [7 × 5]> <lm>  
-#>  3 Benin                    <tibble [7 × 5]> <lm>  
-#>  4 Botswana                 <tibble [7 × 5]> <lm>  
-#>  5 Burkina Faso             <tibble [7 × 5]> <lm>  
-#>  6 Burundi                  <tibble [7 × 5]> <lm>  
-#>  7 Cameroon                 <tibble [7 × 5]> <lm>  
-#>  8 Central African Republic <tibble [7 × 5]> <lm>  
-#>  9 Chad                     <tibble [7 × 5]> <lm>  
-#> 10 Comoros                  <tibble [7 × 5]> <lm>  
+#>    country                  data              mod   
+#>    <chr>                    <list>            <list>
+#>  1 Algeria                  <tibble [12 × 5]> <lm>  
+#>  2 Angola                   <tibble [12 × 5]> <lm>  
+#>  3 Benin                    <tibble [12 × 5]> <lm>  
+#>  4 Botswana                 <tibble [12 × 5]> <lm>  
+#>  5 Burkina Faso             <tibble [12 × 5]> <lm>  
+#>  6 Burundi                  <tibble [12 × 5]> <lm>  
+#>  7 Cameroon                 <tibble [12 × 5]> <lm>  
+#>  8 Central African Republic <tibble [12 × 5]> <lm>  
+#>  9 Chad                     <tibble [12 × 5]> <lm>  
+#> 10 Comoros                  <tibble [12 × 5]> <lm>  
 #> # … with 132 more rows
 ```
 
@@ -227,18 +227,18 @@ mods %>%
   unnest(params)
 #> # A tibble: 284 x 6
 #> # Groups:   country [142]
-#>    country      term         estimate std.error statistic      p.value
-#>    <chr>        <chr>           <dbl>     <dbl>     <dbl>        <dbl>
-#>  1 Algeria      (Intercept) -1153.     30.2         -38.2 0.000000231 
-#>  2 Algeria      year            0.612   0.0153       39.9 0.000000186 
-#>  3 Angola       (Intercept)  -648.     41.9         -15.5 0.0000206   
-#>  4 Angola       year            0.348   0.0213       16.3 0.0000158   
-#>  5 Benin        (Intercept)  -800.     13.0         -61.6 0.0000000213
-#>  6 Benin        year            0.429   0.00660      65.1 0.0000000162
-#>  7 Botswana     (Intercept)  -866.     42.4         -20.4 0.00000519  
-#>  8 Botswana     year            0.468   0.0215       21.7 0.00000385  
-#>  9 Burkina Faso (Intercept) -1037.     26.7         -38.9 0.000000212 
-#> 10 Burkina Faso year            0.548   0.0136       40.4 0.000000175 
+#>    country      term          estimate std.error statistic  p.value
+#>    <chr>        <chr>            <dbl>     <dbl>     <dbl>    <dbl>
+#>  1 Algeria      (Intercept) -1068.       43.8      -24.4   3.07e-10
+#>  2 Algeria      year            0.569     0.0221    25.7   1.81e-10
+#>  3 Angola       (Intercept)  -377.       46.6       -8.08  1.08e- 5
+#>  4 Angola       year            0.209     0.0235     8.90  4.59e- 6
+#>  5 Benin        (Intercept)  -613.       38.9      -15.8   2.18e- 8
+#>  6 Benin        year            0.334     0.0196    17.0   1.04e- 8
+#>  7 Botswana     (Intercept)   -65.5     202.        -0.324 7.53e- 1
+#>  8 Botswana     year            0.0607    0.102      0.593 5.66e- 1
+#>  9 Burkina Faso (Intercept)  -676.       67.8       -9.97  1.63e- 6
+#> 10 Burkina Faso year            0.364     0.0342    10.6   9.05e- 7
 #> # … with 274 more rows
 ```
 
@@ -341,7 +341,7 @@ list(country, rsq) %>% map(head)
 #> [6] "Burundi"     
 #> 
 #> [[2]]
-#> [1] 0.9968754 0.9815419 0.9988206 0.9895038 0.9969444 0.9912364
+#> [1] 0.9851172 0.8878146 0.9666020 0.0340234 0.9187105 0.7659960
 
 # dplyr: Data frame approach
 country_rsq <- mods2 %>% summarise(rsq = summary(mod)$r.squared)

@@ -7,6 +7,13 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Packages.
+
+```{r}
+library(tidyverse)
+```
+
+
 
 ## Warm up
 
@@ -19,151 +26,79 @@ toy <- tribble(
       "de",    5800,    6000,    6200,
       "us",   15000,   14000,   13000
 )
-
-toy
 ```
 
-To tidy this dataset we pivot over all columns except `country`. We may exclude `country` with `-` or select all other columns with `where(is.numeric)`L
+To tidy this dataset we pivot over all columns except `country`. We may exclude `country` with `-` or select all other columns with `where(is.numeric)`.
 
 ```{r}
-longer <- toy %>% pivot_longer(cols = where(is.numeric))
+toy %>% pivot_longer(where(is.numeric))
+```
+
+This dataset is now tidy.
+
+
+
+## Import
+
+Import all datasets in "data/by-continent" into a single data frame: `messy`.
+
+```{r}
+paths <- dir_ls(here("data", "by-continent"))
+paths
+
+messy <- vroom(paths)
+```
+
+
+
+## Tidy
+
+* Pivot over all numeric columns.
+* Store the result as `longer`.
+* Use `names_to = metric` (see `?pivot_longer()`).
+* Compare the number of rows in the input and output.
+
+```{r longer-1}
+
+```
+```{r longer-2, eval=FALSE}
+longer <- messy %>% 
+  ____________(where(__________), ________ = "metric")
+
 longer
-
-# Same
-longer1 <- toy %>% pivot_longer(cols = where(is.numeric))
-identical(longer1, longer)
 ```
 
-## tidyr
-
-* Pivot on the columns that start with "gdp" (see `?tidyselect::starts_with`).
-* How long is the input?
-* How long is the output?
-
-```{r pivot-1}
-
-
-```
-
-```{r pivot-2}
-gap_wide %>% 
-  ____________(cols = starts_with("___"))
-```
-
-```{r pivot-3}
-gap_wide %>% 
-  pivot_longer(cols = starts_with("gdp"))
+```{r longer-3, echo=FALSE}
+longer <- messy %>% 
+  pivot_longer(where(is.numeric), names_to = "metric")
+longer
 ```
 
 
 
-* Pivot on all columns except `continent` and `country`.
-* Refer to the columns you want to pivot on using `starts_with()` (`|` means or)
-
-```{r multiple-conditions-1}
-
-
-
-
-```
-
-```{r multiple-conditions-2}
-________ %>% 
-  pivot_longer(
-    cols = ___________("gdp") | ___________("life") | ___________("pop")
-  )
-```
-
-```{r multiple-conditions-3}
-gap_wide %>% 
-  pivot_longer(
-    cols = starts_with("gdp") | starts_with("life") | starts_with("pop")
-  )
-```
-
-
-
-This alternative is identical but shorter to type.
-
-* The result is still messy. Why?
-
-```{r exclude-1}
-
-
-```
-
-```{r exclude-2}
-gap_wide ___
-  pivot_longer(cols = -_________:-_______)
-```
-
-```{r exclude-3}
-gap_wide %>% 
-  pivot_longer(cols = -continent:-country)
-```
-
-
-
-* Now also use `separate()` and the vector `c("metric", "year")`.
-* We now achieved a tidy dataset. Why?
+* `metric` is still messy; tidy it with `separate()` and `c("metric", "year")`.
+* Store the result as `tidy`.
 
 ```{r separate-1}
 
-
-
-
-
 ```
 
-```{r separate-2}
-tidy <- gap_wide %>% 
-  pivot_longer(cols = -continent:-country) %>% 
-  ________(col = name, into = c("______", "____"))
-
-tidy
+```{r separate-2, eval=FALSE}
+tidy <- longer %>% ________(______, c("metric", "____"))
 ```
 
-```{r separate-3}
-tidy <- gap_wide %>% 
-  pivot_longer(cols = -continent:-country) %>% 
-  separate(col = name, into = c("metric", "year"))
-
-tidy
+```{r separate-3, echo=FALSE}
+tidy <- longer %>% separate(metric, c("metric", "year"))
 ```
+
 
 
 
 * Use `unite()` and `pivot_wider()` to mess things up back again.
 
-```{r messy-1}
 
+TODO
 
-
-
-
-
-
-```
-
-```{r messy-2}
-messy <- tidy %>% 
-  _____("name", metric, year) %>% 
-  pivot______()
-
-messy
-
-gap_wide
-```
-
-```{r messy-3}
-messy <- tidy %>% 
-  unite("name", metric, year) %>% 
-  pivot_wider()
-
-messy
-
-gap_wide
-```
 
 ## Filling missing data with `complete()`
 

@@ -1,0 +1,202 @@
+---
+title: "Car"
+output: github_document
+params:
+  year:
+    value: [1952, 2007]
+    min: 1952
+    max: 2007
+    step: 1
+    sep: ""
+---
+
+**Collapse all chunks with Alt+O / Cmd+Option+O**
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>", cache = TRUE)
+```
+
+Packages.
+
+```{r}
+library(tidyverse)
+library(here)
+library(vroom)
+library(fs)
+library(broom)
+```
+
+`vroom()` reads multiple datasets into a single data frame, elegantly and fast:
+
+```{r demo-paths}
+paths <- dir_ls(here("data", "by-continent"))
+messy <- suppressMessages(vroom(paths))
+messy
+```
+
+
+
+Do the same step by step and compare the results:
+
+* Create a list of data frames, mapping each path to `vroom()` with `map()`.
+* Use the `~` syntax to suppress the messages from `vroom()`.
+* Reduce `reduce()` the list to a single data frame with `bind_rows()`.
+* Pipe the output into `identical()` and compare it with `messy`.
+
+```{r map-reduce-1, eval=FALSE}
+paths %>% 
+  ___(~ suppressMessages(_____(.x))) %>%
+  reduce(_________) %>% 
+  reduce(bind_rows) %>% 
+  _________(messy)
+```
+
+```{r map-reduce-2, echo=FALSE}
+paths %>% 
+  map(~ suppressMessages(vroom(.x))) %>%
+  reduce(bind_rows) %>% 
+  identical(messy)
+```
+
+
+
+Create a longer dataset with a numeric column `year`, and one column per metric:
+
+* Pivot, separate, and mutate `year`.
+* Pivot again to move each metric to its own column.
+
+```{r tidy-1, eval=FALSE}
+tidy <- messy %>% 
+  ____________(where(is.numeric)) %>% 
+  ________(____, into = c("name", "year")) %>% 
+  ______(year = as.numeric(____)) %>% 
+  ___________(names_from = name)
+
+tidy
+```
+
+```{r tidy-2, echo=FALSE}
+tidy <- messy %>% 
+  pivot_longer(where(is.numeric)) %>% 
+  separate(name, into = c("name", "year")) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  pivot_wider(names_from = name)
+
+tidy
+```
+
+
+
+## Pick years
+
+* Pick years in the (inclusive) range `params$min_year`-`params$max_year`.
+
+```{r pick-params-1, eval=FALSE}
+picked <- tidy %>% 
+  ______(____ >= min(params$year), year <= max(______$____))
+```
+
+```{r pick-params-2, echo=FALSE}
+picked <- tidy %>% 
+  filter(year >= min(params$year), year <= max(params$year))
+```
+
+
+
+## Plot linear models
+
+Plot a linear model of life expectancy through time:
+
+* Map `group` to `country` (what happens if you don't).
+* Use `geom_smooth()`; use the "lm" `method`.
+* For clarity, remote the `se` shade, and reduce `alpha` and `size` to 1/3.
+
+```{r TODO-lines-2}
+picked %>% 
+  ggplot(aes(year, lifeExp, group = country)) +
+  geom_smooth(method = "lm", se = FALSE, alpha = 1/3, size = 1/3)
+```
+
+> What if you actually want those mods? To access estimates, p-values, etc. In that case, you need to fit them yourself. How to do that?
+> -- https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html
+
+
+
+## Compute linear models: The purrr way
+
+Put the variables needed for country-specific models into nested data frame:
+
+* Use `group_by()` and `nest()` to create a list column with the `country` data.
+* Inspect the list `nested$data` with `View()`.
+
+```{r}
+nested <- picked %>% nest_by(country)
+nested
+```
+
+
+
+* Use `map()` inside `mutate()` to pull interesting information out of each fitted linear model.
+* Inspect the resulting list column `mod` with `View()`.
+
+```{r}
+mods <- tidy %>% 
+  group_by(country) %>% 
+  nest() %>% 
+  mutate(mod = map(data, ~ lm(lifeExp ~ year, data = .x)))
+
+mods
+```
+
+
+
+* Use `broom::tidy()` to access the parameters of each model.
+* Remove the now unnecessary columns `data` and `mod`.
+* `unnest()` the `parameters` column.
+
+```{r}
+mods %>% 
+  mutate(parameters = map(mod, broom::tidy)) %>% 
+  select(-data, -mod) %>% 
+  unnest(parameters)
+```
+
+
+
+## Compute linear models: The `rowwise()` way
+
+> `rowwise()` data frames allow you to solve a variety of modelling problems in what I think is a particularly elegant way.
+> -- https://dplyr.tidyverse.org/articles/rowwise.html#list-columns-1
+
+
+
+* Use `nest_by()` to create a row-wise data-frame, nested by `country`.
+
+```{r}
+nested2 <- tidy %>% nest_by(country)
+nested2
+```
+
+* Use `mutate()` without `map()` to pull interesting information out of each fitted linear model.
+* Inspect the resulting list column `mod` with `View()`.
+
+```{r}
+mods2 <- nested2 %>% 
+  mutate(mod = list(lm(lifeExp ~ year, data = data)))
+
+mods2
+```
+
+
+
+* Access the model parameters with `summarise()` and `broom::tidy()`.
+
+```{r}
+mods2 %>% summarise(broom::tidy(mod))
+```
+
+
+
+## TODO

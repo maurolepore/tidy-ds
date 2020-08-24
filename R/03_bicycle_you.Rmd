@@ -4,7 +4,7 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
 Packages.
@@ -60,20 +60,14 @@ messy <- vroom(paths)
 * Store the result as `longer`.
 * Use `names_to = metric` (see `?pivot_longer()`).
 
-```{r longer-1}
-
-
-
-```
-
-```{r longer-2, eval=FALSE}
+```{r longer-1, eval=FALSE}
 longer <- messy %>% 
   ____________(where(__________), ________ = "metric")
 
 longer
 ```
 
-```{r longer-3, echo=FALSE}
+```{r longer-2, echo=FALSE}
 longer <- messy %>% 
   pivot_longer(where(is.numeric), names_to = "metric")
 
@@ -85,17 +79,12 @@ longer
 * `metric` is still messy; tidy it with `separate()` and `c("metric", "year")`.
 * Store the result as `tidy`.
 
-```{r separate-1}
-
-
-```
-
-```{r separate-2, eval=FALSE}
+```{r separate-1, eval=FALSE}
 tidy <- longer %>% ________(______, c("metric", "____"))
 tidy
 ```
 
-```{r separate-3, echo=FALSE}
+```{r separate-2, echo=FALSE}
 tidy <- longer %>% separate(metric, c("metric", "year"))
 tidy
 ```
@@ -108,19 +97,13 @@ Mess things up again:
 * Use `pivot_wider()` to take the `names_from` the column `metric` and create new columns -- taking `values_from` the column `value`.
 * Is the output wider than the input?
 
-```{r mess-up-1}
-
-
-
-```
-
-```{r mess-up-2, eval=FALSE}
+```{r mess-up-1, eval=FALSE}
 tidy %>% 
   _____("metric", ______, year) %>% 
   ___________(names_from = ______, values_from = _____)
 ```
 
-```{r mess-up-3, echo=FALSE}
+```{r mess-up-2, echo=FALSE}
 tidy %>% 
   unite("metric", metric, year) %>% 
   pivot_wider(names_from = metric, values_from = value)
@@ -160,16 +143,7 @@ Now add a new column `mean`, holding the mean life expectancy for each country:
 * `ungroup()`.
 * Store the result as `subset2`.
 
-```{r group-mutate-1}
-subset2 <- subset1 %>% 
-  group_by(country) %>% 
-  mutate(mean = mean(lifeExp), year = as.numeric(year)) %>% 
-  ungroup()
-
-subset2
-```
-
-```{r group-mutate-2, eval=FALSE}
+```{r group-mutate-1, eval=FALSE}
 subset2 <- subset1 %>% 
   ________(country) %>% 
   ______(mean = ____(lifeExp), year = as.numeric(____)) %>% 
@@ -178,7 +152,7 @@ subset2 <- subset1 %>%
 subset2
 ```
 
-```{r group-mutate-3, echo=FALSE}
+```{r group-mutate-2, echo=FALSE}
 subset2 <- subset1 %>% 
   group_by(country) %>% 
   mutate(mean = mean(lifeExp), year = as.numeric(year)) %>% 
@@ -189,7 +163,7 @@ subset2
 
 
 
-I now degrade this dataset a bit for a later example.
+Let's degrade this dataset a bit for a later example.
 
 ```{r}
 subset3 <- subset2 %>% slice(-2)
@@ -212,14 +186,11 @@ This dataset has implicit missing for Argentina in 1957.
 
 * Make the implicit missing data explicit with `complete()`.
 
-```{r complete-1}
-
-```
-```{r complete-2, eval=FALSE}
+```{r complete-1, eval=FALSE}
 subset3 %>% ________(_______, year)
 ```
 
-```{r complete-3, echo=FALSE}
+```{r complete-2, echo=FALSE}
 subset3 %>% complete(country, year)
 ```
 
@@ -232,21 +203,14 @@ Extend the previous code:
 * You'll need to pass each value to fill as a named list.
 * Store the result as `filled`.
 
-```{r fill-1}
-
-
-
-
-```
-
-```{r fill-2, eval=FALSE}
+```{r fill-1, eval=FALSE}
 mean_arg <- subset3 %>% ______(country == "_________") %>% ____(mean)
 
 filled <- subset3 %>% 
   ________(country, year, fill = list(lifeExp = ________, ____ = mean_arg))
 ```
 
-```{r fill-3, echo=FALSE}
+```{r fill-2, echo=FALSE}
 mean_arg <- subset3 %>% filter(country == "Argentina") %>% pull(mean)
 
 filled <- subset3 %>% 
@@ -255,19 +219,13 @@ filled <- subset3 %>%
 
 
 
-You lack data in between 1952-1957:
+Let's now complete the missing data in between 1952-1957.
 
 * Use `pull()` to  pull the available years.
 * Use `full_seq()` to produce the full sequence of every year in the range.
 * Store the result as `all_years`.
 
-```{r full-seq-1}
-
-
-
-```
-
-```{r full-seq-2, eval=FALSE}
+```{r full-seq-1, eval=FALSE}
 all_years <- filled %>% 
   ____(year) %>% 
   ________(period = 1)
@@ -275,7 +233,7 @@ all_years <- filled %>%
 all_years
 ```
 
-```{r full-seq-3, echo=FALSE}
+```{r full-seq-2, echo=FALSE}
 all_years <- filled %>% 
   pull(year) %>% 
   full_seq(period = 1)
@@ -286,33 +244,89 @@ all_years
 
 
 * Use `all_years` to `complete()` `year`; also complete `country` with itself.
+* `fill()` values of `mean` for each `country`.
+* What happens if your forget to `group_by()`?
+* Store the result as `full_mean`.
 
-TODO
-  
-```{r all-years-3}
-filled2 <- filled %>% 
-  complete(year = all_years, country = country)
+```{r all-years-1, eval=FALSE}
+full_mean <- filled %>% 
+  ________(year = _________, country = _______) %>% 
+  ________(country) %>%
+  ____(mean)
 
-filled2
+full_mean
+```
+
+```{r all-years-2, echo=FALSE}
+full_mean <- filled %>% 
+  complete(year = all_years, country = country) %>% 
+  group_by(country) %>%
+  fill(mean)
+
+full_mean
 ```
 
 
 
-This code uses other two approaches to fill data: `if_else()` and `case_when()`:
+* `pull()` the `mean` `lifeExp` for "Germany" and store it as `mean_ger`
+* Fill `lifeExp` with corresponding values of `mean`, using `case_when()`.
+* There are 3 cases: the result should be `mean_arg`, `mean_ger`, or `lifeExp`.
+* Store the result as `full`.
 
-```{r}
-mean_ger <- means %>% filter(country == "Germany") %>% pull(mean)
+```{r full-1, eval=FALSE}
+mean_ger <- subset3 %>% 
+  ________(country, mean) %>% 
+  ______(country == "Germany") %>% 
+  ____(mean)
 
-filled %>% 
-  complete(year = all_years, country = country) %>% 
-  mutate(mean = if_else(country == "Argentina", mean_arg, mean_ger)) %>%
+other <- TRUE
+
+full <- full_mean %>% 
   mutate(
-    lifeExp = case_when(
-      is.na(.data$lifeExp) & .data$country == "Argentina" ~ mean_arg,
-      is.na(.data$lifeExp) & .data$country == "Germany"   ~ mean_ger,
-      TRUE                                                ~ lifeExp
+    lifeExp = _________(
+      is.na(lifeExp) & country == "Argentina" ~ ________,
+      is.na(lifeExp) & country == "Germany"   ~ ________,
+      other                                   ~ lifeExp
     )
   )
+
+full
+```
+
+```{r full-2, echo=FALSE}
+mean_ger <- subset3 %>% 
+  distinct(country, mean) %>% 
+  filter(country == "Germany") %>% 
+  pull(mean)
+
+other <- TRUE
+
+full <- full_mean %>% 
+  mutate(
+    lifeExp = case_when(
+      is.na(lifeExp) & country == "Argentina" ~ mean_arg,
+      is.na(lifeExp) & country == "Germany"   ~ mean_ger,
+      other                                   ~ lifeExp
+    )
+  )
+
+full
+```
+
+
+
+## Plot
+
+* Make a line-plot of `year` versus `lifeExp`.
+* Add a dotted line intercepting `y` at the `mean` value for each `country`.
+* Use `facet_wrap()` to plot each country in a separate panel.
+
+```{r line-2, echo=FALSE}
+full %>% 
+  ggplot(aes(year, lifeExp)) + 
+  geom_line() +
+  geom_hline(aes(yintercept = mean), linetype = "dotted") +
+  facet_wrap(~country)
 ```
 
 

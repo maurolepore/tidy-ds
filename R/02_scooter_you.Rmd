@@ -181,6 +181,10 @@ You'll learn more about `map()` and friends later.
 
 
 
+* Knit with different `params` and inspect the output.
+
+
+
 ## Takeaways
 
 Import:

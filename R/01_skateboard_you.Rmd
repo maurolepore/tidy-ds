@@ -74,3 +74,28 @@ ggplot(data = _________, aes(x = _________, y = _______)) +
 ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
   geom_boxplot()
 ```
+
+
+
+## Takeaways
+
+* Use all packages in the tidyverse with `library(tidyverse)`.
+
+Import:
+
+* Use `read_csv()` to read a single .csv file.
+* Use `here()` to craete safe paths to files -- particularly in rmarkdown.
+
+Visualise:
+
+* Start your plots from this template:
+
+```
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+Communicate: 
+
+* Use github_document to report your analysis as a web page on GitHub.
+* Set the chunk options you like.

@@ -79,8 +79,6 @@ ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
 
 ## Takeaways
 
-* Use all packages in the tidyverse with `library(tidyverse)`.
-
 Import:
 
 * Use `read_csv()` to read a single .csv file.
@@ -99,3 +97,9 @@ Communicate:
 
 * Use github_document to report your analysis as a web page on GitHub.
 * Set the chunk options you like.
+
+Other:
+
+* Use all packages in the tidyverse with `library(tidyverse)`.
+* Assign values to objects with `<-`.
+* Compose functions like `g(f(x))` or `x %>% f() %>% g()`.

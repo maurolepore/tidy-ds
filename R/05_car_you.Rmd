@@ -377,7 +377,7 @@ formals(ggsave) %>% names()
 _____(plots_df, ______)
 ```
 
-```{r pwalk-1, eval=FALSE}
+```{r pwalk-2, eval=FALSE}
 pwalk(plots_df, ggsave)
 ```
 
@@ -402,16 +402,16 @@ You can achieve the same with `rowwise()` and `summarise()`.
 plots_df %>% 
   _______() %>% 
   rowwise() %>% 
-  _________(trash = list(______(filename, plot)))
+  _________(list(______(filename, plot)))
 
 # Confirm
 dir_ls(here("output"))
 ```
 
-```{r summarise-ggsave-1, echo=FALSE}
+```{r summarise-ggsave-2, echo=FALSE}
 plots_df %>% 
   rowwise() %>% 
-  summarise(trash = list(ggsave(filename, plot)))
+  summarise(list(ggsave(filename, plot)))
 
 # Confirm
 dir_ls(here("output"))
@@ -420,3 +420,4 @@ dir_ls(here("output"))
 
 
 * Knit with params and set the year range however you like.
+

@@ -442,28 +442,28 @@ make_plot <- function(data, country) {
 if (!dir_exists(here("output"))) {
   dir_create(here("output"))
 }
-```
 
-``` r
+# The pronoun `.data` is not strictly necessary but it's more explicit
 plots_df <- picked %>% 
   filter(.data$country %in% c(high, low)) %>%
   nest_by(.data$country) %>% 
   summarise(plot = list(make_plot(.data$data, .data$country))) %>% 
   ungroup() %>%
-  mutate(filename = here("output", glue("{country}.png"))) %>% 
-  select(-country)
+  mutate(filename = here("output", glue("{country}.png"))) %>%
+  relocate(filename) %>% 
+  select(-.data$country)
 #> `summarise()` regrouping output by 'country' (override with `.groups` argument)
 
 plots_df
 #> # A tibble: 6 x 2
-#>   plot   filename                                   
-#>   <list> <chr>                                      
-#> 1 <gg>   /home/rstudio/tidy-ds/output/Botswana.png  
-#> 2 <gg>   /home/rstudio/tidy-ds/output/Brazil.png    
-#> 3 <gg>   /home/rstudio/tidy-ds/output/France.png    
-#> 4 <gg>   /home/rstudio/tidy-ds/output/Mauritania.png
-#> 5 <gg>   /home/rstudio/tidy-ds/output/Rwanda.png    
-#> 6 <gg>   /home/rstudio/tidy-ds/output/Zimbabwe.png
+#>   filename                                    plot  
+#>   <chr>                                       <list>
+#> 1 /home/rstudio/tidy-ds/output/Botswana.png   <gg>  
+#> 2 /home/rstudio/tidy-ds/output/Brazil.png     <gg>  
+#> 3 /home/rstudio/tidy-ds/output/France.png     <gg>  
+#> 4 /home/rstudio/tidy-ds/output/Mauritania.png <gg>  
+#> 5 /home/rstudio/tidy-ds/output/Rwanda.png     <gg>  
+#> 6 /home/rstudio/tidy-ds/output/Zimbabwe.png   <gg>
 ```
 
 Let’s see the first plot:
@@ -474,30 +474,40 @@ plots_df %>% slice_head() %>% pull(plot)
 #> `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](05_car_you_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](05_car_you_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 We can now use both a list and data frame approach to saving the plots:
 
-  - List approach:
+## List approach to saving multiple plots
+
+`pwalk()` is an extension of `walk2()`; it’s easiest to use when the
+names of the list match the names of the arguments of the function you
+apply.
+
+``` r
+plots_df %>% names()
+#> [1] "filename" "plot"
+
+formals(ggsave) %>% names()
+#>  [1] "filename"  "plot"      "device"    "path"      "scale"     "width"    
+#>  [7] "height"    "units"     "dpi"       "limitsize" "..."
+```
+
+  - Use `pwalk()` to apply `ggsave()` over each `filename`.
 
 <!-- end list -->
 
 ``` r
-pwalk(plots_df, ggsave)
-#> Saving 7 x 5 in image
-#> `geom_smooth()` using formula 'y ~ x'
-#> Saving 7 x 5 in image
-#> `geom_smooth()` using formula 'y ~ x'
-#> Saving 7 x 5 in image
-#> `geom_smooth()` using formula 'y ~ x'
-#> Saving 7 x 5 in image
-#> `geom_smooth()` using formula 'y ~ x'
-#> Saving 7 x 5 in image
-#> `geom_smooth()` using formula 'y ~ x'
-#> Saving 7 x 5 in image
-#> `geom_smooth()` using formula 'y ~ x'
+_____(plots_df, ______)
+```
 
-# Confirm
+``` r
+pwalk(plots_df, ggsave)
+```
+
+Confirm.
+
+``` r
 dir_ls(here("output"))
 #> /home/rstudio/tidy-ds/output/Botswana.png
 #> /home/rstudio/tidy-ds/output/Brazil.png
@@ -510,33 +520,51 @@ dir_ls(here("output"))
 file_delete(dir_ls(here("output")))
 ```
 
-  - Data frame approach:
+## Summarise approach to saving multiple plots
+
+You can achieve the same with `rowwise()` and `summarise()`.
+
+  - Use `ggsave()` inside `summarise()` (wrap the output in `list()`).
 
 <!-- end list -->
 
 ``` r
 plots_df %>% 
+  _______() %>% 
   rowwise() %>% 
-  summarise(trash = list(suppressMessages(ggsave(filename, plot))))
-#> `summarise()` ungrouping output (override with `.groups` argument)
-#> # A tibble: 6 x 1
-#>   trash 
-#>   <list>
-#> 1 <NULL>
-#> 2 <NULL>
-#> 3 <NULL>
-#> 4 <NULL>
-#> 5 <NULL>
-#> 6 <NULL>
+  _________(list(______(filename, plot)))
 
 # Confirm
 dir_ls(here("output"))
-#> /home/rstudio/tidy-ds/output/Botswana.png
-#> /home/rstudio/tidy-ds/output/Brazil.png
-#> /home/rstudio/tidy-ds/output/France.png
-#> /home/rstudio/tidy-ds/output/Mauritania.png
-#> /home/rstudio/tidy-ds/output/Rwanda.png
-#> /home/rstudio/tidy-ds/output/Zimbabwe.png
 ```
+
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> `summarise()` ungrouping output (override with `.groups` argument)
+    #> # A tibble: 6 x 1
+    #>   `list(ggsave(filename, plot))`
+    #>   <list>                        
+    #> 1 <NULL>                        
+    #> 2 <NULL>                        
+    #> 3 <NULL>                        
+    #> 4 <NULL>                        
+    #> 5 <NULL>                        
+    #> 6 <NULL>
+    #> /home/rstudio/tidy-ds/output/Botswana.png
+    #> /home/rstudio/tidy-ds/output/Brazil.png
+    #> /home/rstudio/tidy-ds/output/France.png
+    #> /home/rstudio/tidy-ds/output/Mauritania.png
+    #> /home/rstudio/tidy-ds/output/Rwanda.png
+    #> /home/rstudio/tidy-ds/output/Zimbabwe.png
 
   - Knit with params and set the year range however you like.

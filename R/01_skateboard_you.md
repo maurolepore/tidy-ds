@@ -12,30 +12,36 @@ library(_________)
 _______(here)
 ```
 
-    #> ── Attaching packages ──────────────────────────────── tidyverse 1.3.0 ──
+    #> ── Attaching packages ──────────────────────────────────── tidyverse 1.3.0 ──
     #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
     #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
     #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
     #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-    #> ── Conflicts ─────────────────────────────────── tidyverse_conflicts() ──
+    #> ── Conflicts ─────────────────────────────────────── tidyverse_conflicts() ──
     #> x dplyr::filter() masks stats::filter()
     #> x dplyr::lag()    masks stats::lag()
     #> here() starts at /home/rstudio/tidy-ds
 
-  - Create a safe `path` to “data/gampinder” with `here()`.
+You are about to read data but this code fails. The path is unsafe, fix
+it:
+
+  - Create a safe path with `here()` and retry.
+  - Experiment with “Knit \> Knit Directory”.
 
 <!-- end list -->
 
 ``` r
-path <- ____("data", "_________.csv")
+read_csv("data/gapminder.csv")
+#> Error: 'data/gapminder.csv' does not exist in current working directory ('/home/rstudio/tidy-ds/R').
 ```
 
-  - Read the csv file and assign it to `gapminder`.
+  - Read the csv file; Create a safe path to “data/gampinder.csv” with
+    `here()`.
 
 <!-- end list -->
 
 ``` r
-gapminder <- read____(____)
+gapminder <- ________(here("____", "gapminder.csv"))
 ```
 
     #> Parsed with column specification:

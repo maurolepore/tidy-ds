@@ -25,28 +25,25 @@ library(tidyverse)
 library(here)
 ```
 
+You are about to read data but this code fails. The path is unsafe,  fix it:
 
+* Create a safe path with `here()` and retry.
+* Experiment with "Knit > Knit Directory".
 
-* Create a safe `path` to "data/gampinder" with `here()`.
-
-```{r path-1, eval = FALSE}
-path <- ____("data", "_________.csv")
-```
-
-```{r path-2, echo = FALSE}
-path <- here("data", "gapminder.csv")
+```{r test-here, error=TRUE}
+read_csv("data/gapminder.csv")
 ```
 
 
 
-* Read the csv file and assign it to `gapminder`.
+* Read the csv file; Create a safe path to "data/gampinder.csv" with `here()`.
 
 ```{r read-1, eval = FALSE}
-gapminder <- read____(____)
+gapminder <- ________(here("____", "gapminder.csv"))
 ```
 
 ```{r read-2, echo = FALSE}
-gapminder <- read_csv(path)
+gapminder <- read_csv(here("data", "gapminder.csv"))
 ```
 
 

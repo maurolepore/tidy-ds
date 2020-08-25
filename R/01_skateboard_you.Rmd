@@ -1,5 +1,5 @@
 ---
-title: Skate
+title: Skateboard
 output: github_document
 ---
 

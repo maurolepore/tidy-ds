@@ -9,63 +9,20 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 
 This document creates the data in data/ from files in data-raw.
 
-* Use tidyverse packages and friends.
-
 ```{r packages}
 library(tidyverse)
 library(here)
 library(vroom)
-
 library(fs)
 library(glue)
-```
-
-Explore the root of this repository.
-
-```{r}
-# Call a function with no argument
-here()
-
-# Call a function with 1 argument
-dir_ls(here())
-
-# Same output, different syntax: nest
-out1 <- dir_ls(here())
-
-# Same output, different syntax: pipe
-out2 <- here() %>% dir_ls()
-
-# Call a function with 2 arguments
-identical(out1, out2)
-
-# Same
-out1 %>% identical(out2)
-```
-
-Explore datasets.
-
-```{r}
-# Call a function with three arguments (one passed to ...) -- see `?dir_ls()`
-here() %>% dir_ls(regex = "data", recurse = TRUE)
 ```
 
 Import `wide` data from data-raw/.
 
 ```{r, message=FALSE}
 wide <- vroom(here("data-raw", "gap_wide.csv"))
-
 wide
 ```
-
-
-
-## Beyond basics
-
-This section shows `if()`, the not `!` operator, and the pattern `glue("{variable} string")`.
-
---
-
-
 
 Find `continents`.
 
@@ -74,7 +31,6 @@ continents <- wide %>%
   distinct(continent) %>% 
   pull() %>% 
   tolower()
-
 continents
 ```
 
@@ -82,7 +38,6 @@ Ensure data/by-continent/.
 
 ```{r}
 by_continent_path <- here("data", "by-continent")
-
 by_continent_path
 
 if (!dir_exists(by_continent_path)) {
@@ -94,11 +49,8 @@ Create paths where to later save the data of each continent.
 
 ```{r}
 paths <- path(by_continent_path, glue("{continents}.csv"))
-
 paths
 ```
-
-
 
 Split data by continent and save it in data/ (side effect with no output).
 
@@ -113,32 +65,4 @@ Confirm.
 ```{r, message=FALSE}
 # See files
 dir_ls(by_continent_path)
-
-# Read them back as a single data frame
-df <- dir_ls(by_continent_path) %>% vroom()
-
-df
 ```
-
-Other purrr ways to do the same.
-
-```{r, message=FALSE}
-# Same
-df1 <- dir_ls(by_continent_path) %>% 
-  map(read_csv) %>% 
-  reduce(bind_rows)
-
-# Same
-df2 <- dir_ls(by_continent_path) %>% 
-  map_df(read_csv)
-
-# Same
-df3 <- dir_ls(by_continent_path) %>% 
-  map_df(~read_csv(.x))
-
-all_equal(df, df1)
-all_equal(df, df2)
-all_equal(df, df3)
-```
-
-

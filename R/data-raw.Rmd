@@ -1,53 +1,13 @@
 ---
 title: "Create data/ from data-raw/"
 output: github_document
-editor_options: 
-  chunk_output_type: inline
 ---
-
-This document creates the data in data/ from files in data-raw. It also introduces rmarkdown, R, the tidyverse, iteration with purrr, and some packages that play well with the tidyverse.
-
-## Basics
-
-This section shows the basics of most data-science tasks.
-
-rmarkdown: 
-
-* Share reports online with rmarkdown's `output: github_document`.
-* Write prose with Markdown and insert chunks of R code.
-* Setup chunk.
-* Set global chunk options.
-* Set chunk-specific options.
-
-R:
-
-* Assign a value to an object.
-* Call a function with 0, 1, 2, and 3 arguments.
-* Get help with `?`.
-* Passing arguments to `...`
-* Compose functions by nesting.
-* Compose functions with the pipe.
-
-tidyverse:
-
-* Use multiple packages at once.
-* Notice conflicts.
-
-Friends of the tidyverse:
-
-* rmarkdown for communication.
-* here to write safe paths (crucial in rmarkdown documents).
-* fs to interact with the file system.
-* vroom to read multiple files at once and fast.
-* glue to paste strings in a readable way.
-
---
-
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
+
+This document creates the data in data/ from files in data-raw.
 
 * Use tidyverse packages and friends.
 
@@ -137,20 +97,6 @@ paths <- path(by_continent_path, glue("{continents}.csv"))
 
 paths
 ```
-
-
-
-## Iteration purrr
-
-This section shows how to iterate with purrr:
-
-* Apply a function to each element of a list.
-* Iterate over multiple inputs simultaneously.
-* Apply a function called primarily for its side effect.
-* Specify the expected output with specialized, `map_*()` functions.
-* Inline a function with the formula shortcut `~`.
-
---
 
 
 

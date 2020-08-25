@@ -421,3 +421,53 @@ dir_ls(here("output"))
 
 * Knit with params and set the `year` range however you like.
 
+
+
+## Takeaways
+
+Import:
+
+* Use `bind_rows()` to combine two data frames by row.
+
+Transform:
+
+* Use `group_by()` and `nest()` to create nested data frame.
+* Use `nest_by()` to create a nested data frame with row-wise properties.
+* Use `lm()` to fit a linear model to data.
+  * With list-columns, use `map()` inside `mutate()`
+  * With row-wise data, use `mutate()` or `summarise()` without `map()`.
+* Use `slice_*()` to slice specific rows.
+* Use `pull()` to pull the values of a data frame column.
+* Use `arrange()` and maybe `desc()` to reorder rows.
+* Use `relocate()` to reorder columns.
+* Use `ungroup()` when you no longer need the grouping.
+
+Tidy:
+
+* Use `broom::tidy()` to access the parameters of a model.
+* Use list columns to store anything in a data frame, including plots.
+
+Visualise:
+
+* Use `geom_smooth()` to plot linear models.
+* Use the argument `group` inside `aes()` to group data.
+* Use `ggsave()` to save ggplots.
+
+Communicate:
+
+* You may pass multiple values to YAML params with:
+
+```yaml
+params:
+  value: [1952, 2007]
+```
+
+Other:
+
+* View lists with `View()` (for data frames, prefer `dplyr::view()` ).
+* Iteration:
+  * Use `reduce()` to reduce a list to a single value with a binary function.
+* Use `pluck()` to pluck a single element from a vector.
+* `map()` can also extract by name or position
+* Use `pmap()/pwalk()` to apply a function iterating over any number of vectors.
+* Use the `walk*()` family to apply functions called primarily for side-effects.

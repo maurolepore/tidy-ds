@@ -82,7 +82,7 @@ ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
 Import:
 
 * Use `read_csv()` to read a single .csv file.
-* Use `here()` to craete safe paths to files -- particularly in rmarkdown.
+* Use `here()` to create safe paths with `here()`, particularly in rmarkdown.
 
 Visualise:
 

@@ -28,6 +28,7 @@ library(glue)
 Import `wide` data from data-raw/.
 
 ``` r
+# Adapted from https://github.com/jennybc/gapminder
 wide <- vroom(here("data-raw", "gap_wide.csv"))
 wide
 #> # A tibble: 142 x 38

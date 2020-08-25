@@ -20,6 +20,7 @@ library(glue)
 Import `wide` data from data-raw/.
 
 ```{r, message=FALSE}
+# Adapted from https://github.com/jennybc/gapminder
 wide <- vroom(here("data-raw", "gap_wide.csv"))
 wide
 ```

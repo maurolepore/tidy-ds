@@ -567,4 +567,4 @@ dir_ls(here("output"))
     #> /home/rstudio/tidy-ds/output/Rwanda.png
     #> /home/rstudio/tidy-ds/output/Zimbabwe.png
 
-  - Knit with params and set the year range however you like.
+  - Knit with params and set the `year` range however you like.

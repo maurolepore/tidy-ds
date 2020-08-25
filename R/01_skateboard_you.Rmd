@@ -36,14 +36,24 @@ read_csv("data/gapminder.csv")
 
 
 
-* Read the csv file; Create a safe path to "data/gampinder.csv" with `here()`.
+Instead of `here("a/path")` it's safer to avoid `/` and use `here("a", "path")`.
+
+```{r}
+path <- here("data", "gapminder.csv")
+```
+
+
+
+Now you can do `read_csv(path)` or use the pipe syntax: `path %>% readr_path()`.
+
+* Read the data in `path` using the pipe syntax.
 
 ```{r read-1, eval = FALSE}
-gapminder <- ________(here("____", "gapminder.csv"))
+gapminder <- path %>% read_csv()
 ```
 
 ```{r read-2, echo = FALSE}
-gapminder <- read_csv(here("data", "gapminder.csv"))
+gapminder <- path %>% read_csv()
 ```
 
 
@@ -78,12 +88,12 @@ ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
 
 Import:
 
-* Use `read_csv()` to read a single .csv file.
 * Use `here()` to create safe paths with `here()`, particularly in rmarkdown.
+* Use `read_csv()` to read a single .csv file.
 
 Visualise:
 
-* Start your plots from this template:
+* Use this template to create plots:
 
 ```
 ggplot(data = <DATA>) +
@@ -92,11 +102,12 @@ ggplot(data = <DATA>) +
 
 Communicate: 
 
-* Use github_document to report your analysis as a web page on GitHub.
+* Use `output: github_document` to report your analysis as a web page on GitHub.
 * Set the chunk options you like.
 
 Other:
 
 * Use all packages in the tidyverse with `library(tidyverse)`.
 * Assign values to objects with `<-`.
-* Compose functions like `g(f(x))` or `x %>% f() %>% g()`.
+* Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except ggplot2.
+* Compose ggplot2 layers with `+` not `%>%`.

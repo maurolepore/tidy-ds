@@ -12,12 +12,12 @@ library(_________)
 _______(here)
 ```
 
-    #> ── Attaching packages ──────────────────────────────────── tidyverse 1.3.0 ──
+    #> ── Attaching packages ──────────────────────── tidyverse 1.3.0 ──
     #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
     #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
     #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
     #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-    #> ── Conflicts ─────────────────────────────────────── tidyverse_conflicts() ──
+    #> ── Conflicts ─────────────────────────── tidyverse_conflicts() ──
     #> x dplyr::filter() masks stats::filter()
     #> x dplyr::lag()    masks stats::lag()
     #> here() starts at /home/rstudio/tidy-ds
@@ -35,13 +35,22 @@ read_csv("data/gapminder.csv")
 #> Error: 'data/gapminder.csv' does not exist in current working directory ('/home/rstudio/tidy-ds/R').
 ```
 
-  - Read the csv file; Create a safe path to “data/gampinder.csv” with
-    `here()`.
+Instead of `here("a/path")` it’s safer to avoid `/` and use `here("a",
+"path")`.
+
+``` r
+path <- here("data", "gapminder.csv")
+```
+
+Now you can do `read_csv(path)` or use the pipe syntax: `path %>%
+readr_path()`.
+
+  - Read the data in `path` using the pipe syntax.
 
 <!-- end list -->
 
 ``` r
-gapminder <- ________(here("____", "gapminder.csv"))
+gapminder <- path %>% read_csv()
 ```
 
     #> Parsed with column specification:
@@ -93,13 +102,13 @@ ggplot(data = _________, aes(x = _________, y = _______)) +
 
 Import:
 
-  - Use `read_csv()` to read a single .csv file.
   - Use `here()` to create safe paths with `here()`, particularly in
     rmarkdown.
+  - Use `read_csv()` to read a single .csv file.
 
 Visualise:
 
-  - Start your plots from this template:
+  - Use this template to create plots:
 
 <!-- end list -->
 
@@ -108,12 +117,14 @@ Visualise:
 
 Communicate:
 
-  - Use github\_document to report your analysis as a web page on
-    GitHub.
+  - Use `output: github_document` to report your analysis as a web page
+    on GitHub.
   - Set the chunk options you like.
 
 Other:
 
   - Use all packages in the tidyverse with `library(tidyverse)`.
   - Assign values to objects with `<-`.
-  - Compose functions like `g(f(x))` or `x %>% f() %>% g()`.
+  - Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except
+    ggplot2.
+  - Compose ggplot2 layers with `+` not `%>%`.

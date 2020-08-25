@@ -199,3 +199,36 @@ total %>%
 ```
 
 That was hard work. R is column-oriented so it's best to first tidy the data.
+
+
+
+## Takeaways
+
+Import:
+
+* You can read multiple files into a single data frame with `map_df()`.
+
+Tidy: 
+
+* Working with messy data is not impossible but hard. Best is to tidy first.
+
+Transform:
+
+* Two useful "select helpers" are `starts_with()` & `everything()`.
+* Use `data %>% count( columns to group by )` to summarize your data quickly.
+* Use `group_by()` to define the groups over the summary should iterate.
+* Use `summarize()` and `across()` to summarise data across columns.
+* Use `n()` inside `summarise()` to count the number of rows in each group.
+* Use `rename_with()` to rename columns with a function.
+* `rowwise()` & `c_across()` are like `group_by()` & `across()` but row-wise.
+
+Visualize:
+
+* Use `geom_col()` and `geom_bar()` to create barcharts.
+* Use `geom_errorbar()` to plot uncertainty.
+* Use `labs()` to add a title to a plot (also subtitle, caption, etc.).
+
+Other:
+
+* Side-effect functions should return their first argument `invisible()`.
+* Use `str_replace()` to replace one string with another.

@@ -250,12 +250,13 @@ arg_ger %>% complete(country, year)
 
 Extend the previous code:
 
+* Fill the missing values of `lifeExp` with the value in `mean_argentina`.
 * You'll need to pass each value to fill as a named list.
 * Store the result as `filled`.
 
 ```{r fill-1, eval=FALSE}
 filled <- arg_ger %>% 
-  ________(country, year, fill = list(lifeExp = ________, ____ = mean_argentina))
+  complete(country, year, fill = list(_______ = mean_argentina))
 
 filled
 ```
@@ -266,7 +267,7 @@ filled
 
 ```{r fill-2, echo=FALSE}
 filled <- arg_ger %>% 
-  complete(country, year, fill = list(lifeExp = mean_argentina, mean = mean_argentina))
+  complete(country, year, fill = list(lifeExp = mean_argentina))
 
 filled
 ```

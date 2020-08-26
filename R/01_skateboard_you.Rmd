@@ -1,0 +1,125 @@
+---
+title: Skateboard
+output: github_document
+---
+
+**Collapse all chunks with Alt+O / Cmd+Option+O**
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+
+
+* Use the packages tidyverse and here.
+
+```{r packages-1, eval = FALSE}
+library(_________)
+_______(here)
+```
+
+```{r packages-2, echo = FALSE}
+library(tidyverse)
+library(here)
+```
+
+You are about to read data but this code fails. The path is unsafe,  fix it:
+
+* Create a safe path with `here()` and retry.
+* Experiment with "Knit > Knit Directory".
+
+```{r test-here, error=TRUE}
+read_csv("data/gapminder.csv")
+```
+
+
+
+Instead of `here("a/path")` it's safer to avoid `/` and use `here("a", "path")`.
+
+```{r}
+path <- here("data", "gapminder.csv")
+```
+
+
+
+Now you can do `read_csv(path)` or use the pipe syntax: `path %>% readr_path()`.
+
+* Read the data in `path` using the pipe syntax.
+
+```{r read-1, eval = FALSE}
+gapminder <- path %>% read_csv()
+```
+
+```{r read-2, echo = FALSE}
+gapminder <- path %>% read_csv()
+```
+
+
+
+* Print and explore `gampinder` under the chunk and with `view()`.
+
+```{r gapminder-1, eval = FALSE}
+_________
+```
+
+```{r gapminder-2, echo = FALSE}
+gapminder
+```
+
+
+
+`gapminder` is a spreadsheet-like data structure called a data frame. A data frame is a list of lists (columns), all with the same number of elements (rows). In particular, the tidyverse offers an improved data frame called a tibble.
+
+![](http://i.imgur.com/zKA3A2g.png)
+
+
+
+You will now visualise the data with ggplot2. This is how it works:
+
+![](http://i.imgur.com/T77FopE.png)
+
+
+
+* Create a boxplot of `lifeExp` for each `continent` (`?geom_boxplot()`).
+
+```{r boxplot-1, eval = FALSE}
+ggplot(data = _________, aes(x = _________, y = _______)) +
+  geom________()
+```
+
+```{r boxplot-2, echo = FALSE}
+ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
+  geom_boxplot()
+```
+
+
+
+## Takeaways
+
+Import:
+
+* Use `here()` to create safe paths with `here()`, particularly in rmarkdown.
+* Use `read_csv()` to read a single .csv file.
+
+Visualise:
+
+* Use this template to create plots:
+
+```
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+Communicate: 
+
+* Use `output: github_document` to report your analysis as a web page on GitHub.
+* Set the chunk options you like.
+
+Other:
+
+* Use all packages in the tidyverse with `library(tidyverse)`.
+* Assign values to objects with `<-`.
+* Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except ggplot2.
+* Compose ggplot2 layers with `+` not `%>%`.

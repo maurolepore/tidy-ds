@@ -1,0 +1,473 @@
+---
+title: "Car"
+output: github_document
+params:
+  year:
+    value: [1952, 2007]
+    min: 1952
+    max: 2007
+    step: 1
+    sep: ""
+---
+
+**Collapse all chunks with Alt+O / Cmd+Option+O**
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+Packages.
+
+```{r demo-package}
+library(tidyverse)
+library(here)
+library(vroom)
+library(fs)
+library(broom)
+library(glue)
+```
+
+`vroom()` reads multiple datasets into a single data frame, elegantly and fast:
+
+```{r demo-paths}
+paths <- dir_ls(here("data", "by-continent"))
+messy <- suppressMessages(vroom(paths))
+messy
+```
+
+
+
+Do the same step by step and compare the results:
+
+* Create a list of data frames, mapping each path to `vroom()` with `map()`.
+* Use the `~` syntax to suppress the messages from `vroom()`.
+* Reduce `reduce()` the list to a single data frame with `bind_rows()`.
+* Pipe the output into `identical()` and compare it with `messy`.
+
+```{r map-reduce-1, eval=FALSE}
+paths %>% 
+  ___(~ suppressMessages(_____(.x))) %>%
+  reduce(_________) %>% 
+  reduce(bind_rows) %>% 
+  _________(messy)
+```
+
+```{r map-reduce-2, echo=FALSE}
+paths %>% 
+  map(~ suppressMessages(vroom(.x))) %>%
+  reduce(bind_rows) %>% 
+  identical(messy)
+```
+
+
+
+Create a longer dataset with a numeric column `year`, and one column per metric:
+
+* Pivot, separate, and mutate `year`.
+* Pivot again to move each metric to its own column.
+
+```{r tidy-1, eval=FALSE}
+tidy <- messy %>% 
+  ____________(where(is.numeric)) %>% 
+  ________(____, into = c("name", "year")) %>% 
+  ______(year = as.numeric(____)) %>% 
+  ___________(names_from = name)
+
+tidy
+```
+
+```{r tidy-2, echo=FALSE}
+tidy <- messy %>% 
+  pivot_longer(where(is.numeric)) %>% 
+  separate(name, into = c("name", "year")) %>% 
+  mutate(year = as.numeric(year)) %>% 
+  pivot_wider(names_from = name)
+
+tidy
+```
+
+
+
+## Pick years
+
+* Pick years in the (inclusive) range `params$min_year`-`params$max_year`.
+
+```{r pick-params-1, eval=FALSE}
+picked <- tidy %>% 
+  ______(____ >= min(params$year), year <= max(______$____))
+```
+
+```{r pick-params-2, echo=FALSE}
+picked <- tidy %>% 
+  filter(year >= min(params$year), year <= max(params$year))
+```
+
+
+
+## Plot linear models
+
+Plot a linear model of life expectancy through time:
+
+* Map `group` to `country` (what happens if you don't).
+* Use `geom_smooth()`; use the "lm" `method`.
+* For clarity, remote the `se` shade, and reduce `alpha` and `size` to 1/3.
+
+```{r plot-lines-1, eval=FALSE}
+picked %>% 
+  ggplot(aes(____, lifeExp, group = _______)) +
+  ___________(method = "__", se = _____, alpha = ___, ____ = 1/3)
+```
+
+```{r plot-lines-2, echo=FALSE}
+picked %>% 
+  ggplot(aes(year, lifeExp, group = country)) +
+  geom_smooth(method = "lm", se = FALSE, alpha = 1/3, size = 1/3)
+```
+
+
+
+## Compute linear models: The list approach
+
+> What if you actually want those mods? To access estimates, p-values, etc. In that case, you need to fit them yourself. How to do that?
+> -- https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html
+
+
+
+Put the variables needed for country-specific models into nested data frame:
+
+* Use `group_by()` and `nest()` to create a list column with the `country` data.
+* You may inspect the list `nested$data` with `View()`.
+
+```{r group-by-nest-1, eval=FALSE}
+nested <- picked %>% 
+  ________(country) %>% 
+  ____()
+
+nested
+```
+
+```{r group-by-nest-2, echo=TRUE}
+nested <- picked %>% 
+  group_by(country) %>% 
+  nest()
+
+nested
+```
+
+
+
+* Use `map()` inside `mutate()` to fit linear models of `lifeExp` versus `year`.
+
+```{r mutate-map-lm-1, eval=FALSE}
+mods <- nested %>% 
+  ______(mod = ___(data, ~ lm(_______ ~ year, data = .x)))
+
+mods
+```
+
+```{r mutate-map-lm-2, echo=FALSE}
+mods <- nested %>% 
+  mutate(mod = map(data, ~ lm(lifeExp ~ year, data = .x)))
+
+mods
+```
+
+
+
+* Use `map()` inside `mutate()`; apply `broom::tidy()` to get model parameters.
+* Remove the needless columns `data` and `mod`.
+* `unnest()` the `params` column.
+
+```{r}
+mods %>% 
+  mutate(params = map(mod, broom::tidy)) %>% 
+  select(-data, -mod) %>% 
+  unnest(params)
+```
+
+
+
+## Compute linear models: The `rowwise()` approach
+
+> `rowwise()` data frames allow you to solve a variety of modelling problems in what I think is a particularly elegant way.
+> -- https://dplyr.tidyverse.org/articles/rowwise.html#list-columns-1
+
+
+
+* Use `nest_by()` to create a row-wise data-frame, nested by `country`.
+
+```{r nest-by-1, eval=FALSE}
+nested2 <- tidy %>% _______(_______)
+nested2
+```
+
+```{r nest-by-2, echo=FALSE}
+nested2 <- tidy %>% nest_by(country)
+nested2
+```
+
+
+
+* Use `mutate()` without `map()` to pull interesting information out of each fitted linear model.
+* Inspect the resulting list column `mod` with `View()`.
+
+```{r mutate-list-lm-1, eval=FALSE}
+mods2 <- nested2 %>% 
+  ______(mod = list(__(_______ ~ year, data = .data$data)))
+
+mods2
+```
+
+```{r mutate-list-lm-2, echo=FALSE}
+mods2 <- nested2 %>% 
+  mutate(mod = list(lm(lifeExp ~ year, data = .data$data)))
+
+mods2
+```
+
+
+
+* Use `broom::tidy()` inside `summarise()` to access model parameters.
+
+```{r summarise-tidy-1, eval=FALSE}
+parameters2 <- mods2 %>% _________(broom::tidy(___))
+parameters2
+```
+
+```{r summarise-tidy-2, echo=FALSE}
+parameters2 <- mods2 %>% summarise(broom::tidy(mod))
+parameters2
+```
+
+
+
+## Plotting from the model parameters
+
+Here are two ways to get the r.squared from the model of each country:
+
+```{r}
+# purrr: List approach
+country <- mods %>% pluck("country")
+rsq <- mods %>% pluck("mod") %>% map(summary) %>% map_dbl("r.squared")
+list(country, rsq) %>% map(head)
+
+# dplyr: Data frame approach
+country_rsq <- mods2 %>% summarise(rsq = summary(mod)$r.squared)
+head(country_rsq)
+```
+
+
+
+The data frame approach keeps `country` and `rsq` in sync. This makes it easy to work with the two vectors at the same time. 
+
+* `ungroup()` the dataset `country_rsq` (what happens if you don't?).
+* `arrange()` to find the 3 countries with highest and lowest `rsq`.
+* Use `slice_head()` and `pull()` to pull the names of those countries.
+
+```{r high_low-1, eval=FALSE}
+high <- country_rsq %>% 
+  _______() %>% 
+  arrange(____(rsq)) %>% 
+  slice_head(n = 3) %>% 
+  ____(country)
+high
+
+low <- country_rsq %>% 
+  ungroup() %>% 
+  _______(rsq) %>% 
+  __________(n = 3) %>% 
+  pull(country)
+low
+```
+
+```{r high_low-2, echo=FALSE}
+high <- country_rsq %>% 
+  ungroup() %>% 
+  arrange(desc(rsq)) %>% 
+  slice_head(n = 3) %>% 
+  pull(country)
+high
+
+low <- country_rsq %>% 
+  ungroup() %>% 
+  arrange(rsq) %>% 
+  slice_head(n = 3) %>% 
+  pull(country)
+low
+```
+
+
+
+Confirm your findings with a plot:
+
+* `filter()` the `picked` dataset; get countries with the highest/lowest `rsq`.
+* Plot a linear model with `geom_smooth()`; keep map `colour` to `country`.
+* Facet each `country` into a separate panel.
+* Use `theme_bw()` (or any other theme you like).
+
+```{r}
+picked %>% 
+  filter(country %in% c(high, low)) %>% 
+  ggplot(aes(year, lifeExp)) + 
+  geom_smooth(method = "lm") +
+  facet_wrap(~country) +
+  theme_bw()
+```
+
+
+
+The data frame is a very flexible data structure; it can store anything in it.
+
+Let's save each plot in a single .png file. Let's first create a helper function to make the plot for each country, and also create the paths to the plots we'll soon save.
+
+```{r}
+make_plot <- function(data, country) {
+  data %>% 
+    ggplot(aes(year, lifeExp)) + 
+    geom_smooth(method = "lm") +
+    labs(title = country) +
+    theme_bw()
+}
+
+# Ensure the parent directory exists, or create it
+if (!dir_exists(here("output"))) {
+  dir_create(here("output"))
+}
+
+# The pronoun `.data` is not strictly necessary but it's more explicit
+plots_df <- picked %>% 
+  filter(.data$country %in% c(high, low)) %>%
+  nest_by(.data$country) %>% 
+  summarise(plot = list(make_plot(.data$data, .data$country))) %>% 
+  ungroup() %>%
+  mutate(filename = here("output", glue("{country}.png"))) %>%
+  relocate(filename) %>% 
+  select(-.data$country)
+
+plots_df
+```
+
+Let's see the first plot:
+
+```{r}
+plots_df %>% slice_head() %>% pull(plot)
+```
+
+
+
+We can now use both a list and data frame approach to saving the plots:
+
+## List approach to saving multiple plots
+
+`pwalk()` is an extension of `walk2()`; it's easiest to use when the names of the list match the names of the arguments of the function you apply.
+
+```{r}
+plots_df %>% names()
+
+formals(ggsave) %>% names()
+```
+
+
+
+* Use `pwalk()` to apply `ggsave()` over each `filename`.
+
+```{r pwalk-1, eval=FALSE}
+_____(plots_df, ______)
+```
+
+```{r pwalk-2, eval=FALSE}
+pwalk(plots_df, ggsave)
+```
+
+Confirm.
+
+```{r}
+dir_ls(here("output"))
+
+# Cleanup
+file_delete(dir_ls(here("output")))
+```
+
+
+
+## Summarise approach to saving multiple plots
+
+You can achieve the same with `rowwise()` and `summarise()`. 
+
+* Use `ggsave()` inside `summarise()` (wrap the output in `list()`).
+
+```{r summarise-ggsave-1, eval=FALSE}
+plots_df %>% 
+  _______() %>% 
+  rowwise() %>% 
+  _________(list(______(filename, plot)))
+
+# Confirm
+dir_ls(here("output"))
+```
+
+```{r summarise-ggsave-2, echo=FALSE}
+plots_df %>% 
+  rowwise() %>% 
+  summarise(list(ggsave(filename, plot)))
+
+# Confirm
+dir_ls(here("output"))
+```
+
+
+
+* Knit with params and set the `year` range however you like.
+
+
+
+## Takeaways
+
+Import:
+
+* Use `bind_rows()` to combine two data frames by row.
+
+Transform:
+
+* Use `group_by()` and `nest()` to create nested data frame.
+* Use `nest_by()` to create a nested data frame with row-wise properties.
+* Use `lm()` to fit a linear model to data.
+  * With list-columns, use `map()` inside `mutate()`
+  * With row-wise data, use `mutate()` or `summarise()` without `map()`.
+* Use `slice_*()` to slice specific rows.
+* Use `pull()` to pull the values of a data frame column.
+* Use `arrange()` and maybe `desc()` to reorder rows.
+* Use `relocate()` to reorder columns.
+* Use `ungroup()` when you no longer need the grouping.
+
+Tidy:
+
+* Use `broom::tidy()` to access the parameters of a model.
+* Use list columns to store anything in a data frame, including plots.
+
+Visualise:
+
+* Use `geom_smooth()` to plot linear models.
+* Use the argument `group` inside `aes()` to group data.
+* Use `ggsave()` to save ggplots.
+
+Communicate:
+
+* You may pass multiple values to YAML params with:
+
+```yaml
+params:
+  value: [1952, 2007]
+```
+
+Other:
+
+* View lists with `View()` (for data frames, prefer `dplyr::view()` ).
+* Iteration:
+  * Use `reduce()` to reduce a list to a single value with a binary function.
+* Use `pluck()` to pluck a single element from a vector.
+* `map()` can also extract by name or position
+* Use `pmap()/pwalk()` to apply a function iterating over any number of vectors.
+* Use the `walk*()` family to apply functions called primarily for side-effects.

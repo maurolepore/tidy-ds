@@ -23,10 +23,10 @@ Please do this before the workshop to ensure we all have the same R environment;
 create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 ```
 
-3. Install the packages tidyverse and here with:
+3. Install the tidyverse packages and friends:
 
 ```r
-install.packages(c("tidyverse", "here"))
+install.packages(c("tidyverse", "here", "vroom"))
 ```
 
 ## Links
@@ -34,3 +34,20 @@ install.packages(c("tidyverse", "here"))
 * Google doc: https://bit.ly/2020-08-26-tidy-ds
 * tidy-ds repository: https://github.com/2DegreesInvesting/tidy-ds
 
+## How to work with usethis:
+
+* Use usethis with `library(usethis)` or `devtools::use_devtools()`.
+* Use `pr_init()` to initialize work on a new pull-request branch.
+* Use `pr_pause()` to pause work on a pull-request branch (to start a new one).
+* Use RStudio's branch menu (Git pane) to switch between pull-request branches.
+* Use `pr_sync()` to update a pull-request branch against `upstream`.
+
+## How to work on each task:
+
+1. Initialize a pull request with `pr_init("prefix_you")` (you is your name).
+1. _Copy_ (don't rename) `prefix_you.Rmd` (a new file with your name).
+1. Submit a draft pull request with `pr_push()`.
+1. Open `prefix_you.Rmd` and collapse all chunks with Alt+o (or Alt+Shift+o).
+1. Attempt each challenge in a new chunk or in `chunk-1`; check with `chunk-2`.
+1. Commit your work with a meaningful message.
+1. Update the pull-request with `pr_sync()`.

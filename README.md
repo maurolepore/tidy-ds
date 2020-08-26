@@ -26,7 +26,7 @@ create_from_github("2DegreesInvesting/tidy-ds", destdir = "~", fork = TRUE)
 3. Install the tidyverse packages and friends:
 
 ```r
-install.packages(c("tidyverse", "here", "vroom"))
+install.packages(c("tidyverse", "here", "vroom", "shiny"))
 ```
 
 ## Links

@@ -1,0 +1,462 @@
+---
+title: "Bicycle"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+
+
+## Packages
+
+```{r}
+library(tidyverse)
+library(here)
+library(fs)
+library(vroom)
+```
+
+
+
+## Definition of tidy data
+
+<img src=http://i.imgur.com/SwZLZ3I.png width=750>
+
+
+
+## From messy to tidy
+
+<img src=http://i.imgur.com/ybegKuU.png width=750>
+
+
+
+## Demo: A messy dataset
+
+This toy dataset is messy. Why?
+
+```{r demo-toy}
+toy <- tribble(
+  ~country, ~"2011", ~"2012", ~"2013",
+      "fr",    7000,    6900,    7000,
+      "de",    5800,    6000,    6200,
+      "us",   15000,   14000,   13000
+)
+```
+
+
+
+## Demo `pivot_longer()`
+
+To tidy this dataset we pivot over all columns except `country`. We may exclude `country` with `-` or select all other columns with `where(is.numeric)`.
+
+```{r}
+toy %>% pivot_longer(where(is.numeric))
+```
+
+
+
+## Import
+
+Import all datasets in "data/by-continent" into a single data frame: `messy`.
+
+```{r}
+paths <- dir_ls(here("data", "by-continent"))
+messy <- suppressMessages(vroom(paths))
+messy
+```
+
+
+
+## Tidy with `pivot_longer()`: Task
+
+* Pivot over all numeric columns.
+* Store the result as `longer`.
+* Use `names_to = metric` (see `?pivot_longer()`).
+
+```{r longer-1, eval=FALSE}
+longer <- messy %>% 
+  ____________(where(__________), ________ = "metric")
+
+longer
+```
+
+
+
+## Tidy with `pivot_longer()`: Result
+
+```{r longer-2, echo=FALSE}
+longer <- messy %>% 
+  pivot_longer(where(is.numeric), names_to = "metric")
+
+longer
+```
+
+
+
+## `separate()`: Task
+
+Mess things up again:
+
+* `metric` is still messy; tidy it with `separate()` and `c("metric", "year")`.
+* Store the result as `tidy`.
+
+```{r separate-1, eval=FALSE}
+tidy <- longer %>% ________(______, c("metric", "____"))
+tidy
+```
+
+
+
+## `separate()`: Result
+
+```{r separate-2, echo=FALSE}
+tidy <- longer %>% separate(metric, c("metric", "year"))
+tidy
+```
+
+
+
+## `unite()` and `pivot_wider()`: Task
+
+* Use `unite()` to unite the columns `metric` and `year` as "metric".
+* Use `pivot_wider()` to take the `names_from` the column `metric` and create new columns -- taking `values_from` the column `value`.
+* Is the output wider than the input?
+
+```{r mess-up-1, eval=FALSE}
+tidy %>% 
+  _____("metric", ______, year) %>% 
+  ___________(names_from = ______, values_from = _____)
+```
+
+
+
+## `unite()` and `pivot_wider()`: Result
+
+```{r mess-up-2, echo=FALSE}
+tidy %>% 
+  unite("metric", metric, year) %>% 
+  pivot_wider(names_from = metric, values_from = value)
+```
+
+
+
+## Create a small dataset: Review
+
+Let's create a small dataset to play with. Explain what this code does.
+
+You should already understand this code:
+
+- Remove `continent`.
+- Subset life expectancy values for Argentina and Germany before 1962.
+- Move the life expectancy values to the column `lifeExp`.
+
+
+
+## Create a small dataset: Review
+
+```{r}
+subset1 <- tidy %>% 
+  select(-continent) %>% 
+  filter(
+    country %in% c("Argentina", "Germany"), 
+    metric == "lifeExp",
+    year < 1962
+  ) %>% 
+  pivot_wider(names_from = metric)
+
+subset1
+```
+
+
+
+## Create a small dataset: Task
+
+Now add a new column `mean`, holding the mean `lifeExp` for each `country`:
+
+* Use `group_by()`.
+* Use `mutate()` to calculate mean `lifeExp` and to make `year` numeric.
+* `ungroup()`.
+* Store the result as `subset2`.
+
+```{r group-mutate-1, eval=FALSE}
+subset2 <- subset1 %>% 
+  ________(country) %>% 
+  ______(mean = ____(lifeExp), year = as.numeric(____)) %>% 
+  _______()
+
+subset2
+```
+
+
+
+## Create a small dataset: Result
+
+```{r group-mutate-2, echo=FALSE}
+subset2 <- subset1 %>% 
+  group_by(country) %>% 
+  mutate(mean = mean(lifeExp), year = as.numeric(year)) %>% 
+  ungroup()
+
+subset2
+```
+
+
+
+## Create a small dataset: Tweak
+
+Let's degrade this dataset a bit for a later example.
+
+```{r}
+arg_ger <- subset2 %>% slice(-2) %>% select(-mean)
+```
+
+
+
+## `complete()`: What's missing?
+
+Say you have the dataset `arg_ger`; it is missing data in between 1952 and 1957, but -- somehow -- you know the historical mean for each country. Let's use this data and knowledge to try fill the missing data.
+
+```{r}
+arg_ger
+
+# Historical mean life expectancy
+mean_argentina <- 63.5
+mean_germany <- 68.3
+```
+
+
+
+## `complete()`: Task
+
+* Make the implicit missing data explicit with `complete()`.
+
+```{r complete-1, eval=FALSE}
+arg_ger %>% ________(_______, year)
+```
+
+
+
+## `complete()`: Result
+
+```{r complete-2, echo=FALSE}
+arg_ger %>% complete(country, year)
+```
+
+
+
+## `fill`: Task
+
+Extend the previous code:
+
+* You'll need to pass each value to fill as a named list.
+* Store the result as `filled`.
+
+```{r fill-1, eval=FALSE}
+filled <- arg_ger %>% 
+  ________(country, year, fill = list(lifeExp = ________, ____ = mean_argentina))
+
+filled
+```
+
+
+
+## `fill`: Result
+
+```{r fill-2, echo=FALSE}
+filled <- arg_ger %>% 
+  complete(country, year, fill = list(lifeExp = mean_argentina, mean = mean_argentina))
+
+filled
+```
+
+
+
+## `full_seq()`: Task
+
+Let's now complete the missing data in between 1952-1957.
+
+* Use `pull()` to  pull the available years.
+* Use `full_seq()` to produce the full sequence of every year in the range.
+* Store the result as `all_years`.
+
+```{r full-seq-1, eval=FALSE}
+all_years <- filled %>% 
+  ____(year) %>% 
+  ________(period = 1)
+
+all_years
+```
+
+
+
+## `full_seq()`: Result
+
+```{r full-seq-2, echo=FALSE}
+all_years <- filled %>% 
+  pull(year) %>% 
+  full_seq(period = 1)
+
+all_years
+```
+
+
+
+## `fill()`: Task
+
+* Use `all_years` to `complete()` `year`; also complete `country` with itself.
+* Store the result as `full_mean`.
+
+```{r all-years-1, eval=FALSE}
+full_mean <- filled %>% ________(year = _________, country = _______)
+
+full_mean
+```
+
+
+
+## `fill()`: Result
+
+```{r all-years-2, echo=FALSE}
+full_mean <- filled %>% complete(year = all_years, country = country)
+
+full_mean
+```
+
+
+
+## `case_when()`: Task
+
+Fill `lifeExp` with the mean historical values for each country:
+
+* Use `mutate()` and `case_when()`.
+* The 3 possible results are `mean_argentina`, `mean_germany`, or `lifeExp`.
+* Store the result as `full`.
+
+
+
+## `case_when()`: Task
+
+```{r full-1, eval=FALSE}
+full <- full_mean %>% 
+  mutate(
+    lifeExp = _________(
+      _____(lifeExp) & country == "_________" ~ mean_argentina,
+      is.na(_______) & _______ == "Germany"   ~ ____________,
+      # Any other case
+      TRUE                                    ~ lifeExp
+    )
+  )
+
+full
+```
+
+
+
+## `case_when()`: Result
+
+```{r full-2, echo=FALSE}
+full <- full_mean %>% 
+  mutate(
+    lifeExp = case_when(
+      is.na(lifeExp) & country == "Argentina" ~ mean_argentina,
+      is.na(lifeExp) & country == "Germany"   ~ mean_germany,
+      # Any other case
+      TRUE                                    ~ lifeExp
+    )
+  )
+
+full
+```
+
+
+
+## Plot: Task
+
+* Make a line-plot of `year` versus `lifeExp`.
+* Add a "dotted" line intercepting `y` at the historical mean of each country.
+* Use `facet_wrap()` to plot each country in a separate panel.
+
+```{r line-1, eval=FALSE}
+full %>% 
+  ggplot(aes(____, _______)) + 
+  _____line() +
+  _____hline(__________ = c(mean_argentina, mean_germany), linetype = "______") +
+  __________(~country)
+```
+
+
+
+## Plot: Task
+
+```{r line-2, echo=FALSE}
+full %>% 
+  ggplot(aes(year, lifeExp)) + 
+  geom_line() +
+  geom_hline(yintercept = c(mean_argentina, mean_germany), linetype = "dotted") +
+  facet_wrap(~country)
+```
+
+
+
+## Create a presentation
+
+* Run this code on the console to crate a presentation from this file.
+* The output file is at "R/03_bicycle_you.html"; open it.
+
+```
+rmarkdown::render(
+  input = here("R/03_bicycle_you.Rmd"), 
+  output_format = "ioslides_presentation"
+)
+```
+
+
+
+# Takeaways
+
+
+## Takeaways: Imoprt
+
+* Use `vroom()` to ready multiple files into a single data frame.
+
+
+
+## Takeaways: Tidy
+
+* The tidyverse prefers tidy data where:
+  * Every variable is in its own column.
+  * Every observation is in its own row.
+* Use `pivot_longer()` and `pivot_wider()` to move columns to values and back.
+* Use `unite()` to unite multiple ones into a single one.
+* Use `separate()` to separate one column into multiple ones.
+* Some functions you may use to fill missing values include:
+  * `complete()`, `fill()`, `full_seq()`, `case_when()`.
+
+
+
+## Takeaways: Transform
+
+* The select-helpers (e.g. `where()`) help to transform but also to tidy data.
+* You can `filter()` with multiple conditions separated by `&` or comma `,`.
+
+
+
+## Takeaways: Visualise
+
+* You can extend the basic plot template to include many layers.
+* Use `facet_wrap()` to plot subset of data in separate panels.
+
+
+
+## Takeaways: Communicate
+
+You can transform your github_document into an .html slideshow with:
+
+```
+rmarkdown::render(
+  input = here("your-github_document.Rmd"), 
+  output_format = "ioslides_presentation"
+)
+```

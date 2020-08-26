@@ -1,0 +1,234 @@
+---
+title: "Bicycle"
+output: github_document
+---
+
+**Collapse all chunks with Alt+O / Cmd+Option+O**
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+Packages.
+
+```{r}
+library(tidyverse)
+library(here)
+library(vroom)
+library(fs)
+library(glue)
+```
+
+
+
+This messy dataset comes in multiple files -- one per continent:
+
+```{r demo-paths}
+paths <- dir_ls(here("data", "by-continent"))
+paths
+```
+
+You can use `map_df()` to interactively call `read_csv()` on each path.
+
+```{r message=FALSE}
+paths %>% map_df(read_csv)
+```
+
+
+
+But `vroom()` does this faster and in one step (it's "vectorized" over `file`).
+
+* Read the data from all `paths` into a single data frame with `vroom()`.
+* Pipe it into `glimpse()` and store the result as `messy` and print it.
+
+```{r vroom-messy-1, eval=FALSE}
+messy <- _____(paths) %>% _______()
+messy
+```
+
+```{r vroom-messy-2, echo=FALSE}
+messy <- vroom(paths) %>% glimpse()
+messy
+```
+
+
+
+`glimpse()` is safe to use in pipelines. As it's called for its side effect, it returns its first argument `invisible()`.
+
+```{r demo-invisible}
+formalArgs(tibble:::glimpse.data.frame)
+
+tail(tibble:::glimpse.data.frame)
+```
+
+
+
+A common way to explore data is by counting rows:
+
+* `count()` rows by `continent`.
+* Confirm no `country` has more than one row using `count()` and `filter()`.
+
+```{r count-1, eval=FALSE}
+messy %>% _____(continent)
+
+messy %>% _____(country) %>% ______(_ > 1)
+```
+
+```{r count-2, echo=TRUE}
+messy %>% count(continent)
+
+messy %>% count(country) %>% filter(n > 1)
+```
+
+
+
+This messy dataset is hard to work with but not impossible. Let's study the mean life expectancy through time.
+
+Let's focus on `continent` and all columns that `start_with()` "lifeExp":
+
+```{r demo-starts-with}
+life_exp <- messy %>% 
+  select(continent, starts_with("lifeExp_"))
+
+life_exp
+```
+
+The prefix "lifeExp" is redundant and we could remove it.
+
+```{r demo-rename-with}
+remove_prefix <- function(.x) str_replace(.x, "lifeExp_", "")
+
+life_exp1 <- life_exp %>% 
+  rename_with(remove_prefix)
+
+# Same with the `~` shortcut, like in `map()` and friends
+life_exp1 <- life_exp %>% 
+  rename_with(~str_replace(.x, "lifeExp_", ""))
+
+life_exp1
+```
+
+(The resulting names are non-syntactic so R surrounds them in backticks. Such names are awkward and you should avoid them. As you will soon see, here we won't refer to them directly; instead we'll use the tidyselect helpers -- see `?select()`.)
+
+
+
+* Use `summarize()` to get the `mean` `across()` all columns except `continent`.
+
+```{r summarize-across-1, eval=FALSE}
+life_exp1 %>% 
+  _________(across(-_________, mean))
+```
+
+```{r summarize-across-2, echo=FALSE}
+life_exp1 %>% 
+  summarize(across(-continent, mean))
+```
+
+
+
+* Now iterate over each `continent`, by grouping column-wise with `group_by()`.
+* Compute across `everything()` (the grouping variable is excluded by default).
+* Compute the number of observations per group (use `n = n()`).
+* Relocate the `n` column to the front with `relocate()`.
+* Store the result as `by_continent`.
+
+```{r summarise-group-by-1, eval=FALSE}
+by_continent <- life_exp1 %>% 
+  ________(continent) %>% 
+  summarize(across(everything(), mean), n = n()) %>% 
+  ________(n)
+
+by_continent
+```
+
+```{r summarise-group-by-2, echo=FALSE}
+by_continent <- life_exp1 %>% 
+  group_by(continent) %>% 
+  summarize(across(everything(), mean), n = n()) %>% 
+  relocate(n)
+
+by_continent
+```
+
+
+
+* Now iterate over each year, by grouping row-wise with `rowwise()`.
+* Create the new column `life_expectancy`: as `mean(c_across())`
+* Create the new column `se`() standard error) as `sd(c_across()) / sqrt(n)`.
+
+(See `?c_across()` -- its like `across()` but works with `rowwise()`.)
+
+```{r summarize-rowwise-1, eval=FALSE}
+total <- by_continent %>% 
+  _______(continent) %>% 
+  _________(life_expectancy = ____(c_across()), se = __(c_across()) / sqrt(_))
+
+total
+```
+
+```{r summarize-rowwise-2, echo=FALSE}
+total <- by_continent %>% 
+  rowwise(continent, n) %>% 
+  summarise(life_expectancy = mean(c_across()), se = sd(c_across()) / sqrt(n))
+
+total
+```
+
+
+
+* Create a bar-plot (`?geom_col()`) of `continent` versus `life_expectancy`.
+* Use `geom_errorbar()` to show uncertainty as `life_expectancy + se`.
+* Add this title with `labs()`: "Mean life expectancy (1952-2007)".
+
+```{r geom-col-1, eval=FALSE}
+total %>% 
+  ggplot(___(_________, life_expectancy)) +
+  geom____() +
+  _____________(aes(ymin = life_expectancy, ymax = _______________ + se)) +
+  ____(_____ = "Mean life expectancy (1952-2007)")
+```
+
+```{r geom-col-2, echo=FALSE}
+total %>% 
+  ggplot(aes(continent, life_expectancy)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = life_expectancy, ymax = life_expectancy + se)) +
+  labs(title = "Mean life expectancy (1952-2007)")
+```
+
+That was hard work. R is column-oriented so it's best to first tidy the data.
+
+
+
+## Takeaways
+
+Import:
+
+* You can read multiple files into a single data frame with `map_df()`.
+
+Tidy: 
+
+* Working with messy data is not impossible but hard. Best is to tidy first.
+
+Transform:
+
+* Two useful "select helpers" are `starts_with()` & `everything()`.
+* Use `data %>% count( columns to group by )` to summarize your data quickly.
+* Use `group_by()` to define the groups over the summary should iterate.
+* Use `summarize()` and `across()` to summarise data across columns.
+* Use `n()` inside `summarise()` to count the number of rows in each group.
+* Use `rename_with()` to rename columns with a function.
+* `rowwise()` & `c_across()` are like `group_by()` & `across()` but row-wise.
+
+Visualize:
+
+* Use `geom_col()` and `geom_bar()` to create barcharts.
+* Use `geom_errorbar()` to plot uncertainty.
+* Use `labs()` to add a title to a plot (also subtitle, caption, etc.).
+
+Other:
+
+* Side-effect functions should return their first argument `invisible()`.
+* Use `str_replace()` to replace one string with another.

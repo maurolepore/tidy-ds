@@ -1,0 +1,219 @@
+---
+title: Scooter
+output: github_document
+params:
+  continent:
+    choices: [Africa, Americas, Asia, Europe, Oceania]
+    multiple: true
+    value: [Africa, Americas, Asia, Europe, Oceania]
+---
+
+**Collapse all chunks with Alt+O / Cmd+Option+O**
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+Packages.
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+Import -- [practice safe paths](https://rstats.wtf/safe-paths.html).
+
+```{r}
+gapminder <- read_csv(here("data", "gapminder.csv"))
+```
+
+
+
+* Explore `gapminder` with `glimpse()`.
+
+```{r glimpse-1, eval=FALSE}
+gapminder %>% _______()
+```
+
+```{r glimpse-2, echo=FALSE}
+gapminder %>% glimpse()
+```
+
+
+
+* Using `filter()`, subset rows where `continent` is "Europe".
+
+```{r filter-continents-1, eval=FALSE}
+continents <- c("________", "______")
+_________ %>% ______(continent %in% continents)
+```
+
+```{r filter-continents-2, echo=FALSE}
+continents <- "Europe"
+gapminder %>% filter(continent %in% continents)
+```
+
+
+
+Notice the `value` of the `continent` `param` from the YAML header at the top.
+
+```{r}
+params
+```
+
+
+
+* Edit the YAML header so `param` `continent` takes the value Europe.
+* Using `filter()`, subset rows where `continent` is `params$continent`.
+
+```{r filter-params-continent-1, eval=FALSE}
+filtered <- _________ %>% 
+  ______(continent %in% ______$continent)
+
+filtered
+```
+
+```{r filter-params-continent-2, echo=FALSE}
+filtered <- gapminder %>% 
+  filter(continent %in% params$continent)
+
+filtered
+```
+
+
+
+* From `filtered`, exclude `country` and `continent` with `select()`.
+
+```{r selected-1, eval=FALSE}
+selected <- filtered %>% 
+  ______(-country, -_________)
+  select(-country, -continent)
+
+selected
+```
+
+```{r selected-2, echo=FALSE}
+selected <- filtered %>% 
+  select(-country, -continent)
+
+selected
+```
+
+
+
+Explore the relationship between `gdpPercap` and `lifeExp` with a scatterplot:
+
+* Use `geom_point()`.
+* As a third dimension, map point size to `pop`.
+* Reduce overplotting by setting `alpha` to 1/3 and `shape` to `. Experiment.
+
+```{r}
+selected %>% 
+  ggplot(aes(lifeExp, gdpPercap, size = pop)) + 
+  geom_point(alpha = 1/3, shape = 1)
+```
+
+
+
+## Iteration
+
+Above you used `select()` to exclude `country` and `continent`. Let's do this again but this time let's tackle the problem as an iteration challenge.
+
+* Do it again but subset columns by type with `select(where(` and with `keep()`.
+* Compare the result with `identical()`.
+
+```{r iterate-by-type-1, eval=FALSE}
+selected1 <- filtered %>% ______(where(is._______))
+_________ %>% identical(selected)
+
+selected2 <- filtered %>% ____(is._______)
+_________ %>% identical(selected)
+```
+
+```{r iterate-by-type-2, echo=FALSE}
+selected1 <- filtered %>% select(where(is.numeric))
+selected1 %>% identical(selected)
+
+selected2 <- filtered %>% keep(is.numeric)
+selected2 %>% identical(selected)
+```
+
+
+
+Although it's not obvious, you've just solved an iteration problem. Let's make it explicit with `for()`:
+
+```{r demo-for}
+# Pre-allocate
+pick <- logical(ncol(filtered))
+# Iterate
+for (i in seq_along(filtered)) {
+  pick[[i]] <- is.numeric(filtered[[i]])
+}
+selected3 <- filtered[pick]
+selected3 %>% identical(selected)
+```
+
+In this case, you could also discard character columns with `discard()`:
+
+```{r demo-discard}
+# Same
+selected4 <- filtered %>% discard(is.character)
+selected4 %>% identical(selected)
+```
+
+
+
+BTW, my iteration using `identical()` was inelegant; let's improve it.
+
+You can map each element of a list to a function with `map()`:
+
+![](http://i.imgur.com/O1X1SDb.png)
+
+```{r}
+to_compare <- list(selected1, selected2, selected3, selected4)
+
+to_compare %>% map_lgl(identical, selected)
+
+# Same
+to_compare %>% map_lgl(~identical(.x, selected))
+
+# Same
+to_compare %>% map_lgl(function(.x) identical(.x, selected))
+```
+
+You'll learn more about `map()` and friends later.
+
+
+
+* Knit with different `params` and inspect the output.
+
+
+
+## Takeaways
+
+Import:
+
+* Use `glimpse()` to quickly explore the data you import.
+
+Transform:
+
+The most common and powerful data-science verbs are `filter()` and `select()`:
+
+* Use with `filter()` to subset rows using column values.
+* Use `select()` to subset columns using their names and types.
+
+Visualise:
+
+* Mapping and setting the same parameters produce different results.
+* You can map data not only to `x`, `y` but also to `size`, `color`, etc.
+* You may set `alpha`, `shape`, and `size` in ways that reduce overplotting.
+
+Communicate: 
+
+* You may use rmarkdown `params` to recreate reports with different parameters.
+
+Iterate:
+
+* You may avoid `for()` loops with `map()` & friends -- more on this later.

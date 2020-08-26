@@ -5,12 +5,12 @@ Bicycle
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ───────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ─────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ──────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -21,11 +21,11 @@ library(vroom)
 
 ## Definition of tidy data
 
-![](http://i.imgur.com/SwZLZ3I.png)
+<img src=http://i.imgur.com/SwZLZ3I.png width=750>
 
 ## From messy to tidy
 
-![](http://i.imgur.com/ybegKuU.png)
+<img src=http://i.imgur.com/ybegKuU.png width=750>
 
 ## Demo: A messy dataset
 
@@ -460,6 +460,8 @@ full %>%
 
 ![](03_bicycle_you_files/figure-gfm/line-2-1.png)<!-- -->
 
+## Create a presentation
+
   - Run this code on the console to crate a presentation from this file.
   - The output file is at “R/03\_bicycle\_you.html”; open it.
 
@@ -470,13 +472,13 @@ full %>%
       output_format = "ioslides_presentation"
     )
 
-## Takeaways
+# Takeaways
 
-Imoprt:
+## Takeaways: Imoprt
 
   - Use `vroom()` to ready multiple files into a single data frame.
 
-Tidy:
+## Takeaways: Tidy
 
   - The tidyverse prefers tidy data where:
       - Every variable is in its own column.
@@ -486,24 +488,21 @@ Tidy:
   - Use `unite()` to unite multiple ones into a single one.
   - Use `separate()` to separate one column into multiple ones.
   - Some functions you may use to fill missing values include:
-      - `complete()`
-      - `fill()`
-      - `full_seq()`
-      - `case_when()`
+      - `complete()`, `fill()`, `full_seq()`, `case_when()`.
 
-Transform:
+## Takeaways: Transform
 
   - The select-helpers (e.g. `where()`) help to transform but also to
     tidy data.
   - You can `filter()` with multiple conditions separated by `&` or
     comma `,`.
 
-Visualise:
+## Takeaways: Visualise
 
   - You can extend the basic plot template to include many layers.
   - Use `facet_wrap()` to plot subset of data in separate panels.
 
-Communicate:
+## Takeaways: Communicate
 
 You can transform your github\_document into an .html slideshow with:
 
@@ -511,17 +510,3 @@ You can transform your github\_document into an .html slideshow with:
       input = here("your-github_document.Rmd"), 
       output_format = "ioslides_presentation"
     )
-
-Other:
-
-  - The operator `%in%` extends equality to compare multiple elements at
-    once:
-
-<!-- end list -->
-
-``` r
-1 %in% c(1, 2)
-#> [1] TRUE
-c("a", "b") %in% c("b", "c")
-#> [1] FALSE  TRUE
-```

@@ -7,6 +7,8 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
+
+
 ## Packages
 
 ```{r}
@@ -16,13 +18,19 @@ library(fs)
 library(vroom)
 ```
 
+
+
 ## Definition of tidy data
 
-![](http://i.imgur.com/SwZLZ3I.png)
+<img src=http://i.imgur.com/SwZLZ3I.png width=750>
+
+
 
 ## From messy to tidy
 
-![](http://i.imgur.com/ybegKuU.png)
+<img src=http://i.imgur.com/ybegKuU.png width=750>
+
+
 
 ## Demo: A messy dataset
 
@@ -36,6 +44,8 @@ toy <- tribble(
       "us",   15000,   14000,   13000
 )
 ```
+
+
 
 ## Demo `pivot_longer()`
 
@@ -72,6 +82,8 @@ longer <- messy %>%
 longer
 ```
 
+
+
 ## Tidy with `pivot_longer()`: Result
 
 ```{r longer-2, echo=FALSE}
@@ -95,6 +107,8 @@ tidy <- longer %>% ________(______, c("metric", "____"))
 tidy
 ```
 
+
+
 ## `separate()`: Result
 
 ```{r separate-2, echo=FALSE}
@@ -116,6 +130,8 @@ tidy %>%
   ___________(names_from = ______, values_from = _____)
 ```
 
+
+
 ## `unite()` and `pivot_wider()`: Result
 
 ```{r mess-up-2, echo=FALSE}
@@ -135,6 +151,8 @@ You should already understand this code:
 - Remove `continent`.
 - Subset life expectancy values for Argentina and Germany before 1962.
 - Move the life expectancy values to the column `lifeExp`.
+
+
 
 ## Create a small dataset: Review
 
@@ -170,6 +188,8 @@ subset2 <- subset1 %>%
 
 subset2
 ```
+
+
 
 ## Create a small dataset: Result
 
@@ -216,6 +236,8 @@ mean_germany <- 68.3
 arg_ger %>% ________(_______, year)
 ```
 
+
+
 ## `complete()`: Result
 
 ```{r complete-2, echo=FALSE}
@@ -237,6 +259,8 @@ filled <- arg_ger %>%
 
 filled
 ```
+
+
 
 ## `fill`: Result
 
@@ -265,6 +289,8 @@ all_years <- filled %>%
 all_years
 ```
 
+
+
 ## `full_seq()`: Result
 
 ```{r full-seq-2, echo=FALSE}
@@ -288,6 +314,8 @@ full_mean <- filled %>% ________(year = _________, country = _______)
 full_mean
 ```
 
+
+
 ## `fill()`: Result
 
 ```{r all-years-2, echo=FALSE}
@@ -306,6 +334,8 @@ Fill `lifeExp` with the mean historical values for each country:
 * The 3 possible results are `mean_argentina`, `mean_germany`, or `lifeExp`.
 * Store the result as `full`.
 
+
+
 ## `case_when()`: Task
 
 ```{r full-1, eval=FALSE}
@@ -321,6 +351,8 @@ full <- full_mean %>%
 
 full
 ```
+
+
 
 ## `case_when()`: Result
 
@@ -354,6 +386,8 @@ full %>%
   __________(~country)
 ```
 
+
+
 ## Plot: Task
 
 ```{r line-2, echo=FALSE}
@@ -365,6 +399,8 @@ full %>%
 ```
 
 
+
+## Create a presentation
 
 * Run this code on the console to crate a presentation from this file.
 * The output file is at "R/03_bicycle_you.html"; open it.
@@ -378,14 +414,16 @@ rmarkdown::render(
 
 
 
-## Takeaways
+# Takeaways
 
 
-Imoprt:
+## Takeaways: Imoprt
 
 * Use `vroom()` to ready multiple files into a single data frame.
 
-Tidy:
+
+
+## Takeaways: Tidy
 
 * The tidyverse prefers tidy data where:
   * Every variable is in its own column.
@@ -394,22 +432,25 @@ Tidy:
 * Use `unite()` to unite multiple ones into a single one.
 * Use `separate()` to separate one column into multiple ones.
 * Some functions you may use to fill missing values include:
-  * `complete()`
-  * `fill()`
-  * `full_seq()`
-  * `case_when()`
+  * `complete()`, `fill()`, `full_seq()`, `case_when()`.
 
-Transform:
+
+
+## Takeaways: Transform
 
 * The select-helpers (e.g. `where()`) help to transform but also to tidy data.
 * You can `filter()` with multiple conditions separated by `&` or comma `,`.
 
-Visualise:
+
+
+## Takeaways: Visualise
 
 * You can extend the basic plot template to include many layers.
 * Use `facet_wrap()` to plot subset of data in separate panels.
 
-Communicate:
+
+
+## Takeaways: Communicate
 
 You can transform your github_document into an .html slideshow with:
 
@@ -418,15 +459,4 @@ rmarkdown::render(
   input = here("your-github_document.Rmd"), 
   output_format = "ioslides_presentation"
 )
-```
-
-Other:
-
-* The operator `%in%` extends equality to compare multiple elements at once:
-
-``` r
-1 %in% c(1, 2)
-#> [1] TRUE
-c("a", "b") %in% c("b", "c")
-#> [1] FALSE  TRUE
 ```

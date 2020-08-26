@@ -70,7 +70,19 @@ gapminder
 
 
 
-* Boxplot `lifeExp` for each continent `continent` (see `?geom_boxplot()`).
+`gapminder` is a spreadsheet-like data structure called a data frame. A data frame is a list of lists (columns), all with the same number of elements (rows). In particular, the tidyverse offers an improved data frame called a tibble.
+
+![](http://i.imgur.com/zKA3A2g.png)
+
+
+
+You will now visualise the data with ggplot2. This is how it works:
+
+![](http://i.imgur.com/T77FopE.png)
+
+
+
+* Create a boxplot of `lifeExp` for each `continent` (`?geom_boxplot()`).
 
 ```{r boxplot-1, eval = FALSE}
 ggplot(data = _________, aes(x = _________, y = _______)) +

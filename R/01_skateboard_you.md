@@ -12,12 +12,12 @@ library(_________)
 _______(here)
 ```
 
-    #> ── Attaching packages ──────────────────────── tidyverse 1.3.0 ──
+    #> ── Attaching packages ──────────────────────────────────────── tidyverse 1.3.0 ──
     #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
     #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
     #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
     #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-    #> ── Conflicts ─────────────────────────── tidyverse_conflicts() ──
+    #> ── Conflicts ─────────────────────────────────────────── tidyverse_conflicts() ──
     #> x dplyr::filter() masks stats::filter()
     #> x dplyr::lag()    masks stats::lag()
     #> here() starts at /home/rstudio/tidy-ds
@@ -86,8 +86,19 @@ _________
     #> 10 Afghanistan Asia       1997    41.8 22227415      635.
     #> # … with 1,694 more rows
 
-  - Boxplot `lifeExp` for each continent `continent` (see
-    `?geom_boxplot()`).
+`gapminder` is a spreadsheet-like data structure called a data frame. A
+data frame is a list of lists (columns), all with the same number of
+elements (rows). In particular, the tidyverse offers an improved data
+frame called a tibble.
+
+![](http://i.imgur.com/zKA3A2g.png)
+
+You will now visualise the data with ggplot2. This is how it works:
+
+![](http://i.imgur.com/T77FopE.png)
+
+  - Create a boxplot of `lifeExp` for each `continent`
+    (`?geom_boxplot()`).
 
 <!-- end list -->
 

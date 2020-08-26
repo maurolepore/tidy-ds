@@ -16,7 +16,13 @@ library(fs)
 library(vroom)
 ```
 
+## Definition of tidy data
 
+![](http://i.imgur.com/SwZLZ3I.png)
+
+## From messy to tidy
+
+![](http://i.imgur.com/ybegKuU.png)
 
 ## Demo: A messy dataset
 

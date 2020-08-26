@@ -163,7 +163,13 @@ selected4 <- filtered %>% discard(is.character)
 selected4 %>% identical(selected)
 ```
 
-BTW, my iteration using `identical()` was inelegant; let's improve it:
+
+
+BTW, my iteration using `identical()` was inelegant; let's improve it.
+
+You can map each element of a list to a function with `map()`:
+
+![](http://i.imgur.com/O1X1SDb.png)
 
 ```{r}
 to_compare <- list(selected1, selected2, selected3, selected4)

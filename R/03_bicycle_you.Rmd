@@ -9,6 +9,23 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 
 
 
+## Create a presentation
+
+* Render this document with "Knit" -- as usual.
+
+Now render is as an "ioslides_resentation" from the console: Run this code:
+
+```
+rmarkdown::render(
+  input = here("R/03_bicycle_you.Rmd"), 
+  output_format = "ioslides_presentation"
+)
+```
+
+The output file is at "R/03_bicycle_you.html"; open it.
+
+
+
 ## Packages
 
 ```{r}
@@ -397,20 +414,6 @@ full %>%
   geom_line() +
   geom_hline(yintercept = c(mean_argentina, mean_germany), linetype = "dotted") +
   facet_wrap(~country)
-```
-
-
-
-## Create a presentation
-
-* Run this code on the console to crate a presentation from this file.
-* The output file is at "R/03_bicycle_you.html"; open it.
-
-```
-rmarkdown::render(
-  input = here("R/03_bicycle_you.Rmd"), 
-  output_format = "ioslides_presentation"
-)
 ```
 
 

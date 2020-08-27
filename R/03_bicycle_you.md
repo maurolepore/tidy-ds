@@ -1,16 +1,30 @@
 Bicycle
 ================
 
+## Create a presentation
+
+  - Render this document with “Knit” – as usual.
+
+Now render is as an “ioslides\_resentation” from the console: Run this
+code:
+
+    rmarkdown::render(
+      input = here("R/03_bicycle_you.Rmd"), 
+      output_format = "ioslides_presentation"
+    )
+
+The output file is at “R/03\_bicycle\_you.html”; open it.
+
 ## Packages
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ──────────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
 #> ✓ tibble  3.0.3     ✓ dplyr   1.0.2
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ─────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ─────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
@@ -319,6 +333,8 @@ arg_ger %>% ________(_______, year)
 
 Extend the previous code:
 
+  - Fill the missing values of `lifeExp` with the value in
+    `mean_argentina`.
   - You’ll need to pass each value to fill as a named list.
   - Store the result as `filled`.
 
@@ -326,7 +342,7 @@ Extend the previous code:
 
 ``` r
 filled <- arg_ger %>% 
-  complete(country, year, fill = list(lifeExp = mean_argentina))
+  complete(country, year, fill = list(_______ = mean_argentina))
 
 filled
 ```
@@ -459,18 +475,6 @@ full %>%
 ## Plot: Task
 
 ![](03_bicycle_you_files/figure-gfm/line-2-1.png)<!-- -->
-
-## Create a presentation
-
-  - Run this code on the console to crate a presentation from this file.
-  - The output file is at “R/03\_bicycle\_you.html”; open it.
-
-<!-- end list -->
-
-    rmarkdown::render(
-      input = here("R/03_bicycle_you.Rmd"), 
-      output_format = "ioslides_presentation"
-    )
 
 # Takeaways
 

@@ -23,44 +23,11 @@ library(glue)
 
 
 
-This messy dataset comes in multiple files -- one per continent:
+This messy dataset comes in multiple files -- one per continent.
 
 ```{r demo-paths}
 paths <- dir_ls(here("data", "by-continent"))
-paths
-```
-
-You can use `map_df()` to interactively call `read_csv()` on each path.
-
-```{r message=FALSE}
-paths %>% map_df(read_csv)
-```
-
-
-
-But `vroom()` does this faster and in one step (it's "vectorized" over `file`).
-
-* Read the data from all `paths` into a single data frame with `vroom()`.
-* Pipe it into `glimpse()` and store the result as `messy` and print it.
-
-```{r vroom-messy-1, eval=FALSE}
-messy <- _____(paths) %>% _______()
-messy
-```
-
-```{r vroom-messy-2, echo=FALSE}
 messy <- vroom(paths) %>% glimpse()
-messy
-```
-
-
-
-`glimpse()` is safe to use in pipelines. As it's called for its side effect, it returns its first argument `invisible()`.
-
-```{r demo-invisible}
-formalArgs(tibble:::glimpse.data.frame)
-
-tail(tibble:::glimpse.data.frame)
 ```
 
 
@@ -100,12 +67,9 @@ The prefix "lifeExp" is redundant and we could remove it.
 ```{r demo-rename-with}
 remove_prefix <- function(.x) str_replace(.x, "lifeExp_", "")
 
-life_exp1 <- life_exp %>% 
-  rename_with(remove_prefix)
-
+life_exp1 <- life_exp %>% rename_with(remove_prefix)
 # Same with the `~` shortcut, like in `map()` and friends
-life_exp1 <- life_exp %>% 
-  rename_with(~str_replace(.x, "lifeExp_", ""))
+life_exp1 <- life_exp %>% rename_with(~str_replace(.x, "lifeExp_", ""))
 
 life_exp1
 ```

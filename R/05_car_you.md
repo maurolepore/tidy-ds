@@ -7,19 +7,18 @@ Packages.
 
 ``` r
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ─────────────────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-#> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
+#> ✓ tibble  3.0.3     ✓ dplyr   1.0.2
 #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-#> ── Conflicts ─────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(here)
-#> here() starts at /home/rstudio/tidy-ds
+#> here() starts at /home/rstudio-user/tidy-ds
 library(vroom)
 library(fs)
-library(broom)
 library(glue)
 #> 
 #> Attaching package: 'glue'
@@ -28,74 +27,86 @@ library(glue)
 #>     collapse
 ```
 
+## Import
+
 `vroom()` reads multiple datasets into a single data frame, elegantly
-and fast:
+and fast. But let’s do it’s job in a different way, breaking down what
+`vroom()` does into steps that help us understand the underlying
+iteration problem, and a solution we can latter apply to many other
+iteration problems.
 
-``` r
-paths <- dir_ls(here("data", "by-continent"))
-messy <- suppressMessages(vroom(paths))
-messy
-#> # A tibble: 142 x 38
-#>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
-#>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>
-#>  1 Africa    Algeria          2449.          3014.          2551.          3247.
-#>  2 Africa    Angola           3521.          3828.          4269.          5523.
-#>  3 Africa    Benin            1063.           960.           949.          1036.
-#>  4 Africa    Botswa…           851.           918.           984.          1215.
-#>  5 Africa    Burkin…           543.           617.           723.           795.
-#>  6 Africa    Burundi           339.           380.           355.           413.
-#>  7 Africa    Camero…          1173.          1313.          1400.          1508.
-#>  8 Africa    Centra…          1071.          1191.          1193.          1136.
-#>  9 Africa    Chad             1179.          1308.          1390.          1197.
-#> 10 Africa    Comoros          1103.          1211.          1407.          1876.
-#> # … with 132 more rows, and 32 more variables: gdpPercap_1972 <dbl>,
-#> #   gdpPercap_1977 <dbl>, gdpPercap_1982 <dbl>, gdpPercap_1987 <dbl>,
-#> #   gdpPercap_1992 <dbl>, gdpPercap_1997 <dbl>, gdpPercap_2002 <dbl>,
-#> #   gdpPercap_2007 <dbl>, lifeExp_1952 <dbl>, lifeExp_1957 <dbl>,
-#> #   lifeExp_1962 <dbl>, lifeExp_1967 <dbl>, lifeExp_1972 <dbl>,
-#> #   lifeExp_1977 <dbl>, lifeExp_1982 <dbl>, lifeExp_1987 <dbl>,
-#> #   lifeExp_1992 <dbl>, lifeExp_1997 <dbl>, lifeExp_2002 <dbl>,
-#> #   lifeExp_2007 <dbl>, pop_1952 <dbl>, pop_1957 <dbl>, pop_1962 <dbl>,
-#> #   pop_1967 <dbl>, pop_1972 <dbl>, pop_1977 <dbl>, pop_1982 <dbl>,
-#> #   pop_1987 <dbl>, pop_1992 <dbl>, pop_1997 <dbl>, pop_2002 <dbl>,
-#> #   pop_2007 <dbl>
-```
+Create a vector of paths to read .csv files from:
 
-Do the same step by step and compare the results:
-
-  - Create a list of data frames, mapping each path to `vroom()` with
-    `map()`.
-  - Use the `~` syntax to suppress the messages from `vroom()`.
-  - Reduce `reduce()` the list to a single data frame with
-    `bind_rows()`.
-  - Pipe the output into `identical()` and compare it with `messy`.
+  - Use `here()` to create a safe path to the folder
+    “data/by-continent”.
+  - Use `dir_ls()` to create a vector of paths to the .csv files in that
+    folder.
 
 <!-- end list -->
 
 ``` r
-paths %>% 
-  ___(~ suppressMessages(_____(.x))) %>%
-  reduce(_________) %>% 
-  reduce(bind_rows) %>% 
-  _________(messy)
+paths <- ______(____("data", "by-continent"))
 ```
 
-    #> [1] TRUE
+  - `map()` each path to `read_csv` to create a list of data frames.
+  - `reduce()` the list of data frames to a single data frame with
+    `bind_rows`.
+
+<!-- end list -->
+
+``` r
+messy <- paths %>% 
+  ___(________) %>%
+  ______(bind_rows)
+
+messy
+```
+
+    #> # A tibble: 142 x 38
+    #>    continent country gdpPercap_1952 gdpPercap_1957 gdpPercap_1962 gdpPercap_1967
+    #>    <chr>     <chr>            <dbl>          <dbl>          <dbl>          <dbl>
+    #>  1 Africa    Algeria          2449.          3014.          2551.          3247.
+    #>  2 Africa    Angola           3521.          3828.          4269.          5523.
+    #>  3 Africa    Benin            1063.           960.           949.          1036.
+    #>  4 Africa    Botswa…           851.           918.           984.          1215.
+    #>  5 Africa    Burkin…           543.           617.           723.           795.
+    #>  6 Africa    Burundi           339.           380.           355.           413.
+    #>  7 Africa    Camero…          1173.          1313.          1400.          1508.
+    #>  8 Africa    Centra…          1071.          1191.          1193.          1136.
+    #>  9 Africa    Chad             1179.          1308.          1390.          1197.
+    #> 10 Africa    Comoros          1103.          1211.          1407.          1876.
+    #> # … with 132 more rows, and 32 more variables: gdpPercap_1972 <dbl>,
+    #> #   gdpPercap_1977 <dbl>, gdpPercap_1982 <dbl>, gdpPercap_1987 <dbl>,
+    #> #   gdpPercap_1992 <dbl>, gdpPercap_1997 <dbl>, gdpPercap_2002 <dbl>,
+    #> #   gdpPercap_2007 <dbl>, lifeExp_1952 <dbl>, lifeExp_1957 <dbl>,
+    #> #   lifeExp_1962 <dbl>, lifeExp_1967 <dbl>, lifeExp_1972 <dbl>,
+    #> #   lifeExp_1977 <dbl>, lifeExp_1982 <dbl>, lifeExp_1987 <dbl>,
+    #> #   lifeExp_1992 <dbl>, lifeExp_1997 <dbl>, lifeExp_2002 <dbl>,
+    #> #   lifeExp_2007 <dbl>, pop_1952 <dbl>, pop_1957 <dbl>, pop_1962 <dbl>,
+    #> #   pop_1967 <dbl>, pop_1972 <dbl>, pop_1977 <dbl>, pop_1982 <dbl>,
+    #> #   pop_1987 <dbl>, pop_1992 <dbl>, pop_1997 <dbl>, pop_2002 <dbl>,
+    #> #   pop_2007 <dbl>
+
+## Tidy
 
 Create a longer dataset with a numeric column `year`, and one column per
 metric:
 
-  - Pivot, separate, and mutate `year`.
-  - Pivot again to move each metric to its own column.
+  - Pivot over numeric columns.
+  - Separate the `metric` column into the new columns “metric” and
+    “year”.
+  - Mutate the `year` column to numeric.
+  - Pivot again, to create a wider data frame with each metric in its
+    own column.
 
 <!-- end list -->
 
 ``` r
 tidy <- messy %>% 
-  ____________(where(is.numeric)) %>% 
-  ________(____, into = c("name", "year")) %>% 
-  ______(year = as.numeric(____)) %>% 
-  ___________(names_from = name)
+  ____________(_____(is.numeric), names_to = "metric") %>% 
+  ________(metric, into = c("metric", "____")) %>% 
+  ______(year = __________(year)) %>% 
+  ___________(names_from = metric)
 
 tidy
 ```
@@ -115,19 +126,45 @@ tidy
     #> 10 Africa    Algeria  1997     4797.    69.2 29072015
     #> # … with 1,694 more rows
 
-## Pick years
+## Transform
 
-  - Pick years in the (inclusive) range
-    `params$min_year`-`params$max_year`.
+Subset the data you care about:
+
+  - Use `filter()` to pick years in the inclusive range of
+    `params$year`.
+  - Use `select()` to pick `country`, `year`, and `lifeExp`.
 
 <!-- end list -->
 
 ``` r
-picked <- tidy %>% 
-  ______(____ >= min(params$year), year <= max(______$____))
+params$year
+#> [1] 1952 2007
 ```
 
-## Plot linear models
+``` r
+picked <- tidy %>% 
+  ______(year >= min(______$____) & year <= max(______$____)) %>% 
+  ______(country, ____, lifeExp)
+
+picked
+```
+
+    #> # A tibble: 1,704 x 3
+    #>    country  year lifeExp
+    #>    <chr>   <dbl>   <dbl>
+    #>  1 Algeria  1952    43.1
+    #>  2 Algeria  1957    45.7
+    #>  3 Algeria  1962    48.3
+    #>  4 Algeria  1967    51.4
+    #>  5 Algeria  1972    54.5
+    #>  6 Algeria  1977    58.0
+    #>  7 Algeria  1982    61.4
+    #>  8 Algeria  1987    65.8
+    #>  9 Algeria  1992    67.7
+    #> 10 Algeria  1997    69.2
+    #> # … with 1,694 more rows
+
+## Visualise
 
 Plot a linear model of life expectancy through time:
 
@@ -148,394 +185,183 @@ picked %>%
 
 ![](05_car_you_files/figure-gfm/plot-lines-2-1.png)<!-- -->
 
-## Compute linear models: The list approach
+## Model
 
-> What if you actually want those mods? To access estimates, p-values,
-> etc. In that case, you need to fit them yourself. How to do that? –
-> <https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html>
+Let’s explore two ways to get and access the parameters of those models.
 
-Put the variables needed for country-specific models into nested data
-frame:
+`map()` approach:
 
-  - Use `group_by()` and `nest()` to create a list column with the
-    `country` data.
-  - You may inspect the list `nested$data` with `View()`.
+  - `group_by()` `country` then `nest()`.
+  - Call `lm()` inside `map()` inside `mutate()`, mapping the
+    list-column `data`.
+  - `map_*()` to apply `summary(.x)$r.squared` over the models
+    list-column …
+  - … do this inside `summarise()`.
 
 <!-- end list -->
 
 ``` r
-nested <- picked %>% 
+rsq <- tidy %>% 
   ________(country) %>% 
-  ____()
+  nest() %>% 
+  mutate(mod = ___(data, ~lm(_______ ~ year, data = .x))) %>% 
+  _________(rsq = map_dbl(mod, ~summary(.x)$r.squared))
 
-nested
+rsq
 ```
 
-``` r
-nested <- picked %>% 
-  group_by(country) %>% 
-  nest()
-
-nested
-#> # A tibble: 142 x 2
-#> # Groups:   country [142]
-#>    country                  data             
-#>    <chr>                    <list>           
-#>  1 Algeria                  <tibble [12 × 5]>
-#>  2 Angola                   <tibble [12 × 5]>
-#>  3 Benin                    <tibble [12 × 5]>
-#>  4 Botswana                 <tibble [12 × 5]>
-#>  5 Burkina Faso             <tibble [12 × 5]>
-#>  6 Burundi                  <tibble [12 × 5]>
-#>  7 Cameroon                 <tibble [12 × 5]>
-#>  8 Central African Republic <tibble [12 × 5]>
-#>  9 Chad                     <tibble [12 × 5]>
-#> 10 Comoros                  <tibble [12 × 5]>
-#> # … with 132 more rows
-```
-
-  - Use `map()` inside `mutate()` to fit linear models of `lifeExp`
-    versus `year`.
-
-<!-- end list -->
-
-``` r
-mods <- nested %>% 
-  ______(mod = ___(data, ~ lm(_______ ~ year, data = .x)))
-
-mods
-```
-
-    #> # A tibble: 142 x 3
-    #> # Groups:   country [142]
-    #>    country                  data              mod   
-    #>    <chr>                    <list>            <list>
-    #>  1 Algeria                  <tibble [12 × 5]> <lm>  
-    #>  2 Angola                   <tibble [12 × 5]> <lm>  
-    #>  3 Benin                    <tibble [12 × 5]> <lm>  
-    #>  4 Botswana                 <tibble [12 × 5]> <lm>  
-    #>  5 Burkina Faso             <tibble [12 × 5]> <lm>  
-    #>  6 Burundi                  <tibble [12 × 5]> <lm>  
-    #>  7 Cameroon                 <tibble [12 × 5]> <lm>  
-    #>  8 Central African Republic <tibble [12 × 5]> <lm>  
-    #>  9 Chad                     <tibble [12 × 5]> <lm>  
-    #> 10 Comoros                  <tibble [12 × 5]> <lm>  
-    #> # … with 132 more rows
-
-  - Use `map()` inside `mutate()`; apply `broom::tidy()` to get model
-    parameters.
-  - Remove the needless columns `data` and `mod`.
-  - `unnest()` the `params` column.
-
-<!-- end list -->
-
-``` r
-mods %>% 
-  mutate(params = map(mod, broom::tidy)) %>% 
-  select(-data, -mod) %>% 
-  unnest(params)
-#> # A tibble: 284 x 6
-#> # Groups:   country [142]
-#>    country      term          estimate std.error statistic  p.value
-#>    <chr>        <chr>            <dbl>     <dbl>     <dbl>    <dbl>
-#>  1 Algeria      (Intercept) -1068.       43.8      -24.4   3.07e-10
-#>  2 Algeria      year            0.569     0.0221    25.7   1.81e-10
-#>  3 Angola       (Intercept)  -377.       46.6       -8.08  1.08e- 5
-#>  4 Angola       year            0.209     0.0235     8.90  4.59e- 6
-#>  5 Benin        (Intercept)  -613.       38.9      -15.8   2.18e- 8
-#>  6 Benin        year            0.334     0.0196    17.0   1.04e- 8
-#>  7 Botswana     (Intercept)   -65.5     202.        -0.324 7.53e- 1
-#>  8 Botswana     year            0.0607    0.102      0.593 5.66e- 1
-#>  9 Burkina Faso (Intercept)  -676.       67.8       -9.97  1.63e- 6
-#> 10 Burkina Faso year            0.364     0.0342    10.6   9.05e- 7
-#> # … with 274 more rows
-```
-
-## Compute linear models: The `rowwise()` approach
-
-> `rowwise()` data frames allow you to solve a variety of modelling
-> problems in what I think is a particularly elegant way. –
-> <https://dplyr.tidyverse.org/articles/rowwise.html#list-columns-1>
-
-  - Use `nest_by()` to create a row-wise data-frame, nested by
-    `country`.
-
-<!-- end list -->
-
-``` r
-nested2 <- tidy %>% _______(_______)
-nested2
-```
-
+    #> `summarise()` ungrouping output (override with `.groups` argument)
     #> # A tibble: 142 x 2
-    #> # Rowwise:  country
-    #>    country                   data
-    #>    <chr>       <list<tbl_df[,5]>>
-    #>  1 Afghanistan           [12 × 5]
-    #>  2 Albania               [12 × 5]
-    #>  3 Algeria               [12 × 5]
-    #>  4 Angola                [12 × 5]
-    #>  5 Argentina             [12 × 5]
-    #>  6 Australia             [12 × 5]
-    #>  7 Austria               [12 × 5]
-    #>  8 Bahrain               [12 × 5]
-    #>  9 Bangladesh            [12 × 5]
-    #> 10 Belgium               [12 × 5]
+    #>    country       rsq
+    #>    <chr>       <dbl>
+    #>  1 Afghanistan 0.948
+    #>  2 Albania     0.911
+    #>  3 Algeria     0.985
+    #>  4 Angola      0.888
+    #>  5 Argentina   0.996
+    #>  6 Australia   0.980
+    #>  7 Austria     0.992
+    #>  8 Bahrain     0.967
+    #>  9 Bangladesh  0.989
+    #> 10 Belgium     0.995
     #> # … with 132 more rows
 
-  - Use `mutate()` without `map()` to pull interesting information out
-    of each fitted linear model.
-  - Inspect the resulting list column `mod` with `View()`.
-
-<!-- end list -->
+Rowwise approach:
 
 ``` r
-mods2 <- nested2 %>% 
-  ______(mod = list(__(_______ ~ year, data = .data$data)))
+rsq2 <- tidy %>% 
+  nest_by(country) %>% 
+  ______(mod = list(__(_______ ~ year, data = data))) %>% 
+  summarise(rsq = _______(mod)$r.squared)
 
-mods2
-```
-
-    #> # A tibble: 142 x 3
-    #> # Rowwise:  country
-    #>    country                   data mod   
-    #>    <chr>       <list<tbl_df[,5]>> <list>
-    #>  1 Afghanistan           [12 × 5] <lm>  
-    #>  2 Albania               [12 × 5] <lm>  
-    #>  3 Algeria               [12 × 5] <lm>  
-    #>  4 Angola                [12 × 5] <lm>  
-    #>  5 Argentina             [12 × 5] <lm>  
-    #>  6 Australia             [12 × 5] <lm>  
-    #>  7 Austria               [12 × 5] <lm>  
-    #>  8 Bahrain               [12 × 5] <lm>  
-    #>  9 Bangladesh            [12 × 5] <lm>  
-    #> 10 Belgium               [12 × 5] <lm>  
-    #> # … with 132 more rows
-
-  - Use `broom::tidy()` inside `summarise()` to access model parameters.
-
-<!-- end list -->
-
-``` r
-parameters2 <- mods2 %>% _________(broom::tidy(___))
-parameters2
+rsq2
 ```
 
     #> `summarise()` regrouping output by 'country' (override with `.groups` argument)
-    #> # A tibble: 284 x 6
+    #> # A tibble: 142 x 2
     #> # Groups:   country [142]
-    #>    country     term         estimate std.error statistic  p.value
-    #>    <chr>       <chr>           <dbl>     <dbl>     <dbl>    <dbl>
-    #>  1 Afghanistan (Intercept)  -508.     40.5        -12.5  1.93e- 7
-    #>  2 Afghanistan year            0.275   0.0205      13.5  9.84e- 8
-    #>  3 Albania     (Intercept)  -594.     65.7         -9.05 3.94e- 6
-    #>  4 Albania     year            0.335   0.0332      10.1  1.46e- 6
-    #>  5 Algeria     (Intercept) -1068.     43.8        -24.4  3.07e-10
-    #>  6 Algeria     year            0.569   0.0221      25.7  1.81e-10
-    #>  7 Angola      (Intercept)  -377.     46.6         -8.08 1.08e- 5
-    #>  8 Angola      year            0.209   0.0235       8.90 4.59e- 6
-    #>  9 Argentina   (Intercept)  -390.      9.68       -40.3  2.14e-12
-    #> 10 Argentina   year            0.232   0.00489     47.4  4.22e-13
-    #> # … with 274 more rows
+    #>    country       rsq
+    #>    <chr>       <dbl>
+    #>  1 Afghanistan 0.948
+    #>  2 Albania     0.911
+    #>  3 Algeria     0.985
+    #>  4 Angola      0.888
+    #>  5 Argentina   0.996
+    #>  6 Australia   0.980
+    #>  7 Austria     0.992
+    #>  8 Bahrain     0.967
+    #>  9 Bangladesh  0.989
+    #> 10 Belgium     0.995
+    #> # … with 132 more rows
 
-## Plotting from the model parameters
+## Countries with highest and lowest `rsq`
 
-Here are two ways to get the r.squared from the model of each country:
+In the same pipeline:
 
-``` r
-# purrr: List approach
-country <- mods %>% pluck("country")
-rsq <- mods %>% pluck("mod") %>% map(summary) %>% map_dbl("r.squared")
-list(country, rsq) %>% map(head)
-#> [[1]]
-#> [1] "Algeria"      "Angola"       "Benin"        "Botswana"     "Burkina Faso"
-#> [6] "Burundi"     
-#> 
-#> [[2]]
-#> [1] 0.9851172 0.8878146 0.9666020 0.0340234 0.9187105 0.7659960
-
-# dplyr: Data frame approach
-country_rsq <- mods2 %>% summarise(rsq = summary(mod)$r.squared)
-#> `summarise()` regrouping output by 'country' (override with `.groups` argument)
-head(country_rsq)
-#> # A tibble: 6 x 2
-#> # Groups:   country [6]
-#>   country       rsq
-#>   <chr>       <dbl>
-#> 1 Afghanistan 0.948
-#> 2 Albania     0.911
-#> 3 Algeria     0.985
-#> 4 Angola      0.888
-#> 5 Argentina   0.996
-#> 6 Australia   0.980
-```
-
-The data frame approach keeps `country` and `rsq` in sync. This makes it
-easy to work with the two vectors at the same time.
-
-  - `ungroup()` the dataset `country_rsq` (what happens if you don’t?).
-  - `arrange()` to find the 3 countries with highest and lowest `rsq`.
-  - Use `slice_head()` and `pull()` to pull the names of those
-    countries.
+  - `ungroup()` the dataset `rsq` (what happens if you don’t?).
+  - `arrange()` to find order the data set by descending values of `rsq`
+  - `print()` to inspect the data at this point.
+  - `pull()` the `country` column.
 
 <!-- end list -->
 
 ``` r
-high <- country_rsq %>% 
-  _______() %>% 
-  arrange(____(rsq)) %>% 
-  slice_head(n = 3) %>% 
+countries <- rsq %>% 
+  _______() %>%
+  _______(____(rsq)) %>% 
+  _____() %>% 
   ____(country)
-high
 
-low <- country_rsq %>% 
-  ungroup() %>% 
-  _______(rsq) %>% 
-  __________(n = 3) %>% 
-  pull(country)
-low
+head(countries)
 ```
 
-    #> [1] "Brazil"     "Mauritania" "France"
-    #> [1] "Rwanda"   "Botswana" "Zimbabwe"
+    #> # A tibble: 142 x 2
+    #>    country             rsq
+    #>    <chr>             <dbl>
+    #>  1 Brazil            0.998
+    #>  2 Mauritania        0.998
+    #>  3 France            0.998
+    #>  4 Switzerland       0.997
+    #>  5 Pakistan          0.997
+    #>  6 Indonesia         0.997
+    #>  7 Equatorial Guinea 0.997
+    #>  8 Comoros           0.997
+    #>  9 Nicaragua         0.997
+    #> 10 Guatemala         0.997
+    #> # … with 132 more rows
+    #> [1] "Brazil"      "Mauritania"  "France"      "Switzerland" "Pakistan"   
+    #> [6] "Indonesia"
 
-Confirm your findings with a plot:
-
-  - `filter()` the `picked` dataset; get countries with the
-    highest/lowest `rsq`.
-  - Plot a linear model with `geom_smooth()`; keep map `colour` to
-    `country`.
-  - Facet each `country` into a separate panel.
-  - Use `theme_bw()` (or any other theme you like).
+  - `filter()` rows of `picked` where `country` is in the `head()` and
+    `tail()` of `countries`.
 
 <!-- end list -->
 
 ``` r
-picked %>% 
-  filter(country %in% c(high, low)) %>% 
-  ggplot(aes(year, lifeExp)) + 
-  geom_smooth(method = "lm") +
-  facet_wrap(~country) +
-  theme_bw()
-#> `geom_smooth()` using formula 'y ~ x'
+high_low <- picked %>% 
+  ______(country %in% c(____(countries), ____(countries)))
+
+high_low
 ```
 
-![](05_car_you_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+    #> # A tibble: 144 x 3
+    #>    country   year lifeExp
+    #>    <chr>    <dbl>   <dbl>
+    #>  1 Botswana  1952    47.6
+    #>  2 Botswana  1957    49.6
+    #>  3 Botswana  1962    51.5
+    #>  4 Botswana  1967    53.3
+    #>  5 Botswana  1972    56.0
+    #>  6 Botswana  1977    59.3
+    #>  7 Botswana  1982    61.5
+    #>  8 Botswana  1987    63.6
+    #>  9 Botswana  1992    62.7
+    #> 10 Botswana  1997    52.6
+    #> # … with 134 more rows
 
-The data frame is a very flexible data structure; it can store anything
-in it.
+## Do our models agree with those we get with ggplo2?
 
-Let’s save each plot in a single .png file. Let’s first create a helper
-function to make the plot for each country, and also create the paths to
-the plots we’ll soon save.
+If so, our models with high (low) `rsq` should fit the data tightly
+(loosely).
+
+Let’s plot the countries with the 6 highest and 6 lowest values of
+`rsq`.
 
 ``` r
-make_plot <- function(data, country) {
-  data %>% 
-    ggplot(aes(year, lifeExp)) + 
+make_plot <- function(data) {
+  ggplot(data, aes(year, lifeExp)) + 
     geom_smooth(method = "lm") +
-    labs(title = country) +
+    facet_wrap(~country) +
     theme_bw()
 }
-
-# Ensure the parent directory exists, or create it
-if (!dir_exists(here("output"))) {
-  dir_create(here("output"))
-}
-
-# The pronoun `.data` is not strictly necessary but it's more explicit
-plots_df <- picked %>% 
-  filter(.data$country %in% c(high, low)) %>%
-  nest_by(.data$country) %>% 
-  summarise(plot = list(make_plot(.data$data, .data$country))) %>% 
-  ungroup() %>%
-  mutate(filename = here("output", glue("{country}.png"))) %>%
-  relocate(filename) %>% 
-  select(-.data$country)
-#> `summarise()` regrouping output by 'country' (override with `.groups` argument)
-
-plots_df
-#> # A tibble: 6 x 2
-#>   filename                                    plot  
-#>   <chr>                                       <list>
-#> 1 /home/rstudio/tidy-ds/output/Botswana.png   <gg>  
-#> 2 /home/rstudio/tidy-ds/output/Brazil.png     <gg>  
-#> 3 /home/rstudio/tidy-ds/output/France.png     <gg>  
-#> 4 /home/rstudio/tidy-ds/output/Mauritania.png <gg>  
-#> 5 /home/rstudio/tidy-ds/output/Rwanda.png     <gg>  
-#> 6 /home/rstudio/tidy-ds/output/Zimbabwe.png   <gg>
 ```
 
-Let’s see the first plot:
+We can use this helper function to plot all plots at once:
 
 ``` r
-plots_df %>% slice_head() %>% pull(plot)
-#> [[1]]
+high_low %>% make_plot()
 #> `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](05_car_you_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](05_car_you_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-We can now use both a list and data frame approach to saving the plots:
+We can also apply it to a list split by `country`, and save each plot to
+a file:
 
-## List approach to saving multiple plots
-
-`pwalk()` is an extension of `walk2()`; it’s easiest to use when the
-names of the list match the names of the arguments of the function you
-apply.
-
-``` r
-plots_df %>% names()
-#> [1] "filename" "plot"
-
-formals(ggsave) %>% names()
-#>  [1] "filename"  "plot"      "device"    "path"      "scale"     "width"    
-#>  [7] "height"    "units"     "dpi"       "limitsize" "..."
-```
-
-  - Use `pwalk()` to apply `ggsave()` over each `filename`.
+  - `split()` `high_low` by `country`.
+  - `map()` to apply `make_plot`.
+  - Use `ggsave()` inside `iwalk()`, mapping the argument `plot` to
+    `.x`., and the argument `filename` to paths in the “output” folder.
+    Create such paths with `here()`, where the name of each .png files
+    should come from mapping `.y` like so: `glue("{.y}.png")`.
 
 <!-- end list -->
 
 ``` r
-_____(plots_df, ______)
-```
-
-``` r
-pwalk(plots_df, ggsave)
-```
-
-Confirm.
-
-``` r
-dir_ls(here("output"))
-#> /home/rstudio/tidy-ds/output/Botswana.png
-#> /home/rstudio/tidy-ds/output/Brazil.png
-#> /home/rstudio/tidy-ds/output/France.png
-#> /home/rstudio/tidy-ds/output/Mauritania.png
-#> /home/rstudio/tidy-ds/output/Rwanda.png
-#> /home/rstudio/tidy-ds/output/Zimbabwe.png
-
-# Cleanup
-file_delete(dir_ls(here("output")))
-```
-
-## Summarise approach to saving multiple plots
-
-You can achieve the same with `rowwise()` and `summarise()`.
-
-  - Use `ggsave()` inside `summarise()` (wrap the output in `list()`).
-
-<!-- end list -->
-
-``` r
-plots_df %>% 
-  _______() %>% 
-  rowwise() %>% 
-  _________(list(______(filename, plot)))
-
-# Confirm
-dir_ls(here("output"))
+high_low %>% 
+  _____(.$country) %>% 
+  map(_________) %>% 
+  _____(~ ggsave(filename = here("output", glue("{__}.png")), plot = .x))
 ```
 
     #> Saving 7 x 5 in image
@@ -550,60 +376,53 @@ dir_ls(here("output"))
     #> `geom_smooth()` using formula 'y ~ x'
     #> Saving 7 x 5 in image
     #> `geom_smooth()` using formula 'y ~ x'
-    #> `summarise()` ungrouping output (override with `.groups` argument)
-    #> # A tibble: 6 x 1
-    #>   `list(ggsave(filename, plot))`
-    #>   <list>                        
-    #> 1 <NULL>                        
-    #> 2 <NULL>                        
-    #> 3 <NULL>                        
-    #> 4 <NULL>                        
-    #> 5 <NULL>                        
-    #> 6 <NULL>
-    #> /home/rstudio/tidy-ds/output/Botswana.png
-    #> /home/rstudio/tidy-ds/output/Brazil.png
-    #> /home/rstudio/tidy-ds/output/France.png
-    #> /home/rstudio/tidy-ds/output/Mauritania.png
-    #> /home/rstudio/tidy-ds/output/Rwanda.png
-    #> /home/rstudio/tidy-ds/output/Zimbabwe.png
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
+    #> Saving 7 x 5 in image
+    #> `geom_smooth()` using formula 'y ~ x'
 
-  - Knit with params and set the `year` range however you like.
+  - Knit with different parameters and inspect the output.
 
 ## Takeaways
 
 Import:
 
-  - Use `bind_rows()` to combine two data frames by row.
+  - `vrooms()` is like `many_csv %>% map(read_csv) %>%
+    reduce(bind_rows)`.
 
 Transform:
 
-  - Use `group_by()` and `nest()` to create nested data frame.
   - Use `nest_by()` to create a nested data frame with row-wise
     properties.
   - Use `lm()` to fit a linear model to data.
       - With list-columns, use `map()` inside `mutate()`
       - With row-wise data, use `mutate()` or `summarise()` without
         `map()`.
-  - Use `slice_*()` to slice specific rows.
   - Use `pull()` to pull the values of a data frame column.
   - Use `arrange()` and maybe `desc()` to reorder rows.
-  - Use `relocate()` to reorder columns.
   - Use `ungroup()` when you no longer need the grouping.
 
 Tidy:
 
-  - Use `broom::tidy()` to access the parameters of a model.
-  - Use list columns to store anything in a data frame, including plots.
+  - Nest data frames: what happens in the data frame, stays in the data
+    frame.
 
 Visualise:
 
   - Use `geom_smooth()` to plot linear models.
-  - Use the argument `group` inside `aes()` to group data.
   - Use `ggsave()` to save ggplots.
 
 Communicate:
 
-  - You may pass multiple values to YAML params with:
+  - You may pass multiple values to YAML prams with:
 
 <!-- end list -->
 
@@ -612,15 +431,11 @@ params:
   value: [1952, 2007]
 ```
 
-Other:
+Iteration:
 
-  - View lists with `View()` (for data frames, prefer `dplyr::view()` ).
-  - Iteration:
+  - Use `View()` to view lists (for data frames, prefer `dplyr::view()`
+    ).
       - Use `reduce()` to reduce a list to a single value with a binary
         function.
-  - Use `pluck()` to pluck a single element from a vector.
-  - `map()` can also extract by name or position
-  - Use `pmap()/pwalk()` to apply a function iterating over any number
-    of vectors.
-  - Use the `walk*()` family to apply functions called primarily for
-    side-effects.
+      - Use the `walk*()` family to apply side-effect functions.
+      - Use `iwalk()` as short hand for `map2(x, names(x), ...)`

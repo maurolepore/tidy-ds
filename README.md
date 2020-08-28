@@ -36,11 +36,9 @@ install.packages(c("tidyverse", "here", "vroom", "shiny"))
 
 ## How to work with usethis:
 
-* Use usethis with `library(usethis)` or `devtools::use_devtools()`.
-* Use `pr_init()` to initialize work on a new pull-request branch.
-* Use `pr_pause()` to pause work on a pull-request branch (to start a new one).
-* Use RStudio's branch menu (Git pane) to switch between pull-request branches.
-* Use `pr_sync()` to update a pull-request branch against `upstream`.
+This is an [overview of all pull-request functions in the usethis package](https://usethis.r-lib.org/reference/pull-requests.html#overview-of-all-the-functions):
+
+![](http://i.imgur.com/Yg40mAB.png)
 
 ## How to work on each task:
 

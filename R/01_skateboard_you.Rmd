@@ -1,7 +1,6 @@
 ---
 title: Skateboard
 output: github_document
-author: Daisy
 ---
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
@@ -26,6 +25,8 @@ library(tidyverse)
 library(here)
 ```
 
+
+
 You are about to read data but this code fails. The path is unsafe,  fix it:
 
 * Create a safe path with `here()` and retry.
@@ -37,7 +38,7 @@ read_csv("data/gapminder.csv")
 
 
 
-Instead of `here("a/path")` it's safer to avoid `/` and use `here("a", "path")`.
+It's best to avoid `/` and use the form `here("a", "path")`.
 
 ```{r}
 path <- here("data", "gapminder.csv")
@@ -50,7 +51,7 @@ Now you can do `read_csv(path)` or use the pipe syntax: `path %>% readr_path()`.
 * Read the data in `path` using the pipe syntax.
 
 ```{r read-1, eval = FALSE}
-gapminder <- path %>% read_csv()
+gapminder <- ____ %>% ________()
 ```
 
 ```{r read-2, echo = FALSE}
@@ -59,7 +60,7 @@ gapminder <- path %>% read_csv()
 
 
 
-* Print and explore `gampinder` under the chunk and with `view()`.
+* Print and explore `gampinder` under the chunk and with `view()` or `View()`.
 
 ```{r gapminder-1, eval = FALSE}
 _________
@@ -71,7 +72,7 @@ gapminder
 
 
 
-`gapminder` is a spreadsheet-like data structure called a data frame. A data frame is a list of lists (columns), all with the same number of elements (rows). In particular, the tidyverse offers an improved data frame called a tibble.
+`gapminder` is a spreadsheet-like data structure called "data frame". A data frame is a list of lists called "columns", all columns with the same number of elements called "rows". In particular, the tidyverse offers an improved data frame called a "tibble".
 
 ![](http://i.imgur.com/zKA3A2g.png)
 
@@ -86,8 +87,8 @@ You will now visualise the data with ggplot2. This is how it works:
 * Create a boxplot of `lifeExp` for each `continent` (`?geom_boxplot()`).
 
 ```{r boxplot-1, eval = FALSE}
-ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
-  geom_boxplot()
+ggplot(data = _________, aes(x = _________, y = _______)) +
+  ____________()
 ```
 
 ```{r boxplot-2, echo = FALSE}
@@ -116,11 +117,11 @@ ggplot(data = <DATA>) +
 Communicate: 
 
 * Use `output: github_document` to report your analysis as a web page on GitHub.
-* Set the chunk options you like.
+* Set the chunk options you like, for the entire document and for each chunk.
 
 Other:
 
 * Use all packages in the tidyverse with `library(tidyverse)`.
-* Assign values to objects with `<-`.
-* Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except ggplot2.
-* Compose ggplot2 layers with `+` not `%>%`.
+* Assign values to variables with `<-`.
+* Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except for ggplot2.
+* Compose ggplot2 functions (layers) not with `%>%` but with `+`.

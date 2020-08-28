@@ -1,6 +1,5 @@
 Skateboard
 ================
-Daisy
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
 
@@ -13,26 +12,15 @@ library(_________)
 _______(here)
 ```
 
-<<<<<<< HEAD
-    #> ── Attaching packages ──────────────────── tidyverse 1.3.0 ──
-=======
-    #> ── Attaching packages ──────────────────────────────────────── tidyverse 1.3.0 ──
->>>>>>> 03_bicycle_daisy
+    #> ── Attaching packages ────────────────────── tidyverse 1.3.0 ──
     #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
     #> ✓ tibble  3.0.3     ✓ dplyr   1.0.2
     #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
     #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-<<<<<<< HEAD
-    #> ── Conflicts ─────────────────────── tidyverse_conflicts() ──
+    #> ── Conflicts ───────────────────────── tidyverse_conflicts() ──
     #> x dplyr::filter() masks stats::filter()
     #> x dplyr::lag()    masks stats::lag()
     #> here() starts at /home/mauro/git/tidy-ds
-=======
-    #> ── Conflicts ─────────────────────────────────────────── tidyverse_conflicts() ──
-    #> x dplyr::filter() masks stats::filter()
-    #> x dplyr::lag()    masks stats::lag()
-    #> here() starts at /home/rstudio-user/tidy-ds
->>>>>>> 03_bicycle_daisy
 
 You are about to read data but this code fails. The path is unsafe, fix
 it:
@@ -44,15 +32,10 @@ it:
 
 ``` r
 read_csv("data/gapminder.csv")
-<<<<<<< HEAD
 #> Error: 'data/gapminder.csv' does not exist in current working directory ('/home/mauro/git/tidy-ds/R').
-=======
-#> Error: 'data/gapminder.csv' does not exist in current working directory ('/home/rstudio-user/tidy-ds/R').
->>>>>>> 03_bicycle_daisy
 ```
 
-Instead of `here("a/path")` it’s safer to avoid `/` and use `here("a",
-"path")`.
+It’s best to avoid `/` and use the form `here("a", "path")`.
 
 ``` r
 path <- here("data", "gapminder.csv")
@@ -66,7 +49,7 @@ readr_path()`.
 <!-- end list -->
 
 ``` r
-gapminder <- path %>% read_csv()
+gapminder <- ____ %>% ________()
 ```
 
     #> Parsed with column specification:
@@ -79,7 +62,8 @@ gapminder <- path %>% read_csv()
     #>   gdpPercap = col_double()
     #> )
 
-  - Print and explore `gampinder` under the chunk and with `view()`.
+  - Print and explore `gampinder` under the chunk and with `view()` or
+    `View()`.
 
 <!-- end list -->
 
@@ -102,10 +86,10 @@ _________
     #> 10 Afghanistan Asia       1997    41.8 22227415      635.
     #> # … with 1,694 more rows
 
-`gapminder` is a spreadsheet-like data structure called a data frame. A
-data frame is a list of lists (columns), all with the same number of
-elements (rows). In particular, the tidyverse offers an improved data
-frame called a tibble.
+`gapminder` is a spreadsheet-like data structure called “data frame”. A
+data frame is a list of lists called “columns”, all columns with the
+same number of elements called “rows”. In particular, the tidyverse
+offers an improved data frame called a “tibble”.
 
 ![](http://i.imgur.com/zKA3A2g.png)
 
@@ -120,7 +104,7 @@ You will now visualise the data with ggplot2. This is how it works:
 
 ``` r
 ggplot(data = _________, aes(x = _________, y = _______)) +
-  geom________()
+  ____________()
 ```
 
 ![](01_skateboard_you_files/figure-gfm/boxplot-2-1.png)<!-- -->
@@ -146,12 +130,13 @@ Communicate:
 
   - Use `output: github_document` to report your analysis as a web page
     on GitHub.
-  - Set the chunk options you like.
+  - Set the chunk options you like, for the entire document and for each
+    chunk.
 
 Other:
 
   - Use all packages in the tidyverse with `library(tidyverse)`.
-  - Assign values to objects with `<-`.
-  - Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except
+  - Assign values to variables with `<-`.
+  - Compose functions like `g(f(x))` or `x %>% f() %>% g()`, except for
     ggplot2.
-  - Compose ggplot2 layers with `+` not `%>%`.
+  - Compose ggplot2 functions (layers) not with `%>%` but with `+`.

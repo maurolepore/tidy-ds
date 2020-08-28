@@ -12,15 +12,15 @@ library(_________)
 _______(here)
 ```
 
-    #> ── Attaching packages ─────────────────────── tidyverse 1.3.0 ──
+    #> ── Attaching packages ──────────────────── tidyverse 1.3.0 ──
     #> ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-    #> ✓ tibble  3.0.3     ✓ dplyr   1.0.1
+    #> ✓ tibble  3.0.3     ✓ dplyr   1.0.2
     #> ✓ tidyr   1.1.1     ✓ stringr 1.4.0
     #> ✓ readr   1.3.1     ✓ forcats 0.5.0
-    #> ── Conflicts ────────────────────────── tidyverse_conflicts() ──
+    #> ── Conflicts ─────────────────────── tidyverse_conflicts() ──
     #> x dplyr::filter() masks stats::filter()
     #> x dplyr::lag()    masks stats::lag()
-    #> here() starts at /home/rstudio/tidy-ds
+    #> here() starts at /home/mauro/git/tidy-ds
 
 You are about to read data but this code fails. The path is unsafe, fix
 it:
@@ -32,7 +32,7 @@ it:
 
 ``` r
 read_csv("data/gapminder.csv")
-#> Error: 'data/gapminder.csv' does not exist in current working directory ('/home/rstudio/tidy-ds/R').
+#> Error: 'data/gapminder.csv' does not exist in current working directory ('/home/mauro/git/tidy-ds/R').
 ```
 
 Instead of `here("a/path")` it’s safer to avoid `/` and use `here("a",

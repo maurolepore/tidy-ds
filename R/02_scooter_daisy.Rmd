@@ -5,7 +5,7 @@ params:
   continent:
     choices: [Africa, Americas, Asia, Europe, Oceania]
     multiple: true
-    value: [Europe]
+    value: [Africa, Americas, Asia, Europe, Oceania]
 ---
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
@@ -13,7 +13,7 @@ params:
 
 
 ```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE, collapse = FALSE, comment = "#>")
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
 Packages.
@@ -34,7 +34,7 @@ gapminder <- read_csv(here("data", "gapminder.csv"))
 * Explore `gapminder` with `glimpse()`.
 
 ```{r glimpse-1, eval=FALSE}
-gapminder %>% glimpse()
+gapminder %>% _______()
 ```
 
 ```{r glimpse-2, echo=FALSE}
@@ -43,11 +43,11 @@ gapminder %>% glimpse()
 
 
 
-* Using `filter()`, subset rows where `continent` is "Americas" or  "Europe".
+* Using `filter()`, subset rows where `continent` is "Europe".
 
 ```{r filter-continents-1, eval=FALSE}
-continents <- c("Americas", "Europe")
-gapminder %>% filter(continent %in% continents)
+continents <- c("________", "______")
+_________ %>% ______(continent %in% continents)
 ```
 
 ```{r filter-continents-2, echo=FALSE}
@@ -69,8 +69,8 @@ params
 * Using `filter()`, subset rows where `continent` is `params$continent`.
 
 ```{r filter-params-continent-1, eval=FALSE}
-filtered <- gapminder %>% 
-  filter(continent %in% params$continent)
+filtered <- _________ %>% 
+  ______(continent %in% ______$continent)
 
 filtered
 ```
@@ -88,6 +88,7 @@ filtered
 
 ```{r selected-1, eval=FALSE}
 selected <- filtered %>% 
+  ______(-country, -_________)
   select(-country, -continent)
 
 selected
@@ -124,11 +125,11 @@ Above you used `select()` to exclude `country` and `continent`. Let's do this ag
 * Compare the result with `identical()`.
 
 ```{r iterate-by-type-1, eval=FALSE}
-selected1 <- filtered %>% select(where(is.numeric))
-selected1 %>% identical(selected)
+selected1 <- filtered %>% ______(where(is._______))
+_________ %>% identical(selected)
 
-selected2 <- filtered %>% keep(is.numeric)
-selected2 %>% identical(selected)
+selected2 <- filtered %>% ____(is._______)
+_________ %>% identical(selected)
 ```
 
 ```{r iterate-by-type-2, echo=FALSE}

@@ -1,6 +1,7 @@
 ---
 title: Skateboard
 output: github_document
+author: Daisy
 ---
 
 **Collapse all chunks with Alt+O / Cmd+Option+O**
@@ -85,8 +86,8 @@ You will now visualise the data with ggplot2. This is how it works:
 * Create a boxplot of `lifeExp` for each `continent` (`?geom_boxplot()`).
 
 ```{r boxplot-1, eval = FALSE}
-ggplot(data = _________, aes(x = _________, y = _______)) +
-  geom________()
+ggplot(data = gapminder, aes(x = continent, y = lifeExp)) +
+  geom_boxplot()
 ```
 
 ```{r boxplot-2, echo = FALSE}
